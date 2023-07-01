@@ -1,8 +1,7 @@
-using System;
-using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 
 namespace Source.Components;
 
@@ -19,7 +18,8 @@ public interface IHMACProvider
     Task<string> ComputeSigningContentAsync(
         HttpRequestMessage request, 
         DateTimeOffset requestedOn, 
-        Guid nonce
+        Guid nonce,
+        MessageContent[]? additionalContent = null
     );
 }
 
@@ -47,7 +47,8 @@ public class HMACProvider : IHMACProvider
     public async Task<string> ComputeSigningContentAsync(
         HttpRequestMessage request, 
         DateTimeOffset requestedOn, 
-        Guid nonce
+        Guid nonce,
+        MessageContent[]? additionalContent = null
     )
     {
         var macBuilder = new StringBuilder($"{request.Method}");
@@ -65,6 +66,11 @@ public class HMACProvider : IHMACProvider
         {
             var contentHash = ComputeContentHash(await content.ReadAsStringAsync());
             macBuilder.Append($":{contentHash}");
+        }
+
+        if (additionalContent is MessageContent[] messageContent)
+        {
+            macBuilder.AppendJoin(":", messageContent.Select(element => element.Value));
         }
 
         macBuilder.Append($":{nonce}");

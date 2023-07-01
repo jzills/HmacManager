@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using System.Net.Http.Headers;
 using Source.Components;
 
@@ -22,8 +20,23 @@ internal static class HttpRequestHeadersExtensions
         Guid nonce
     ) => headers.Add("X-Nonce", nonce.ToString());
 
+    public static void AddAdditionalContent(
+        this HttpRequestHeaders headers, 
+        MessageContent[]? additionalContent
+    )
+    {
+        if (additionalContent is MessageContent[] messageContent)
+        {
+            foreach (var content in messageContent)
+            {
+                headers.Add(content.Header!, content.Value);
+            }
+        }
+    }
+
     public static bool HasRequiredHeaders(
         this HttpRequestHeaders headers,
+        string[] additionalContentHeaders,
         out RequiredHeaderValues headerValues
     )
     {
@@ -31,11 +44,26 @@ internal static class HttpRequestHeadersExtensions
         var hasRequiredRequestedOnHeader    = headers.HasRequiredRequestedOnHeader(out var requestedOn);
         var hasRequiredNonceHeader          = headers.HasRequiredNonceHeader(out var nonce);
         
+        var contentHeaders = new List<MessageContent>(headers.Count());
+        foreach (var contentHeader in additionalContentHeaders)
+        {
+            if (headers.TryGetValues(contentHeader, out var contentHeaderValue))
+            {
+                var headerValue = contentHeaderValue.FirstOrDefault();
+                contentHeaders.Add(new MessageContent
+                {
+                    Header = contentHeader,
+                    Value = headerValue
+                });
+            }
+        }
+        
         headerValues = new RequiredHeaderValues
         {
             Signature = signature,
             RequestedOn = requestedOn,
-            Nonce = nonce
+            Nonce = nonce,
+            AdditionalContent = contentHeaders.ToArray()
         };
 
         return hasRequiredAuthorizationHeader && 

@@ -1,12 +1,19 @@
-using System;
-using System.Net.Http;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Source.Caching;
 using Source.Extensions;
 
 namespace Source.Components;
 
-public class HMACManager
+public interface IHMACManager
+{
+    Task<bool> VerifyAsync(HttpRequestMessage request);
+    Task<RequiredHeaderValues> SignAsync(
+        HttpRequestMessage request, 
+        MessageContent[]? additionalContent = null
+    );
+}
+
+public class HMACManager : IHMACManager
 {
     private readonly HMACManagerOptions _options;
     private readonly INonceCache _cache;
@@ -25,7 +32,7 @@ public class HMACManager
 
     public async Task<bool> VerifyAsync(HttpRequestMessage request)
     {
-        if (request.Headers.HasRequiredHeaders(out var headerValues))
+        if (request.Headers.HasRequiredHeaders(_options.AdditionalContentHeaders, out var headerValues))
         {
             if (HasValidRequestedOn(headerValues.RequestedOn) && 
                 await HasValidNonceAsync(headerValues.Nonce))
@@ -38,7 +45,8 @@ public class HMACManager
                 var signingContent = await _provider.ComputeSigningContentAsync(
                     request, 
                     headerValues.RequestedOn, 
-                    headerValues.Nonce
+                    headerValues.Nonce,
+                    headerValues.AdditionalContent
                 );
 
                 var signature = _provider.ComputeSignature(signingContent);
@@ -49,14 +57,16 @@ public class HMACManager
         return false;
     }
 
-    public async Task<RequiredHeaderValues> SignAsync(HttpRequestMessage request)
+    public async Task<RequiredHeaderValues> SignAsync(HttpRequestMessage request, MessageContent[]? additionalContent = null)
     {
-        var headerValues = new RequiredHeaderValues();
+        var headerValues = new RequiredHeaderValues 
+            { AdditionalContent = additionalContent };
 
         headerValues.SigningContent = await _provider.ComputeSigningContentAsync(
             request, 
             headerValues.RequestedOn, 
-            headerValues.Nonce
+            headerValues.Nonce,
+            additionalContent
         );
 
         headerValues.Signature = _provider.ComputeSignature(
@@ -66,6 +76,7 @@ public class HMACManager
         request.Headers.AddSignature(headerValues.Signature);
         request.Headers.AddRequestedOn(headerValues.RequestedOn);
         request.Headers.AddNonce(headerValues.Nonce);
+        request.Headers.AddAdditionalContent(additionalContent);
 
         return headerValues;
     }
