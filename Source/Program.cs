@@ -23,7 +23,13 @@ var request = new HttpRequestMessage(HttpMethod.Post, "https://www.someUri.com")
 var services = new ServiceCollection();
 services
     .AddMemoryCache()
-    // .AddHMACManager()
+    .AddHMACManager(options =>
+    {
+        options.ClientId = clientId;
+        options.ClientSecret = clientSecret;
+        options.MaxAge = TimeSpan.FromSeconds(30);
+        options.AdditionalContentHeaders = new string[] { "X-Person-Id" };
+    })
     .AddAuthentication()
     .AddHMAC(options =>
     {
