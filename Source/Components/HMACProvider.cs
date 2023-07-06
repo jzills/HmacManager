@@ -1,27 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Extensions;
 
 namespace Source.Components;
-
-public class HMACProviderOptions
-{
-    public required string ClientId { get; set; } 
-    public required string ClientSecret { get; set; }
-}
-
-public interface IHMACProvider
-{
-    string ComputeContentHash(string content);
-    string ComputeSignature(string signingContent);
-    Task<string> ComputeSigningContentAsync(
-        HttpRequestMessage request, 
-        DateTimeOffset requestedOn, 
-        Guid nonce,
-        MessageContent[]? additionalContent = null
-    );
-}
 
 public class HMACProvider : IHMACProvider
 {
@@ -32,15 +12,29 @@ public class HMACProvider : IHMACProvider
     public string ComputeContentHash(string content)
     {
         var contentBytes = Encoding.UTF8.GetBytes(content);
-        var hashBytes = SHA256.Create().ComputeHash(contentBytes);
+        var hashBytes = _options.ContentHashAlgorithm switch
+        {
+            ContentHashAlgorithm.SHA1   => SHA1.Create().ComputeHash(contentBytes),
+            ContentHashAlgorithm.SHA256 => SHA256.Create().ComputeHash(contentBytes),
+            ContentHashAlgorithm.SHA512 => SHA512.Create().ComputeHash(contentBytes),
+            _                           => SHA256.Create().ComputeHash(contentBytes)
+        };
+
         return Convert.ToBase64String(hashBytes);
     }
 
     public string ComputeSignature(string signingContent)
     {
-        var hashBytes = new HMACSHA256(Convert.FromBase64String(_options.ClientSecret))
-            .ComputeHash(Encoding.UTF8.GetBytes(signingContent));
-
+        var secretBytes = Convert.FromBase64String(_options.ClientSecret);
+        var signingContentBytes = Encoding.UTF8.GetBytes(signingContent);
+        var hashBytes = _options.SignatureHashAlgorithm switch
+        {
+            SignatureHashAlgorithm.HMACSHA1   => new HMACSHA1(secretBytes).ComputeHash(signingContentBytes),
+            SignatureHashAlgorithm.HMACSHA256 => new HMACSHA256(secretBytes).ComputeHash(signingContentBytes),
+            SignatureHashAlgorithm.HMACSHA512 => new HMACSHA512(secretBytes).ComputeHash(signingContentBytes),
+            _                                 => new HMACSHA256(secretBytes).ComputeHash(signingContentBytes)
+        };
+        
         return Convert.ToBase64String(hashBytes);
     }
 

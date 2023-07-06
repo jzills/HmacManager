@@ -1,17 +1,8 @@
-using Microsoft.AspNetCore.Http;
 using Source.Caching;
+using Source.Exceptions;
 using Source.Extensions;
 
 namespace Source.Components;
-
-public interface IHMACManager
-{
-    Task<bool> VerifyAsync(HttpRequestMessage request);
-    Task<RequiredHeaderValues> SignAsync(
-        HttpRequestMessage request, 
-        MessageContent[]? additionalContent = null
-    );
-}
 
 public class HMACManager : IHMACManager
 {
@@ -30,55 +21,74 @@ public class HMACManager : IHMACManager
         _provider = provider;
     }
 
-    public async Task<bool> VerifyAsync(HttpRequestMessage request)
+    public async Task<VerificationResult> VerifyAsync(HttpRequestMessage request)
     {
-        if (request.Headers.HasRequiredHeaders(_options.AdditionalContentHeaders, out var headerValues))
+        if (request.Headers.TryParseHMAC(
+                _options.MessageContentHeaders, out var hmac))
         {
-            if (HasValidRequestedOn(headerValues.RequestedOn) && 
-                await HasValidNonceAsync(headerValues.Nonce))
+            var hasValidPrechecks = 
+                HasValidRequestedOn(hmac.RequestedOn) && await 
+                HasValidNonceAsync(hmac.Nonce);
+
+            if (hasValidPrechecks)
             {   
                 await _cache.SetAsync(
-                    headerValues.Nonce, 
-                    headerValues.RequestedOn
+                    hmac.Nonce, 
+                    hmac.RequestedOn
                 );
 
                 var signingContent = await _provider.ComputeSigningContentAsync(
                     request, 
-                    headerValues.RequestedOn, 
-                    headerValues.Nonce,
-                    headerValues.AdditionalContent
+                    hmac.RequestedOn, 
+                    hmac.Nonce,
+                    hmac.MessageContent
                 );
 
                 var signature = _provider.ComputeSignature(signingContent);
-                return signature == headerValues.Signature;
+                return new VerificationResult
+                {
+                    HMAC = hmac,
+                    IsTrusted = signature == hmac.Signature
+                };
             }
         }
 
-        return false;
+        return new VerificationResult();
     }
 
-    public async Task<RequiredHeaderValues> SignAsync(HttpRequestMessage request, MessageContent[]? additionalContent = null)
+    public async Task<SigningResult> SignAsync(
+        HttpRequestMessage request, 
+        MessageContent[]? messageContent = null
+    )
     {
-        var headerValues = new RequiredHeaderValues 
-            { AdditionalContent = additionalContent };
+        MissingHeaderException.ThrowIfMissing(
+            _options.MessageContentHeaders,
+            messageContent
+        );
 
-        headerValues.SigningContent = await _provider.ComputeSigningContentAsync(
+        var hmac = new HMAC { MessageContent = messageContent };
+
+        hmac.SigningContent = await _provider.ComputeSigningContentAsync(
             request, 
-            headerValues.RequestedOn, 
-            headerValues.Nonce,
-            additionalContent
+            hmac.RequestedOn, 
+            hmac.Nonce,
+            hmac.MessageContent
         );
 
-        headerValues.Signature = _provider.ComputeSignature(
-            headerValues.SigningContent
+        hmac.Signature = _provider.ComputeSignature(
+            hmac.SigningContent
         );
 
-        request.Headers.AddSignature(headerValues.Signature);
-        request.Headers.AddRequestedOn(headerValues.RequestedOn);
-        request.Headers.AddNonce(headerValues.Nonce);
-        request.Headers.AddAdditionalContent(additionalContent);
+        request.Headers.AddSignature(hmac.Signature);
+        request.Headers.AddRequestedOn(hmac.RequestedOn);
+        request.Headers.AddNonce(hmac.Nonce);
+        request.Headers.AddAdditionalContent(hmac.MessageContent);
 
-        return headerValues;
+        return new SigningResult
+        {
+            HMAC = hmac,
+            IsSigned = true
+        };
     }
 
     public bool HasValidRequestedOn(DateTimeOffset requestedOn) => 

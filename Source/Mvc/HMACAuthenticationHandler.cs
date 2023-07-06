@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc.WebApiCompatShim;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Souce.Mvc;
 using Source.Components;
 
 namespace Source.Mvc;
@@ -25,16 +26,16 @@ public class HMACAuthenticationHandler : AuthenticationHandler<HMACAuthenticatio
 
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        var isTrusted = await _manager.VerifyAsync(
+        var verificationResult = await _manager.VerifyAsync(
             Request.HttpContext.GetHttpRequestMessage());
-
-        if (isTrusted)
+            
+        if (verificationResult.IsTrusted)
         {
             return AuthenticateResult.Success(
                 new AuthenticationTicket(
                     new ClaimsPrincipal(), 
                     new AuthenticationProperties(), 
-                    "HMAC"));
+                    HMACAuthenticationDefaults.Scheme));
         }
         else
         {

@@ -7,16 +7,22 @@ using Source.Components;
 
 namespace Source.Mvc.Extensions;
 
-public class HMACManagerConfiguration
-{
-    public string ClientId { get; set; } 
-    public string ClientSecret { get; set; }
-    public TimeSpan MaxAge { get; set; } = TimeSpan.FromSeconds(30);
-    public string[] AdditionalContentHeaders { get; set; }
-}
-
 public static class IServiceCollectionExtensions
 {
+    public static IServiceCollection AddHMACAuthentication(
+        this IServiceCollection services,
+        Action<HMACManagerConfiguration> configureManagerOptions,
+        Action<HMACAuthenticationOptions> configureAuthenticationOptions
+    )
+    {
+        services
+            .AddHMACManager(configureManagerOptions)
+            .AddAuthentication()
+            .AddHMAC(configureAuthenticationOptions);
+
+        return services;
+    }
+
     public static IServiceCollection AddHMACManager(
         this IServiceCollection services,
         Action<HMACManagerConfiguration> configureOptions
@@ -28,7 +34,7 @@ public static class IServiceCollectionExtensions
         var managerOptions = new HMACManagerOptions
         {
             MaxAge = options.MaxAge,
-            AdditionalContentHeaders = options.AdditionalContentHeaders
+            MessageContentHeaders = options.MessageContentHeaders
         };
 
         services.AddScoped<IHMACManager, HMACManager>(provider =>
@@ -40,7 +46,9 @@ public static class IServiceCollectionExtensions
             new HMACProvider(new HMACProviderOptions
             {
                 ClientId = options.ClientId,
-                ClientSecret = options.ClientSecret
+                ClientSecret = options.ClientSecret,
+                ContentHashAlgorithm = options.ContentHashAlgorithm,
+                SignatureHashAlgorithm = options.SignatureHashAlgorithm
             }));
 
         services.AddScoped<INonceCache, NonceMemoryCache>(provider =>

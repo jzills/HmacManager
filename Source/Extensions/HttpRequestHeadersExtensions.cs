@@ -1,4 +1,5 @@
 using System.Net.Http.Headers;
+using Souce.Mvc;
 using Source.Components;
 
 namespace Source.Extensions;
@@ -8,17 +9,20 @@ internal static class HttpRequestHeadersExtensions
     public static void AddSignature(
         this HttpRequestHeaders headers, 
         string signature
-    ) => headers.Authorization = new AuthenticationHeaderValue("Bearer", signature);
+    ) => headers.Authorization = new AuthenticationHeaderValue(
+            HMACAuthenticationDefaults.Scheme, 
+            signature
+        );
 
     public static void AddRequestedOn(
         this HttpRequestHeaders headers, 
         DateTimeOffset requestedOn
-    ) => headers.Add("X-Requested-On", requestedOn.ToString());
+    ) => headers.Add(HMACAuthenticationDefaults.Headers.RequestedOn, requestedOn.ToString());
 
     public static void AddNonce(
         this HttpRequestHeaders headers, 
         Guid nonce
-    ) => headers.Add("X-Nonce", nonce.ToString());
+    ) => headers.Add(HMACAuthenticationDefaults.Headers.Nonce, nonce.ToString());
 
     public static void AddAdditionalContent(
         this HttpRequestHeaders headers, 
@@ -34,10 +38,10 @@ internal static class HttpRequestHeadersExtensions
         }
     }
 
-    public static bool HasRequiredHeaders(
+    public static bool TryParseHMAC(
         this HttpRequestHeaders headers,
-        string[] additionalContentHeaders,
-        out RequiredHeaderValues headerValues
+        string[] messageContentHeaders,
+        out HMAC value
     )
     {
         var hasRequiredAuthorizationHeader  = headers.HasRequiredAuthorizationHeader(out var signature);
@@ -45,28 +49,29 @@ internal static class HttpRequestHeadersExtensions
         var hasRequiredNonceHeader          = headers.HasRequiredNonceHeader(out var nonce);
         
         var contentHeaders = new List<MessageContent>(headers.Count());
-        foreach (var contentHeader in additionalContentHeaders)
+        foreach (var messageContentHeader in messageContentHeaders)
         {
-            if (headers.TryGetValues(contentHeader, out var contentHeaderValue))
+            if (headers.TryGetValues(messageContentHeader, out var contentHeaderValue))
             {
                 var headerValue = contentHeaderValue.FirstOrDefault();
                 contentHeaders.Add(new MessageContent
                 {
-                    Header = contentHeader,
+                    Header = messageContentHeader,
                     Value = headerValue
                 });
             }
         }
         
-        headerValues = new RequiredHeaderValues
+        value = new HMAC
         {
             Signature = signature,
             RequestedOn = requestedOn,
             Nonce = nonce,
-            AdditionalContent = contentHeaders.ToArray()
+            MessageContent = contentHeaders.ToArray()
         };
 
-        return hasRequiredAuthorizationHeader && 
+        return 
+            hasRequiredAuthorizationHeader && 
             hasRequiredRequestedOnHeader && 
             hasRequiredNonceHeader;
     }
@@ -77,7 +82,7 @@ internal static class HttpRequestHeadersExtensions
     )
     {
         var hasValidHeader = 
-            headers?.Authorization?.Scheme == "Bearer" &&
+            headers?.Authorization?.Scheme == HMACAuthenticationDefaults.Scheme &&
             !string.IsNullOrEmpty(headers?.Authorization?.Parameter);
         
         signature = hasValidHeader ? 
@@ -92,7 +97,7 @@ internal static class HttpRequestHeadersExtensions
         out DateTimeOffset requestedOn
     )
     {
-        if (headers.TryGetValues("X-Requested-On", out var requestOnValues))
+        if (headers.TryGetValues(HMACAuthenticationDefaults.Headers.RequestedOn, out var requestOnValues))
         {
             return DateTimeOffset.TryParse(
                 requestOnValues.FirstOrDefault(), 
@@ -109,7 +114,7 @@ internal static class HttpRequestHeadersExtensions
         out Guid nonce
     )
     {
-        if (headers.TryGetValues("X-Nonce", out var nonceValues))
+        if (headers.TryGetValues(HMACAuthenticationDefaults.Headers.Nonce, out var nonceValues))
         {
             return Guid.TryParse(nonceValues.FirstOrDefault(), out nonce);
         }
