@@ -21,7 +21,7 @@ public class NonceMemoryCache : INonceCache
     public Task SetAsync(Guid nonce, DateTimeOffset requestedOn)
     {
         _cache.Set(
-            nonce.ToString(), 
+            $"{nameof(NonceMemoryCache)}_{nonce.ToString()}", 
             nonce.ToString(), new MemoryCacheEntryOptions
             {
                 AbsoluteExpiration = requestedOn.Add(_options.MaxAge)
@@ -32,7 +32,7 @@ public class NonceMemoryCache : INonceCache
 
     public Task<bool> ContainsAsync(Guid nonce)
     {
-        var cacheNonce = _cache.Get(nonce.ToString());
+        var cacheNonce = _cache.Get($"{nameof(NonceMemoryCache)}_{nonce.ToString()}");
         return Task.FromResult(cacheNonce is not null);
     }
 }

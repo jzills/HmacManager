@@ -1,3 +1,4 @@
+using Source.Caching;
 using Source.Components;
 
 namespace Source.Mvc;
@@ -10,4 +11,5 @@ public class HMACOptions
     public string[] MessageContentHeaders { get; set; } = Array.Empty<string>();
     public ContentHashAlgorithm ContentHashAlgorithm { get; set; } = ContentHashAlgorithm.SHA256;
     public SignatureHashAlgorithm SignatureHashAlgorithm { get; set; } = SignatureHashAlgorithm.HMACSHA256;
+    public NonceCacheType NonceCacheType { get; set; } = NonceCacheType.Distributed;
 }

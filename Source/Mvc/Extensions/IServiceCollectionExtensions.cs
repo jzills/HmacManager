@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Source.Caching;
@@ -51,13 +52,22 @@ public static class IServiceCollectionExtensions
                 SignatureHashAlgorithm = options.SignatureHashAlgorithm
             }));
 
-        services.AddScoped<INonceCache, NonceMemoryCache>(provider =>
-            new NonceMemoryCache(
-                provider.GetRequiredService<IMemoryCache>(),
-                managerOptions
-            ));
-            
-        // services.AddScoped<INonceCache, NonceDistributedCache>();
+        if (options.NonceCacheType == NonceCacheType.Memory)
+        {
+            services.AddScoped<INonceCache, NonceMemoryCache>(provider =>
+                new NonceMemoryCache(
+                    provider.GetRequiredService<IMemoryCache>(),
+                    managerOptions
+                ));
+        }
+        else
+        {
+            services.AddScoped<INonceCache, NonceDistributedCache>(provider =>
+                new NonceDistributedCache(
+                    provider.GetRequiredService<IDistributedCache>(),
+                    managerOptions
+                ));
+        }
 
         return services;
     }
