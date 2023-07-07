@@ -11,7 +11,7 @@ public static class IServiceCollectionExtensions
 {
     public static IServiceCollection AddHMACAuthentication(
         this IServiceCollection services,
-        Action<HMACManagerConfiguration> configureManagerOptions,
+        Action<HMACOptions> configureManagerOptions,
         Action<HMACAuthenticationOptions> configureAuthenticationOptions
     )
     {
@@ -25,10 +25,10 @@ public static class IServiceCollectionExtensions
 
     public static IServiceCollection AddHMACManager(
         this IServiceCollection services,
-        Action<HMACManagerConfiguration> configureOptions
+        Action<HMACOptions> configureOptions
     )
     {
-        var options = new HMACManagerConfiguration();
+        var options = new HMACOptions();
         configureOptions.Invoke(options);
 
         var managerOptions = new HMACManagerOptions

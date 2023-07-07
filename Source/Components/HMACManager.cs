@@ -21,7 +21,7 @@ public class HMACManager : IHMACManager
         _provider = provider;
     }
 
-    public async Task<VerificationResult> VerifyAsync(HttpRequestMessage request)
+    public async Task<HMACResult> VerifyAsync(HttpRequestMessage request)
     {
         if (request.Headers.TryParseHMAC(
                 _options.MessageContentHeaders, out var hmac))
@@ -45,18 +45,18 @@ public class HMACManager : IHMACManager
                 );
 
                 var signature = _provider.ComputeSignature(signingContent);
-                return new VerificationResult
+                return new HMACResult
                 {
                     HMAC = hmac,
-                    IsTrusted = signature == hmac.Signature
+                    IsSuccess = signature == hmac.Signature
                 };
             }
         }
 
-        return new VerificationResult();
+        return new HMACResult();
     }
 
-    public async Task<SigningResult> SignAsync(
+    public async Task<HMACResult> SignAsync(
         HttpRequestMessage request, 
         MessageContent[]? messageContent = null
     )
@@ -82,17 +82,14 @@ public class HMACManager : IHMACManager
         request.Headers.AddSignature(hmac.Signature);
         request.Headers.AddRequestedOn(hmac.RequestedOn);
         request.Headers.AddNonce(hmac.Nonce);
-        request.Headers.AddAdditionalContent(hmac.MessageContent);
+        request.Headers.AddMessageContent(hmac.MessageContent);
 
-        return new SigningResult
-        {
-            HMAC = hmac,
-            IsSigned = true
-        };
+        return new HMACResult { HMAC = hmac, IsSuccess = true };
     }
 
     public bool HasValidRequestedOn(DateTimeOffset requestedOn) => 
         DateTimeOffset.UtcNow.Subtract(requestedOn) < _options.MaxAge;
 
-    public async Task<bool> HasValidNonceAsync(Guid nonce) => !(await _cache.ContainsAsync(nonce));
+    public async Task<bool> HasValidNonceAsync(Guid nonce) => 
+        !(await _cache.ContainsAsync(nonce));
 }

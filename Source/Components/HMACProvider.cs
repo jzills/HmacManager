@@ -14,7 +14,7 @@ public class HMACProvider : IHMACProvider
         var contentBytes = Encoding.UTF8.GetBytes(content);
         var hashBytes = _options.ContentHashAlgorithm switch
         {
-            ContentHashAlgorithm.SHA1   => SHA1.Create().ComputeHash(contentBytes),
+            ContentHashAlgorithm.SHA1   => SHA1  .Create().ComputeHash(contentBytes),
             ContentHashAlgorithm.SHA256 => SHA256.Create().ComputeHash(contentBytes),
             ContentHashAlgorithm.SHA512 => SHA512.Create().ComputeHash(contentBytes),
             _                           => SHA256.Create().ComputeHash(contentBytes)
@@ -29,7 +29,7 @@ public class HMACProvider : IHMACProvider
         var signingContentBytes = Encoding.UTF8.GetBytes(signingContent);
         var hashBytes = _options.SignatureHashAlgorithm switch
         {
-            SignatureHashAlgorithm.HMACSHA1   => new HMACSHA1(secretBytes).ComputeHash(signingContentBytes),
+            SignatureHashAlgorithm.HMACSHA1   => new HMACSHA1(secretBytes)  .ComputeHash(signingContentBytes),
             SignatureHashAlgorithm.HMACSHA256 => new HMACSHA256(secretBytes).ComputeHash(signingContentBytes),
             SignatureHashAlgorithm.HMACSHA512 => new HMACSHA512(secretBytes).ComputeHash(signingContentBytes),
             _                                 => new HMACSHA256(secretBytes).ComputeHash(signingContentBytes)
@@ -42,7 +42,7 @@ public class HMACProvider : IHMACProvider
         HttpRequestMessage request, 
         DateTimeOffset requestedOn, 
         Guid nonce,
-        MessageContent[]? additionalContent = null
+        MessageContent[]? messageContentHeaders = null
     )
     {
         var macBuilder = new StringBuilder($"{request.Method}");
@@ -62,9 +62,9 @@ public class HMACProvider : IHMACProvider
             macBuilder.Append($":{contentHash}");
         }
 
-        if (additionalContent is MessageContent[] messageContent)
+        if (messageContentHeaders is MessageContent[] headers)
         {
-            macBuilder.AppendJoin(":", messageContent.Select(element => element.Value));
+            macBuilder.AppendJoin(":", headers.Select(element => element.Value));
         }
 
         macBuilder.Append($":{nonce}");

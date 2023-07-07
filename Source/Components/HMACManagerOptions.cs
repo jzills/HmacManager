@@ -1,5 +1,3 @@
-using System;
-
 namespace Source.Components;
 
 public class HMACManagerOptions

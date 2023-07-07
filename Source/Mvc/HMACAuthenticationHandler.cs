@@ -11,25 +11,25 @@ namespace Source.Mvc;
 
 public class HMACAuthenticationHandler : AuthenticationHandler<HMACAuthenticationOptions>
 {
-    private readonly IHMACManager _manager;
+    private readonly IHMACManager _hmacManager;
 
     public HMACAuthenticationHandler(
-        IHMACManager manager,
+        IHMACManager hmacManager,
         IOptionsMonitor<HMACAuthenticationOptions> options, 
         ILoggerFactory logger, 
         UrlEncoder encoder, 
         ISystemClock clock
     ) : base(options, logger, encoder, clock)
     {
-        _manager = manager;
+        _hmacManager = hmacManager;
     }
 
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        var verificationResult = await _manager.VerifyAsync(
+        var hmacResult = await _hmacManager.VerifyAsync(
             Request.HttpContext.GetHttpRequestMessage());
             
-        if (verificationResult.IsTrusted)
+        if (hmacResult.IsSuccess)
         {
             return AuthenticateResult.Success(
                 new AuthenticationTicket(

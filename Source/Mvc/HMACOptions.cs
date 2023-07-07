@@ -2,7 +2,7 @@ using Source.Components;
 
 namespace Source.Mvc;
 
-public class HMACManagerConfiguration
+public class HMACOptions
 {
     public string ClientId { get; set; } 
     public string ClientSecret { get; set; }

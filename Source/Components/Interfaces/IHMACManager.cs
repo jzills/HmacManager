@@ -2,9 +2,9 @@ namespace Source.Components;
 
 public interface IHMACManager
 {
-    Task<VerificationResult> VerifyAsync(HttpRequestMessage request);
-    Task<SigningResult> SignAsync(
+    Task<HMACResult> VerifyAsync(HttpRequestMessage request);
+    Task<HMACResult> SignAsync(
         HttpRequestMessage request, 
-        MessageContent[]? additionalContent = null
+        MessageContent[]? messageContentHeaders = null
     );
 }

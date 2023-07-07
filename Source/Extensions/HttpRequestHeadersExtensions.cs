@@ -24,14 +24,14 @@ internal static class HttpRequestHeadersExtensions
         Guid nonce
     ) => headers.Add(HMACAuthenticationDefaults.Headers.Nonce, nonce.ToString());
 
-    public static void AddAdditionalContent(
+    public static void AddMessageContent(
         this HttpRequestHeaders headers, 
-        MessageContent[]? additionalContent
+        MessageContent[]? messageContent
     )
     {
-        if (additionalContent is MessageContent[] messageContent)
+        if (messageContent is MessageContent[] contentValues)
         {
-            foreach (var content in messageContent)
+            foreach (var content in contentValues)
             {
                 headers.Add(content.Header!, content.Value);
             }

@@ -36,8 +36,8 @@ var signResult = await hmacManager.SignAsync(request, new MessageContent[]
     new() { Header = "X-User-Id", Value = Guid.NewGuid().ToString() }
 });
 
-var verificationResult  = await hmacManager.VerifyAsync(request);
-var isTrusted = verificationResult.IsTrusted;
-var verificationResult2 = await hmacManager.VerifyAsync(request);
-var checkAgain = verificationResult2.IsTrusted;
+var result  = await hmacManager.VerifyAsync(request);
+var isTrusted = result.IsSuccess;
+var result2 = await hmacManager.VerifyAsync(request);
+var checkAgain = result2.IsSuccess;
 var debug = checkAgain;
