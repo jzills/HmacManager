@@ -8,6 +8,6 @@ public interface IHmacProvider
         HttpRequestMessage request, 
         DateTimeOffset requestedOn, 
         Guid nonce,
-        MessageContent[]? additionalContent = null
+        Header[]? headersToSign = null
     );
 }

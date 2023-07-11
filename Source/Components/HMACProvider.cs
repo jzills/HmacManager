@@ -29,7 +29,7 @@ public class HmacProvider : IHmacProvider
         var signingContentBytes = Encoding.UTF8.GetBytes(signingContent);
         var hashBytes = _options.SignatureHashAlgorithm switch
         {
-            SignatureHashAlgorithm.HMACSHA1   => new HMACSHA1(secretBytes)  .ComputeHash(signingContentBytes),
+            SignatureHashAlgorithm.HMACSHA1   => new HMACSHA1  (secretBytes).ComputeHash(signingContentBytes),
             SignatureHashAlgorithm.HMACSHA256 => new HMACSHA256(secretBytes).ComputeHash(signingContentBytes),
             SignatureHashAlgorithm.HMACSHA512 => new HMACSHA512(secretBytes).ComputeHash(signingContentBytes),
             _                                 => new HMACSHA256(secretBytes).ComputeHash(signingContentBytes)
@@ -42,7 +42,7 @@ public class HmacProvider : IHmacProvider
         HttpRequestMessage request, 
         DateTimeOffset requestedOn, 
         Guid nonce,
-        MessageContent[]? messageContentHeaders = null
+        Header[]? signedHeaders = null
     )
     {
         var macBuilder = new StringBuilder($"{request.Method}");
@@ -62,9 +62,9 @@ public class HmacProvider : IHmacProvider
             macBuilder.Append($":{contentHash}");
         }
 
-        if (messageContentHeaders is not null)
+        if (signedHeaders is not null)
         {
-            macBuilder.AppendJoin(":", messageContentHeaders.Select(element => element.Value));
+            macBuilder.AppendJoin(":", signedHeaders.Select(element => element.Value));
         }
 
         macBuilder.Append($":{nonce}");

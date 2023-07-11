@@ -11,15 +11,15 @@ public class MissingHeaderException : Exception
 
     public static void ThrowIfMissing(
         string[] requiredHeaders, 
-        MessageContent[]? messageContent
+        Header[]? headersToSign
     )
     {
-        if (messageContent is not null)
+        if (headersToSign is not null)
         {
             var hasMissingHeaders = 
                 requiredHeaders
-                    .Except(messageContent
-                    .Select(content => content.Header))
+                    .Except(headersToSign
+                    .Select(header => header.Name))
                     .Any();
 
             if (hasMissingHeaders)

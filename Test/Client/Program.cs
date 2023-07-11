@@ -1,3 +1,4 @@
+using Client;
 using HmacManager.Caching;
 using HmacManager.Mvc;
 using HmacManager.Mvc.Extensions;
@@ -11,15 +12,33 @@ builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient();
+
+builder.Services.AddTransient<MyClientHandler>();
+builder.Services.AddHttpClient<IMyClient, MyClient>(options =>
+{
+    options.BaseAddress = new Uri("https://localhost:7058");
+}).AddHttpMessageHandler<MyClientHandler>();
 
 builder.Services.AddMemoryCache()
     .AddHmacManager(options =>
     {
         options.ClientId = clientId;
         options.ClientSecret = clientSecret;
-        options.MaxAge = TimeSpan.FromSeconds(30);
-        options.NonceCacheType = NonceCacheType.Memory;
+
+        // options.HeaderSchemes.AddScheme("MyFirstScheme", options =>
+        // {
+        //     options.AddHeader("MyFirstRequiredHeader1");
+        //     options.AddHeader("MyFirstRequiredHeader2");
+        // });
+
+        // options.HeaderSchemes.AddScheme("MySecondScheme", options =>
+        // {
+        //     options.AddHeader("MySecondRequiredHeader1");
+        //     options.AddHeader("MySecondRequiredHeader2");
+        // });
     });
 
 var app = builder.Build();

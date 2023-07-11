@@ -23,8 +23,7 @@ public class HmacManager : IHmacManager
 
     public async Task<HmacResult> VerifyAsync(HttpRequestMessage request)
     {
-        if (request.Headers.TryParseHmac(
-                _options.MessageContentHeaders, out var hmac))
+        if (request.Headers.TryParseHmac(_options.SignedHeaders, out var hmac))
         {
             var hasValidPrechecks = 
                 HasValidRequestedOn(hmac.RequestedOn) && await 
@@ -41,7 +40,7 @@ public class HmacManager : IHmacManager
                     request, 
                     hmac.RequestedOn, 
                     hmac.Nonce,
-                    hmac.MessageContent
+                    hmac.SignedHeaders
                 );
 
                 var signature = _provider.ComputeSignature(hmac.SigningContent);
@@ -58,21 +57,21 @@ public class HmacManager : IHmacManager
 
     public async Task<HmacResult> SignAsync(
         HttpRequestMessage request, 
-        MessageContent[]? messageContent = null
+        Header[]? signedHeaders = null
     )
     {
         MissingHeaderException.ThrowIfMissing(
-            _options.MessageContentHeaders,
-            messageContent
+            _options.SignedHeaders,
+            signedHeaders
         );
 
-        var hmac = new Hmac { MessageContent = messageContent };
+        var hmac = new Hmac { SignedHeaders = signedHeaders };
 
         hmac.SigningContent = await _provider.ComputeSigningContentAsync(
             request, 
             hmac.RequestedOn, 
             hmac.Nonce,
-            hmac.MessageContent
+            hmac.SignedHeaders
         );
 
         hmac.Signature = _provider.ComputeSignature(
@@ -82,7 +81,7 @@ public class HmacManager : IHmacManager
         request.Headers.AddSignature(hmac.Signature);
         request.Headers.AddRequestedOn(hmac.RequestedOn);
         request.Headers.AddNonce(hmac.Nonce);
-        request.Headers.AddMessageContent(hmac.MessageContent);
+        request.Headers.AddSignedHeaders(hmac.SignedHeaders);
 
         return new HmacResult { Hmac = hmac, IsSuccess = true };
     }

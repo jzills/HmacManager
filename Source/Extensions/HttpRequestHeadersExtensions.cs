@@ -24,23 +24,23 @@ internal static class HttpRequestHeadersExtensions
         Guid nonce
     ) => headers.Add(HmacAuthenticationDefaults.Headers.Nonce, nonce.ToString());
 
-    public static void AddMessageContent(
+    public static void AddSignedHeaders(
         this HttpRequestHeaders headers, 
-        MessageContent[]? messageContent
+        Header[]? signedHeaders
     )
     {
-        if (messageContent is MessageContent[] contentValues)
+        if (signedHeaders is not null)
         {
-            foreach (var content in contentValues)
+            foreach (var signedHeader in signedHeaders)
             {
-                headers.Add(content.Header!, content.Value);
+                headers.Add(signedHeader.Name!, signedHeader.Value);
             }
         }
     }
 
     public static bool TryParseHmac(
         this HttpRequestHeaders headers,
-        string[] messageContentHeaders,
+        string[] headersToVerify,
         out Hmac value
     )
     {
@@ -48,15 +48,15 @@ internal static class HttpRequestHeadersExtensions
         var hasRequiredRequestedOnHeader    = headers.HasRequiredRequestedOnHeader(out var requestedOn);
         var hasRequiredNonceHeader          = headers.HasRequiredNonceHeader(out var nonce);
         
-        var contentHeaders = new List<MessageContent>(headers.Count());
-        foreach (var messageContentHeader in messageContentHeaders)
+        var headersToSign = new List<Header>(headers.Count());
+        foreach (var headerToVerify in headersToVerify)
         {
-            if (headers.TryGetValues(messageContentHeader, out var contentHeaderValue))
+            if (headers.TryGetValues(headerToVerify, out var contentHeaderValue))
             {
                 var headerValue = contentHeaderValue.FirstOrDefault();
-                contentHeaders.Add(new MessageContent
+                headersToSign.Add(new Header
                 {
-                    Header = messageContentHeader,
+                    Name = headerToVerify,
                     Value = headerValue
                 });
             }
@@ -67,7 +67,7 @@ internal static class HttpRequestHeadersExtensions
             Signature = signature,
             RequestedOn = requestedOn,
             Nonce = nonce,
-            MessageContent = contentHeaders.ToArray()
+            SignedHeaders = headersToSign.ToArray()
         };
 
         return 

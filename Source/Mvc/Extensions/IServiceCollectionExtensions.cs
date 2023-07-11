@@ -38,7 +38,7 @@ public static class IServiceCollectionExtensions
         var managerOptions = new HmacManagerOptions
         {
             MaxAge = options.MaxAge,
-            MessageContentHeaders = options.MessageContentHeaders
+            SignedHeaders = options.SignedHeaders
         };
 
         services.AddScoped<IHmacManager, HmacManager.Components.HmacManager>(provider =>
