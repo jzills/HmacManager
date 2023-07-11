@@ -1,13 +1,13 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Source.Components;
+namespace HmacManager.Components;
 
-public class HMACProvider : IHMACProvider
+public class HmacProvider : IHmacProvider
 {
-    private readonly HMACProviderOptions _options;
+    private readonly HmacProviderOptions _options;
 
-    public HMACProvider(HMACProviderOptions options) => _options = options;
+    public HmacProvider(HmacProviderOptions options) => _options = options;
 
     public string ComputeContentHash(string content)
     {
@@ -47,24 +47,24 @@ public class HMACProvider : IHMACProvider
     {
         var macBuilder = new StringBuilder($"{request.Method}");
 
-        if (request.RequestUri is Uri requestUri)
+        if (request.RequestUri is not null)
         {
-            macBuilder.Append($":{requestUri.PathAndQuery}");
-            macBuilder.Append($":{requestUri.Authority}");
+            macBuilder.Append($":{request.RequestUri.PathAndQuery}");
+            macBuilder.Append($":{request.RequestUri.Authority}");
         }
 
         macBuilder.Append($":{requestedOn}");
         macBuilder.Append($":{_options.ClientId}");
 
-        if (request.Content is HttpContent content)
+        if (request.Content is not null && request.Content.Headers.ContentLength > 0)
         {
-            var contentHash = ComputeContentHash(await content.ReadAsStringAsync());
+            var contentHash = ComputeContentHash(await request.Content.ReadAsStringAsync());
             macBuilder.Append($":{contentHash}");
         }
 
-        if (messageContentHeaders is MessageContent[] headers)
+        if (messageContentHeaders is not null)
         {
-            macBuilder.AppendJoin(":", headers.Select(element => element.Value));
+            macBuilder.AppendJoin(":", messageContentHeaders.Select(element => element.Value));
         }
 
         macBuilder.Append($":{nonce}");

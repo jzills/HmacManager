@@ -1,7 +1,7 @@
-using Microsoft.AspNetCore.Authentication;
+// using Microsoft.AspNetCore.Authentication;
 
-namespace Source.Mvc;
+// namespace HmacManager.Mvc;
 
-public class HMACAuthenticationOptions : AuthenticationSchemeOptions
-{
-}
+// public class HmacAuthenticationOptions : AuthenticationSchemeOptions
+// {
+// }

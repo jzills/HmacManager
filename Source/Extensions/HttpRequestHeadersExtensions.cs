@@ -1,8 +1,8 @@
 using System.Net.Http.Headers;
-using Souce.Mvc;
-using Source.Components;
+using HmacManager.Components;
+using HmacManager.Mvc;
 
-namespace Source.Extensions;
+namespace HmacManager.Extensions;
 
 internal static class HttpRequestHeadersExtensions
 {
@@ -10,19 +10,19 @@ internal static class HttpRequestHeadersExtensions
         this HttpRequestHeaders headers, 
         string signature
     ) => headers.Authorization = new AuthenticationHeaderValue(
-            HMACAuthenticationDefaults.Scheme, 
+            HmacAuthenticationDefaults.Scheme, 
             signature
         );
 
     public static void AddRequestedOn(
         this HttpRequestHeaders headers, 
         DateTimeOffset requestedOn
-    ) => headers.Add(HMACAuthenticationDefaults.Headers.RequestedOn, requestedOn.ToString());
+    ) => headers.Add(HmacAuthenticationDefaults.Headers.RequestedOn, requestedOn.ToString());
 
     public static void AddNonce(
         this HttpRequestHeaders headers, 
         Guid nonce
-    ) => headers.Add(HMACAuthenticationDefaults.Headers.Nonce, nonce.ToString());
+    ) => headers.Add(HmacAuthenticationDefaults.Headers.Nonce, nonce.ToString());
 
     public static void AddMessageContent(
         this HttpRequestHeaders headers, 
@@ -38,10 +38,10 @@ internal static class HttpRequestHeadersExtensions
         }
     }
 
-    public static bool TryParseHMAC(
+    public static bool TryParseHmac(
         this HttpRequestHeaders headers,
         string[] messageContentHeaders,
-        out HMAC value
+        out Hmac value
     )
     {
         var hasRequiredAuthorizationHeader  = headers.HasRequiredAuthorizationHeader(out var signature);
@@ -62,7 +62,7 @@ internal static class HttpRequestHeadersExtensions
             }
         }
         
-        value = new HMAC
+        value = new Hmac
         {
             Signature = signature,
             RequestedOn = requestedOn,
@@ -82,7 +82,7 @@ internal static class HttpRequestHeadersExtensions
     )
     {
         var hasValidHeader = 
-            headers?.Authorization?.Scheme == HMACAuthenticationDefaults.Scheme &&
+            headers?.Authorization?.Scheme == HmacAuthenticationDefaults.Scheme &&
             !string.IsNullOrEmpty(headers?.Authorization?.Parameter);
         
         signature = hasValidHeader ? 
@@ -97,7 +97,7 @@ internal static class HttpRequestHeadersExtensions
         out DateTimeOffset requestedOn
     )
     {
-        if (headers.TryGetValues(HMACAuthenticationDefaults.Headers.RequestedOn, out var requestOnValues))
+        if (headers.TryGetValues(HmacAuthenticationDefaults.Headers.RequestedOn, out var requestOnValues))
         {
             return DateTimeOffset.TryParse(
                 requestOnValues.FirstOrDefault(), 
@@ -114,7 +114,7 @@ internal static class HttpRequestHeadersExtensions
         out Guid nonce
     )
     {
-        if (headers.TryGetValues(HMACAuthenticationDefaults.Headers.Nonce, out var nonceValues))
+        if (headers.TryGetValues(HmacAuthenticationDefaults.Headers.Nonce, out var nonceValues))
         {
             return Guid.TryParse(nonceValues.FirstOrDefault(), out nonce);
         }

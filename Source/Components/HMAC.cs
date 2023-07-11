@@ -1,6 +1,6 @@
-namespace Source.Components;
+namespace HmacManager.Components;
 
-public class HMAC
+public class Hmac
 {
     public string? Signature { get; set; }
     public DateTimeOffset RequestedOn { get; init; } = DateTimeOffset.UtcNow;

@@ -1,7 +1,7 @@
-namespace Source.Components;
+namespace HmacManager.Components;
 
-public class HMACResult
+public class HmacResult
 {
-    public HMAC? HMAC { get; init; } = default;
+    public Hmac? Hmac { get; init; } = default;
     public bool IsSuccess { get; init; } = false;
 }

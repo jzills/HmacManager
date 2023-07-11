@@ -1,17 +1,17 @@
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
-using Source.Components;
+using HmacManager.Components;
 
-namespace Source.Caching.Memory;
+namespace HmacManager.Caching.Memory;
 
 public class NonceMemoryCache : INonceCache
 {
     private readonly IMemoryCache _cache;
-    private readonly HMACManagerOptions _options;
+    private readonly HmacManagerOptions _options;
 
     public NonceMemoryCache(
         IMemoryCache cache,
-        HMACManagerOptions options
+        HmacManagerOptions options
     )
     {
         _cache = cache;

@@ -1,15 +1,23 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
+    <OutputType>library</OutputType>
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <PackageId>HmacManager</PackageId>
+    <Version>1.0.3</Version>
+    <Authors>Joshua Zillwood</Authors>
+    <Description>A tool to manage hmacs including signing and verifying configurable content.</Description>
+    <Company></Company>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.2.0" />
-    <PackageReference Include="microsoft.aspnetcore.mvc.webapicompatshim" Version="2.2.0" />
+    <!-- <PackageReference Include="microsoft.aspnetcore.mvc.webapicompatshim" Version="2.2.0" /> -->
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />

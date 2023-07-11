@@ -1,45 +1,44 @@
-using System.Security.Claims;
-using System.Text.Encodings.Web;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Mvc.WebApiCompatShim;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Souce.Mvc;
-using Source.Components;
+// using System.Security.Claims;
+// using System.Text.Encodings.Web;
+// using Microsoft.AspNetCore.Mvc.WebApiCompatShim;
+// using Microsoft.Extensions.Logging;
+// using Microsoft.Extensions.Options;
+// using Souce.Mvc;
+// using HmacManager.Components;
 
-namespace Source.Mvc;
+// namespace HmacManager.Mvc;
 
-public class HMACAuthenticationHandler : AuthenticationHandler<HMACAuthenticationOptions>
-{
-    private readonly IHMACManager _hmacManager;
+// public class HmacAuthenticationHandler : AuthenticationHandler<HmacAuthenticationOptions>
+// {
+//     private readonly IHmacManager _HmacManager;
 
-    public HMACAuthenticationHandler(
-        IHMACManager hmacManager,
-        IOptionsMonitor<HMACAuthenticationOptions> options, 
-        ILoggerFactory logger, 
-        UrlEncoder encoder, 
-        ISystemClock clock
-    ) : base(options, logger, encoder, clock)
-    {
-        _hmacManager = hmacManager;
-    }
+//     public HmacAuthenticationHandler(
+//         IHmacManager HmacManager,
+//         IOptionsMonitor<HmacAuthenticationOptions> options, 
+//         ILoggerFactory logger, 
+//         UrlEncoder encoder, 
+//         ISystemClock clock
+//     ) : base(options, logger, encoder, clock)
+//     {
+//         _HmacManager = HmacManager;
+//     }
 
-    protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
-    {
-        var hmacResult = await _hmacManager.VerifyAsync(
-            Request.HttpContext.GetHttpRequestMessage());
+//     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
+//     {
+//         var HmacResult = await _HmacManager.VerifyAsync(
+//             Request.HttpContext.GetHttpRequestMessage());
             
-        if (hmacResult.IsSuccess)
-        {
-            return AuthenticateResult.Success(
-                new AuthenticationTicket(
-                    new ClaimsPrincipal(), 
-                    new AuthenticationProperties(), 
-                    HMACAuthenticationDefaults.Scheme));
-        }
-        else
-        {
-            return AuthenticateResult.Fail(new Exception());
-        }
-    }
-}
+//         if (HmacResult.IsSuccess)
+//         {
+//             return AuthenticateResult.Success(
+//                 new AuthenticationTicket(
+//                     new ClaimsPrincipal(), 
+//                     new AuthenticationProperties(), 
+//                     HmacAuthenticationDefaults.Scheme));
+//         }
+//         else
+//         {
+//             return AuthenticateResult.Fail(new Exception());
+//         }
+//     }
+// }

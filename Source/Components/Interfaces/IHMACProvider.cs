@@ -1,6 +1,6 @@
-namespace Source.Components;
+namespace HmacManager.Components;
 
-public interface IHMACProvider
+public interface IHmacProvider
 {
     string ComputeContentHash(string content);
     string ComputeSignature(string signingContent);

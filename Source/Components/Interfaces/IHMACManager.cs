@@ -1,9 +1,9 @@
-namespace Source.Components;
+namespace HmacManager.Components;
 
-public interface IHMACManager
+public interface IHmacManager
 {
-    Task<HMACResult> VerifyAsync(HttpRequestMessage request);
-    Task<HMACResult> SignAsync(
+    Task<HmacResult> VerifyAsync(HttpRequestMessage request);
+    Task<HmacResult> SignAsync(
         HttpRequestMessage request, 
         MessageContent[]? messageContentHeaders = null
     );

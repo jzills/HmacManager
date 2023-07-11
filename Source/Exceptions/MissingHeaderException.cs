@@ -1,11 +1,11 @@
-using Source.Components;
+using HmacManager.Components;
 
-namespace Source.Exceptions;
+namespace HmacManager.Exceptions;
 
 public class MissingHeaderException : Exception
 {
     public MissingHeaderException() 
-        : base("One or more headers defined in HMACManagerOptions is missing.")
+        : base("One or more headers defined in HmacManagerOptions is missing.")
     {
     }
 

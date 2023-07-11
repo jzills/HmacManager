@@ -1,8 +1,8 @@
-namespace Souce.Mvc;
+namespace HmacManager.Mvc;
 
-public static class HMACAuthenticationDefaults
+public static class HmacAuthenticationDefaults
 {
-    public const string Scheme = "HMAC";
+    public const string Scheme = "Hmac";
     public class Headers
     {
         public const string Nonce = "X-Nonce";

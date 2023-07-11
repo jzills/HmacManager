@@ -1,4 +1,4 @@
-namespace Source.Components;
+namespace HmacManager.Components;
 
 public enum SignatureHashAlgorithm
 {

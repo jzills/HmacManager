@@ -1,6 +1,6 @@
-namespace Source.Components;
+namespace HmacManager.Components;
 
-public class HMACProviderOptions
+public class HmacProviderOptions
 {
     public required string ClientId { get; set; } 
     public required string ClientSecret { get; set; }

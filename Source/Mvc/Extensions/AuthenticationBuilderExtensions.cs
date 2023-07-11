@@ -1,17 +1,17 @@
 using Microsoft.AspNetCore.Authentication;
-using Souce.Mvc;
+using HmacManager.Mvc;
 
-namespace Source.Mvc.Extensions;
+namespace HmacManager.Mvc.Extensions;
 
 public static class AuthenticationBuilderExtensions
 {
-    public static AuthenticationBuilder AddHMAC(
-        this AuthenticationBuilder builder,
-        Action<HMACAuthenticationOptions> configureOptions
-    ) => 
-        builder.AddScheme<HMACAuthenticationOptions, HMACAuthenticationHandler>(
-            HMACAuthenticationDefaults.Scheme,
-            HMACAuthenticationDefaults.Scheme,
-            configureOptions
-        );
+    // public static AuthenticationBuilder AddHmac(
+    //     this AuthenticationBuilder builder,
+    //     Action<HmacAuthenticationOptions> configureOptions
+    // ) => 
+    //     builder.AddScheme<HmacAuthenticationOptions, HmacAuthenticationHandler>(
+    //         HmacAuthenticationDefaults.Scheme,
+    //         HmacAuthenticationDefaults.Scheme,
+    //         configureOptions
+    //     );
 }

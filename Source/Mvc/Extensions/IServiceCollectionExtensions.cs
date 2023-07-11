@@ -1,50 +1,53 @@
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
-using Source.Caching;
-using Source.Caching.Distributed;
-using Source.Caching.Memory;
-using Source.Components;
+using HmacManager.Caching;
+using HmacManager.Caching.Distributed;
+using HmacManager.Caching.Memory;
+using HmacManager.Components;
 
-namespace Source.Mvc.Extensions;
+namespace HmacManager.Mvc.Extensions;
 
 public static class IServiceCollectionExtensions
 {
-    public static IServiceCollection AddHMACAuthentication(
+    // public static IServiceCollection AddHmacAuthentication(
+    //     this IServiceCollection services,
+    //     Action<HmacOptions> configureManagerOptions,
+    //     Action<HmacAuthenticationOptions> configureAuthenticationOptions
+    // )
+    // {
+    //     services
+    //         .AddHmacManager(configureManagerOptions)
+    //         .AddAuthentication()
+    //         .AddHmac(configureAuthenticationOptions);
+
+    //     return services;
+    // }
+
+    public static IServiceCollection AddHmacManager(
         this IServiceCollection services,
-        Action<HMACOptions> configureManagerOptions,
-        Action<HMACAuthenticationOptions> configureAuthenticationOptions
+        Action<HmacOptions> configureOptions
     )
     {
-        services
-            .AddHMACManager(configureManagerOptions)
-            .AddAuthentication()
-            .AddHMAC(configureAuthenticationOptions);
-
-        return services;
-    }
-
-    public static IServiceCollection AddHMACManager(
-        this IServiceCollection services,
-        Action<HMACOptions> configureOptions
-    )
-    {
-        var options = new HMACOptions();
+        var options = new HmacOptions();
         configureOptions.Invoke(options);
 
-        var managerOptions = new HMACManagerOptions
+        ArgumentNullException.ThrowIfNullOrEmpty(options.ClientId,     nameof(options.ClientId));
+        ArgumentNullException.ThrowIfNullOrEmpty(options.ClientSecret, nameof(options.ClientSecret));
+
+        var managerOptions = new HmacManagerOptions
         {
             MaxAge = options.MaxAge,
             MessageContentHeaders = options.MessageContentHeaders
         };
 
-        services.AddScoped<IHMACManager, HMACManager>(provider =>
-            new HMACManager(managerOptions, 
+        services.AddScoped<IHmacManager, HmacManager.Components.HmacManager>(provider =>
+            new HmacManager.Components.HmacManager(managerOptions, 
                 provider.GetRequiredService<INonceCache>(), 
-                provider.GetRequiredService<IHMACProvider>()));
+                provider.GetRequiredService<IHmacProvider>()));
 
-        services.AddScoped<IHMACProvider, HMACProvider>(provider => 
-            new HMACProvider(new HMACProviderOptions
+        services.AddScoped<IHmacProvider, HmacProvider>(provider => 
+            new HmacProvider(new HmacProviderOptions
             {
                 ClientId = options.ClientId,
                 ClientSecret = options.ClientSecret,

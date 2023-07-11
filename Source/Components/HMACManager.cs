@@ -1,19 +1,19 @@
-using Source.Caching;
-using Source.Exceptions;
-using Source.Extensions;
+using HmacManager.Caching;
+using HmacManager.Exceptions;
+using HmacManager.Extensions;
 
-namespace Source.Components;
+namespace HmacManager.Components;
 
-public class HMACManager : IHMACManager
+public class HmacManager : IHmacManager
 {
-    private readonly HMACManagerOptions _options;
+    private readonly HmacManagerOptions _options;
     private readonly INonceCache _cache;
-    private readonly IHMACProvider _provider;
+    private readonly IHmacProvider _provider;
 
-    public HMACManager(
-        HMACManagerOptions options,
+    public HmacManager(
+        HmacManagerOptions options,
         INonceCache cache,
-        IHMACProvider provider
+        IHmacProvider provider
     )
     {
         _options = options;
@@ -21,9 +21,9 @@ public class HMACManager : IHMACManager
         _provider = provider;
     }
 
-    public async Task<HMACResult> VerifyAsync(HttpRequestMessage request)
+    public async Task<HmacResult> VerifyAsync(HttpRequestMessage request)
     {
-        if (request.Headers.TryParseHMAC(
+        if (request.Headers.TryParseHmac(
                 _options.MessageContentHeaders, out var hmac))
         {
             var hasValidPrechecks = 
@@ -37,26 +37,26 @@ public class HMACManager : IHMACManager
                     hmac.RequestedOn
                 );
 
-                var signingContent = await _provider.ComputeSigningContentAsync(
+                hmac.SigningContent = await _provider.ComputeSigningContentAsync(
                     request, 
                     hmac.RequestedOn, 
                     hmac.Nonce,
                     hmac.MessageContent
                 );
 
-                var signature = _provider.ComputeSignature(signingContent);
-                return new HMACResult
+                var signature = _provider.ComputeSignature(hmac.SigningContent);
+                return new HmacResult
                 {
-                    HMAC = hmac,
+                    Hmac = hmac,
                     IsSuccess = signature == hmac.Signature
                 };
             }
         }
 
-        return new HMACResult();
+        return new HmacResult();
     }
 
-    public async Task<HMACResult> SignAsync(
+    public async Task<HmacResult> SignAsync(
         HttpRequestMessage request, 
         MessageContent[]? messageContent = null
     )
@@ -66,7 +66,7 @@ public class HMACManager : IHMACManager
             messageContent
         );
 
-        var hmac = new HMAC { MessageContent = messageContent };
+        var hmac = new Hmac { MessageContent = messageContent };
 
         hmac.SigningContent = await _provider.ComputeSigningContentAsync(
             request, 
@@ -84,7 +84,7 @@ public class HMACManager : IHMACManager
         request.Headers.AddNonce(hmac.Nonce);
         request.Headers.AddMessageContent(hmac.MessageContent);
 
-        return new HMACResult { HMAC = hmac, IsSuccess = true };
+        return new HmacResult { Hmac = hmac, IsSuccess = true };
     }
 
     public bool HasValidRequestedOn(DateTimeOffset requestedOn) => 
