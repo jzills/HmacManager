@@ -27,18 +27,11 @@ builder.Services.AddMemoryCache()
     {
         options.ClientId = clientId;
         options.ClientSecret = clientSecret;
-
-        // options.HeaderSchemes.AddScheme("MyFirstScheme", options =>
-        // {
-        //     options.AddHeader("MyFirstRequiredHeader1");
-        //     options.AddHeader("MyFirstRequiredHeader2");
-        // });
-
-        // options.HeaderSchemes.AddScheme("MySecondScheme", options =>
-        // {
-        //     options.AddHeader("MySecondRequiredHeader1");
-        //     options.AddHeader("MySecondRequiredHeader2");
-        // });
+        options.HeaderSchemes.Add("MySecondScheme", headers =>
+        {
+            headers.Add("MySecondRequiredHeader1");
+            headers.Add("MySecondRequiredHeader2");
+        });
     });
 
 var app = builder.Build();

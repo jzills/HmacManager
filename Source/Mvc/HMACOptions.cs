@@ -12,6 +12,6 @@ public class HmacOptions
     public string[] SignedHeaders { get; set; } = Array.Empty<string>();
     public ContentHashAlgorithm ContentHashAlgorithm { get; set; } = ContentHashAlgorithm.SHA256;
     public SignatureHashAlgorithm SignatureHashAlgorithm { get; set; } = SignatureHashAlgorithm.HMACSHA256;
-    public NonceCacheType NonceCacheType { get; set; } = NonceCacheType.Distributed;
-    //public HeaderSchemeCollection HeaderSchemes { get; } = new();
+    public NonceCacheType NonceCacheType { get; set; } = NonceCacheType.Memory;
+    public HeaderSchemeCollection HeaderSchemes { get; } = new();
 }
