@@ -32,7 +32,12 @@ export class SigningContentBuilder {
     }
 
     withBody = body => {
-        this.#builder.push(body);
+
+        const computeContentHash = content => {
+            return content;
+        }
+
+        this.#builder.push(computeContentHash(body));
         return this;
     }
 
@@ -42,7 +47,7 @@ export class SigningContentBuilder {
     }
 
     withSignedHeaders = (signedHeaders, headers) => {
-        if (signedHeaders.length) {
+        if (signedHeaders?.length) {
             const headerValues = signedHeaders.map(key => headers.get(key));
             if (headerValues.some(header => header === null)) {
                 throw new Error("Missing required headers");
