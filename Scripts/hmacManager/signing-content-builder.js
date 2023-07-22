@@ -1,4 +1,4 @@
-export class HmacBuilder {
+export class SigningContentBuilder {
     #builder = [];
 
     withClient = clientId => {

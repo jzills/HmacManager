@@ -1,6 +1,6 @@
 import { Hmac } from "./hmac.js";
 import { HmacResult } from "./hmac-result.js";
-import { HmacBuilder } from "./hmac-builder.js";
+import { SigningContentBuilder } from "./signing-content-builder.js";
 
 export class HmacManager {
     constructor(clientId, clientSecret, signedHeaders) {
@@ -23,10 +23,10 @@ export class HmacManager {
     }
 
     computeSigningContent = (request, requestedOn, nonce) => {
-        const { method, url: urlString, headers, body } = request; 
-        const { pathname, search, host } = new URL(urlString);
+        const { method, url, headers, body } = request; 
+        const { pathname, search, host } = new URL(url);
 
-        const signingContent = new HmacBuilder()
+        const signingContent = new SigningContentBuilder()
             .withClient(this.clientId)
             .withMethod(method)
             .withPathAndQuery(`${pathname}${search}`)
