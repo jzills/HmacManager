@@ -1,7 +1,7 @@
 using Client;
-using HmacManager.Caching;
-using HmacManager.Mvc;
-using HmacManager.Mvc.Extensions;
+using HmacManagement.Caching;
+using HmacManagement.Mvc;
+using HmacManagement.Mvc.Extensions;
 
 var clientId = "b9926638-6b5c-4a79-a6ca-014d8b848172";
 var clientSecret = "11Nv/n22OqU59f9376E//I2rA2+Yg6yRaI0W6YRK/G0=";
@@ -23,7 +23,7 @@ builder.Services.AddHttpClient<IMyClient, MyClient>(options =>
 }).AddHttpMessageHandler<MyClientHandler>();
 
 builder.Services.AddMemoryCache()
-    .AddHmacManager(options =>
+    .AddHmacManagement(options =>
     {
         options.ClientId = clientId;
         options.ClientSecret = clientSecret;

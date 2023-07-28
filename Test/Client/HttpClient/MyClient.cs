@@ -1,4 +1,4 @@
-using HmacManager.Components;
+using HmacManagement.Components;
 
 namespace Client;
 
@@ -51,7 +51,7 @@ public class MyClientHandler : DelegatingHandler
         var hmacManager = _httpContextAccessor.HttpContext.RequestServices
             .GetRequiredService<IHmacManager>();
 
-        var signingResult = await hmacManager.SignAsync(request);
+        var signingResult = await HmacManagement.SignAsync(request);
 
         return await base.SendAsync(request, cancellationToken);
     }

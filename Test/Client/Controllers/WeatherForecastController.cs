@@ -1,5 +1,5 @@
 using System.Net.Http;
-using HmacManager.Components;
+using HmacManagement.Components;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Client.Controllers;

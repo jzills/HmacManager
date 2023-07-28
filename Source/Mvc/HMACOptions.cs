@@ -1,8 +1,8 @@
-using HmacManager.Caching;
-using HmacManager.Components;
-using HmacManager.Headers;
+using HmacManagement.Caching;
+using HmacManagement.Components;
+using HmacManagement.Headers;
 
-namespace HmacManager.Mvc;
+namespace HmacManagement.Mvc;
 
 public class HmacOptions
 {

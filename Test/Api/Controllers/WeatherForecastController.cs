@@ -1,4 +1,4 @@
-using HmacManager.Mvc;
+using HmacManagement.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

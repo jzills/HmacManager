@@ -1,8 +1,9 @@
-using HmacManager.Caching;
-using HmacManager.Exceptions;
-using HmacManager.Extensions;
+using HmacManagement.Caching;
+using HmacManagement.Components;
+using HmacManagement.Exceptions;
+using HmacManagement.Extensions;
 
-namespace HmacManager.Components;
+namespace HmacManagement.Components;
 
 public class HmacManager : IHmacManager
 {
@@ -86,9 +87,9 @@ public class HmacManager : IHmacManager
         return new HmacResult { Hmac = hmac, IsSuccess = true };
     }
 
-    public bool HasValidRequestedOn(DateTimeOffset requestedOn) => 
+    private bool HasValidRequestedOn(DateTimeOffset requestedOn) => 
         DateTimeOffset.UtcNow.Subtract(requestedOn) < _options.MaxAge;
 
-    public async Task<bool> HasValidNonceAsync(Guid nonce) => 
+    private async Task<bool> HasValidNonceAsync(Guid nonce) => 
         !(await _cache.ContainsAsync(nonce));
 }

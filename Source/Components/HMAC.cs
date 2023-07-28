@@ -1,4 +1,4 @@
-namespace HmacManager.Components;
+namespace HmacManagement.Components;
 
 public class Hmac
 {

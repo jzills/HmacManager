@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authentication;
-using HmacManager.Mvc;
+using HmacManagement.Mvc;
 
-namespace HmacManager.Mvc.Extensions;
+namespace HmacManagement.Mvc.Extensions;
 
 public static class AuthenticationBuilderExtensions
 {

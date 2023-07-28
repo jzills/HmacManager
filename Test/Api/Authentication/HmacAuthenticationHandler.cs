@@ -3,8 +3,8 @@ using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Mvc.WebApiCompatShim;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using HmacManager.Mvc;
-using HmacManager.Components;
+using HmacManagement.Mvc;
+using HmacManagement.Components;
 using Microsoft.AspNetCore.Authentication;
 using System.Threading.Tasks;
 using System;
@@ -33,7 +33,7 @@ public class HmacAuthenticationHandler : AuthenticationHandler<HmacAuthenticatio
 
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        var HmacResult = await _HmacManager.VerifyAsync(
+        var HmacResult = await _HmacManagement.VerifyAsync(
             Request.HttpContext.GetHttpRequestMessage());
             
         if (HmacResult.IsSuccess)

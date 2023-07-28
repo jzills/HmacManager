@@ -4,9 +4,9 @@
 // using Microsoft.Extensions.Logging;
 // using Microsoft.Extensions.Options;
 // using Souce.Mvc;
-// using HmacManager.Components;
+// using HmacManagement.Components;
 
-// namespace HmacManager.Mvc;
+// namespace HmacManagement.Mvc;
 
 // public class HmacAuthenticationHandler : AuthenticationHandler<HmacAuthenticationOptions>
 // {
@@ -25,7 +25,7 @@
 
 //     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
 //     {
-//         var HmacResult = await _HmacManager.VerifyAsync(
+//         var HmacResult = await _HmacManagement.VerifyAsync(
 //             Request.HttpContext.GetHttpRequestMessage());
             
 //         if (HmacResult.IsSuccess)

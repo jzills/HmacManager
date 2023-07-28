@@ -1,6 +1,6 @@
 using System.Collections.ObjectModel;
 
-namespace HmacManager.Headers;
+namespace HmacManagement.Headers;
 
 public class HeaderSchemeCollection
 {

@@ -1,7 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace HmacManager.Components;
+namespace HmacManagement.Components;
 
 public class HmacProvider : IHmacProvider
 {

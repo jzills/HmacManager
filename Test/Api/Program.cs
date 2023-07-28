@@ -1,6 +1,6 @@
-using HmacManager.Caching;
-using HmacManager.Mvc;
-using HmacManager.Mvc.Extensions;
+using HmacManagement.Caching;
+using HmacManagement.Mvc;
+using HmacManagement.Mvc.Extensions;
 using Api.Authentication;
 
 var clientId = "b9926638-6b5c-4a79-a6ca-014d8b848172";
@@ -14,7 +14,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddMemoryCache()
-    .AddHmacManager(options =>
+    .AddHmacManagement(options =>
     {
         options.ClientId = clientId;
         options.ClientSecret = clientSecret;

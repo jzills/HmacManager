@@ -1,12 +1,12 @@
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
-using HmacManager.Caching;
-using HmacManager.Caching.Distributed;
-using HmacManager.Caching.Memory;
-using HmacManager.Components;
+using HmacManagement.Caching;
+using HmacManagement.Caching.Distributed;
+using HmacManagement.Caching.Memory;
+using HmacManagement.Components;
 
-namespace HmacManager.Mvc.Extensions;
+namespace HmacManagement.Mvc.Extensions;
 
 public static class IServiceCollectionExtensions
 {
@@ -24,7 +24,7 @@ public static class IServiceCollectionExtensions
     //     return services;
     // }
 
-    public static IServiceCollection AddHmacManager(
+    public static IServiceCollection AddHmacManagement(
         this IServiceCollection services,
         Action<HmacOptions> configureOptions
     )
@@ -32,8 +32,10 @@ public static class IServiceCollectionExtensions
         var options = new HmacOptions();
         configureOptions.Invoke(options);
 
-        ArgumentNullException.ThrowIfNullOrEmpty(options.ClientId,     nameof(options.ClientId));
-        ArgumentNullException.ThrowIfNullOrEmpty(options.ClientSecret, nameof(options.ClientSecret));
+        EnsureClientCredentials(
+            options.ClientId, 
+            options.ClientSecret
+        );
 
         var managerOptions = new HmacManagerOptions
         {
@@ -41,11 +43,25 @@ public static class IServiceCollectionExtensions
             SignedHeaders = options.SignedHeaders
         };
 
-        services.AddScoped<IHmacManager, HmacManager.Components.HmacManager>(provider =>
-            new HmacManager.Components.HmacManager(managerOptions, 
+        return services
+            .AddHmacManager(managerOptions)
+            .AddHmacProvider(options)
+            .AddNonceCache(managerOptions, options.NonceCacheType);
+    }
+
+    private static IServiceCollection AddHmacManager(
+        this IServiceCollection services, 
+        HmacManagerOptions options
+    ) =>
+        services.AddScoped<IHmacManager, HmacManager>(provider =>
+            new HmacManager(options, 
                 provider.GetRequiredService<INonceCache>(), 
                 provider.GetRequiredService<IHmacProvider>()));
 
+    private static IServiceCollection AddHmacProvider(
+        this IServiceCollection services,
+        HmacOptions options
+    ) => 
         services.AddScoped<IHmacProvider, HmacProvider>(provider => 
             new HmacProvider(new HmacProviderOptions
             {
@@ -55,12 +71,18 @@ public static class IServiceCollectionExtensions
                 SignatureHashAlgorithm = options.SignatureHashAlgorithm
             }));
 
-        if (options.NonceCacheType == NonceCacheType.Memory)
+    private static IServiceCollection AddNonceCache(
+        this IServiceCollection services, 
+        HmacManagerOptions options,
+        NonceCacheType cacheType
+    )
+    {
+        if (cacheType == NonceCacheType.Memory)
         {
             services.AddScoped<INonceCache, NonceMemoryCache>(provider =>
                 new NonceMemoryCache(
                     provider.GetRequiredService<IMemoryCache>(),
-                    managerOptions
+                    options
                 ));
         }
         else
@@ -68,10 +90,19 @@ public static class IServiceCollectionExtensions
             services.AddScoped<INonceCache, NonceDistributedCache>(provider =>
                 new NonceDistributedCache(
                     provider.GetRequiredService<IDistributedCache>(),
-                    managerOptions
+                    options
                 ));
         }
 
         return services;
+    }
+
+    private static void EnsureClientCredentials(
+        string? clientId, 
+        string? clientSecret
+    )
+    {
+        ArgumentNullException.ThrowIfNullOrEmpty(clientId,     nameof(clientId));
+        ArgumentNullException.ThrowIfNullOrEmpty(clientSecret, nameof(clientSecret));
     }
 }

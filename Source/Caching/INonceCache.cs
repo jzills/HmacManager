@@ -1,4 +1,4 @@
-namespace HmacManager.Caching;
+namespace HmacManagement.Caching;
 
 public interface INonceCache
 {

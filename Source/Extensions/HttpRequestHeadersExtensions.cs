@@ -1,8 +1,8 @@
 using System.Net.Http.Headers;
-using HmacManager.Components;
-using HmacManager.Mvc;
+using HmacManagement.Components;
+using HmacManagement.Mvc;
 
-namespace HmacManager.Extensions;
+namespace HmacManagement.Extensions;
 
 internal static class HttpRequestHeadersExtensions
 {

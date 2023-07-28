@@ -1,6 +1,6 @@
 // using Microsoft.AspNetCore.Authentication;
 
-// namespace HmacManager.Mvc;
+// namespace HmacManagement.Mvc;
 
 // public class HmacAuthenticationOptions : AuthenticationSchemeOptions
 // {

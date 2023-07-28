@@ -1,6 +1,6 @@
-using HmacManager.Components;
+using HmacManagement.Components;
 
-namespace HmacManager.Exceptions;
+namespace HmacManagement.Exceptions;
 
 public class MissingHeaderException : Exception
 {
