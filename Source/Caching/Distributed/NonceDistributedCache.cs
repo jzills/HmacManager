@@ -6,11 +6,11 @@ namespace HmacManagement.Caching.Distributed;
 public class NonceDistributedCache : INonceCache
 {
     private readonly IDistributedCache _cache;
-    private readonly HmacManagerOptions _options;
+    private readonly NonceCacheOptions _options;
 
     public NonceDistributedCache(
         IDistributedCache cache,
-        HmacManagerOptions options
+        NonceCacheOptions options
     )
     {
         _cache = cache;

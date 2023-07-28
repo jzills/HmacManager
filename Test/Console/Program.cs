@@ -11,14 +11,9 @@ var serviceProvider = new ServiceCollection()
     {
         options.ClientId = clientId;
         options.ClientSecret = clientSecret;
-        // options.HeaderSchemes.Add("MySecondScheme", headers =>
-        // {
-        //     headers.Add("MySecondRequiredHeader1");
-        //     headers.Add("MySecondRequiredHeader2");
-        // });
     }).BuildServiceProvider();
 
 var hmacManager = serviceProvider.GetRequiredService<IHmacManager>();
 var request = new HttpRequestMessage(HttpMethod.Get, new Uri("https://www.myapi.com/endpoint?id=1"));
-var signingResult = await HmacManagement.SignAsync(request);
+var signingResult = await hmacManager.SignAsync(request);
 var debug = signingResult;

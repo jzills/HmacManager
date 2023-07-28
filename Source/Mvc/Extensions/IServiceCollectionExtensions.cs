@@ -12,7 +12,7 @@ public static class IServiceCollectionExtensions
 {
     // public static IServiceCollection AddHmacAuthentication(
     //     this IServiceCollection services,
-    //     Action<HmacOptions> configureManagerOptions,
+    //     Action<HmacManagementOptions> configureManagerOptions,
     //     Action<HmacAuthenticationOptions> configureAuthenticationOptions
     // )
     // {
@@ -26,10 +26,10 @@ public static class IServiceCollectionExtensions
 
     public static IServiceCollection AddHmacManagement(
         this IServiceCollection services,
-        Action<HmacOptions> configureOptions
+        Action<HmacManagementOptions> configureOptions
     )
     {
-        var options = new HmacOptions();
+        var options = new HmacManagementOptions();
         configureOptions.Invoke(options);
 
         EnsureClientCredentials(
@@ -43,10 +43,24 @@ public static class IServiceCollectionExtensions
             SignedHeaders = options.SignedHeaders
         };
 
+        var providerOptions = new HmacProviderOptions
+        {
+            ClientId = options.ClientId!,
+            ClientSecret = options.ClientSecret!,
+            ContentHashAlgorithm = options.ContentHashAlgorithm,
+            SignatureHashAlgorithm = options.SignatureHashAlgorithm
+        };
+
+        var nonceCacheOptions = new NonceCacheOptions
+        {
+            MaxAge = options.MaxAge,
+            Type = options.NonceCacheType
+        };
+
         return services
             .AddHmacManager(managerOptions)
-            .AddHmacProvider(options)
-            .AddNonceCache(managerOptions, options.NonceCacheType);
+            .AddHmacProvider(providerOptions)
+            .AddNonceCache(nonceCacheOptions);
     }
 
     private static IServiceCollection AddHmacManager(
@@ -60,24 +74,17 @@ public static class IServiceCollectionExtensions
 
     private static IServiceCollection AddHmacProvider(
         this IServiceCollection services,
-        HmacOptions options
+        HmacProviderOptions options
     ) => 
         services.AddScoped<IHmacProvider, HmacProvider>(provider => 
-            new HmacProvider(new HmacProviderOptions
-            {
-                ClientId = options.ClientId,
-                ClientSecret = options.ClientSecret,
-                ContentHashAlgorithm = options.ContentHashAlgorithm,
-                SignatureHashAlgorithm = options.SignatureHashAlgorithm
-            }));
+            new HmacProvider(options));
 
     private static IServiceCollection AddNonceCache(
         this IServiceCollection services, 
-        HmacManagerOptions options,
-        NonceCacheType cacheType
+        NonceCacheOptions options
     )
     {
-        if (cacheType == NonceCacheType.Memory)
+        if (options.Type == NonceCacheType.Memory)
         {
             services.AddScoped<INonceCache, NonceMemoryCache>(provider =>
                 new NonceMemoryCache(

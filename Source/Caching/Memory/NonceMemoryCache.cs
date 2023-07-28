@@ -7,11 +7,11 @@ namespace HmacManagement.Caching.Memory;
 public class NonceMemoryCache : INonceCache
 {
     private readonly IMemoryCache _cache;
-    private readonly HmacManagerOptions _options;
+    private readonly NonceCacheOptions _options;
 
     public NonceMemoryCache(
         IMemoryCache cache,
-        HmacManagerOptions options
+        NonceCacheOptions options
     )
     {
         _cache = cache;
