@@ -1,4 +1,7 @@
-﻿using HmacManagement.Components;
+﻿using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
+using HmacManagement.Components;
 using HmacManagement.Mvc.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,9 +14,28 @@ var serviceProvider = new ServiceCollection()
     {
         options.ClientId = clientId;
         options.ClientSecret = clientSecret;
+        options.SignedHeaders = new string[] { "X-AccountId", "X-Email" };
     }).BuildServiceProvider();
 
 var hmacManager = serviceProvider.GetRequiredService<IHmacManager>();
-var request = new HttpRequestMessage(HttpMethod.Get, new Uri("https://www.myapi.com/endpoint?id=1"));
-var signingResult = await hmacManager.SignAsync(request);
+var request = new HttpRequestMessage(HttpMethod.Get, "api/Groups/GetGroups")
+{
+    Content = new StringContent(
+        JsonSerializer.Serialize(new 
+        { 
+            AccountId = 1, 
+            UserId = 2 
+        }), 
+        new MediaTypeHeaderValue("application/json", Encoding.UTF8.WebName))
+};
+
+var signingResult = await hmacManager.SignAsync(request, new Header[]
+{
+    new Header { Name = "X-AccountId", Value = null },
+    new Header { Name = "X-Email", Value = "Joshua.Zillwood@trustedtech.com" }
+});
+
 var debug = signingResult;
+
+var verificationResult = await hmacManager.VerifyAsync(request);
+debug = verificationResult;

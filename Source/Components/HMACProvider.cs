@@ -49,8 +49,19 @@ public class HmacProvider : IHmacProvider
 
         if (request.RequestUri is not null)
         {
-            macBuilder.Append($":{request.RequestUri.PathAndQuery}");
-            macBuilder.Append($":{request.RequestUri.Authority}");
+            if (request.RequestUri.IsAbsoluteUri)
+            {
+                macBuilder.Append($":{request.RequestUri.PathAndQuery}");
+                macBuilder.Append($":{request.RequestUri.Authority}");
+            }
+            else
+            {
+                // Handle the case when a relative uri is used, for instance,
+                // when using an HttpClient with a predefined BaseAddress. For
+                // cases like this, only append the path and any potential query
+                // but disregard the authority.
+                macBuilder.Append($":{request.RequestUri.OriginalString}");
+            }
         }
 
         macBuilder.Append($":{requestedOn}");
@@ -58,8 +69,35 @@ public class HmacProvider : IHmacProvider
 
         if (request.Content is not null && request.Content.Headers.ContentLength > 0)
         {
-            var contentHash = ComputeContentHash(await request.Content.ReadAsStringAsync());
+            // REMEMBER:
+            // As it stands, the HttpRequest from AspNetCore must
+            // have buffering enabled and rewind the body stream after
+            // verifying the signature.
+
+            // Ideally, a way to handle this internally would be preferred.
+            // One potential solution would be to have overloads to handle
+            // HttpRequest objects.
+
+            // SOLUTION 1
+            // REQUIRES TESTING
+            using var stream = new MemoryStream();
+            await request.Content.CopyToAsync(stream);
+            
+            if (stream.CanSeek)
+            {
+                stream.Seek(0, SeekOrigin.Begin);
+            }
+            else
+            {
+                throw new Exception();
+            }
+
+            var content = await new StreamReader(stream).ReadToEndAsync();
+            var contentHash = ComputeContentHash(content);
             macBuilder.Append($":{contentHash}");
+
+            // var contentHash = ComputeContentHash(await request.Content.ReadAsStringAsync());
+            // macBuilder.Append($":{contentHash}");
         }
 
         if (signedHeaders is not null)
