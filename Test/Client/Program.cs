@@ -1,6 +1,4 @@
 using Client;
-using HmacManagement.Caching;
-using HmacManagement.Mvc;
 using HmacManagement.Mvc.Extensions;
 
 var clientId = "b9926638-6b5c-4a79-a6ca-014d8b848172";
@@ -27,11 +25,6 @@ builder.Services.AddMemoryCache()
     {
         options.ClientId = clientId;
         options.ClientSecret = clientSecret;
-        options.HeaderSchemes.Add("MySecondScheme", headers =>
-        {
-            headers.Add("MySecondRequiredHeader1");
-            headers.Add("MySecondRequiredHeader2");
-        });
     });
 
 var app = builder.Build();
