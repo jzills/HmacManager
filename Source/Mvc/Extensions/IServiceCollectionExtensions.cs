@@ -10,20 +10,6 @@ namespace HmacManagement.Mvc.Extensions;
 
 public static class IServiceCollectionExtensions
 {
-    // public static IServiceCollection AddHmacAuthentication(
-    //     this IServiceCollection services,
-    //     Action<HmacManagementOptions> configureManagerOptions,
-    //     Action<HmacAuthenticationOptions> configureAuthenticationOptions
-    // )
-    // {
-    //     services
-    //         .AddHmacManager(configureManagerOptions)
-    //         .AddAuthentication()
-    //         .AddHmac(configureAuthenticationOptions);
-
-    //     return services;
-    // }
-
     public static IServiceCollection AddHmacManagement(
         this IServiceCollection services,
         Action<HmacManagementOptions> configureOptions
