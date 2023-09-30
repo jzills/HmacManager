@@ -10,7 +10,7 @@ internal static class HttpRequestHeadersExtensions
         this HttpRequestHeaders headers, 
         string signature
     ) => headers.Authorization = new AuthenticationHeaderValue(
-            HmacAuthenticationDefaults.Scheme, 
+            HmacAuthenticationDefaults.AuthenticationScheme, 
             signature
         );
 
@@ -82,7 +82,7 @@ internal static class HttpRequestHeadersExtensions
     )
     {
         var hasValidHeader = 
-            headers?.Authorization?.Scheme == HmacAuthenticationDefaults.Scheme &&
+            headers?.Authorization?.Scheme == HmacAuthenticationDefaults.AuthenticationScheme &&
             !string.IsNullOrEmpty(headers?.Authorization?.Parameter);
         
         signature = hasValidHeader ? 

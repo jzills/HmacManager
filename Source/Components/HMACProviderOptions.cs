@@ -2,8 +2,8 @@ namespace HmacManagement.Components;
 
 public class HmacProviderOptions
 {
-    public required string ClientId { get; set; } 
-    public required string ClientSecret { get; set; }
-    public required ContentHashAlgorithm ContentHashAlgorithm { get; set; } = ContentHashAlgorithm.SHA256;
-    public required SignatureHashAlgorithm SignatureHashAlgorithm { get; set; } = SignatureHashAlgorithm.HMACSHA256;
+    public string? ClientId { get; set; } 
+    public string? ClientSecret { get; set; }
+    public ContentHashAlgorithm ContentHashAlgorithm { get; set; } = ContentHashAlgorithm.SHA256;
+    public SignatureHashAlgorithm SignatureHashAlgorithm { get; set; } = SignatureHashAlgorithm.HMACSHA256;
 }
