@@ -80,24 +80,24 @@ public class HmacProvider : IHmacProvider
 
             // SOLUTION 1
             // REQUIRES TESTING
-            using var stream = new MemoryStream();
-            await request.Content.CopyToAsync(stream);
+            // using var stream = new MemoryStream();
+            // await request.Content.CopyToAsync(stream);
             
-            if (stream.CanSeek)
-            {
-                stream.Seek(0, SeekOrigin.Begin);
-            }
-            else
-            {
-                throw new Exception();
-            }
+            // if (stream.CanSeek)
+            // {
+            //     stream.Seek(0, SeekOrigin.Begin);
+            // }
+            // else
+            // {
+            //     throw new Exception();
+            // }
 
-            var content = await new StreamReader(stream).ReadToEndAsync();
-            var contentHash = ComputeContentHash(content);
-            macBuilder.Append($":{contentHash}");
-
-            // var contentHash = ComputeContentHash(await request.Content.ReadAsStringAsync());
+            // var content = await new StreamReader(stream).ReadToEndAsync();
+            // var contentHash = ComputeContentHash(content);
             // macBuilder.Append($":{contentHash}");
+
+            var contentHash = ComputeContentHash(await request.Content.ReadAsStringAsync());
+            macBuilder.Append($":{contentHash}");
         }
 
         if (signedHeaders is not null)

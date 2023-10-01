@@ -1,7 +1,5 @@
 using System.Security.Claims;
-using HmacManagement.Mvc;
 using HmacManagement.Mvc.Extensions;
-using Microsoft.AspNetCore.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,7 +7,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddHmacManagement(options =>
 {
-    options.ClientId = ""; 
+    options.ClientId = "3b49aec6-517c-47b0-a681-3c0251037416"; 
+    options.ClientSecret = "PBnebrN5WUmFdIZE01O3hA==";
 });
 
 builder.Services
@@ -28,6 +27,10 @@ builder.Services
                 };
 
                 return claims;
+            },
+            OnAuthenticationFailure = context =>
+            {
+                return new Exception("My Test Exception");
             }
         };
     });
@@ -47,6 +50,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(

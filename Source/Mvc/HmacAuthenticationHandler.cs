@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authentication;
 using HmacManagement.Components;
+using HmacManagement.Exceptions;
 
 namespace HmacManagement.Mvc;
 
@@ -16,8 +17,8 @@ public class HmacAuthenticationHandler : AuthenticationHandler<HmacAuthenticatio
         IHmacManager hmacManager,
         IOptionsMonitor<HmacAuthenticationOptions> options, 
         ILoggerFactory logger, 
-        UrlEncoder encoder, 
-        ISystemClock clock
+        ISystemClock clock,
+        UrlEncoder encoder
     ) : base(options, logger, encoder, clock)
     {
         _hmacManager = hmacManager;
@@ -52,7 +53,15 @@ public class HmacAuthenticationHandler : AuthenticationHandler<HmacAuthenticatio
         }
         else
         {
-            return AuthenticateResult.Fail(new Exception());
+            if (Options.Events?.OnAuthenticationFailure is not null)
+            {
+                var exception = Options.Events.OnAuthenticationFailure(Request.HttpContext);
+                return AuthenticateResult.Fail(exception);
+            }
+            else
+            {
+                return AuthenticateResult.Fail(new HmacAuthenticationException());
+            }
         }
     }
 }

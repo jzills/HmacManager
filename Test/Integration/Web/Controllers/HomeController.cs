@@ -1,4 +1,6 @@
 ﻿using System.Diagnostics;
+using HmacManagement.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Web.Models;
 
@@ -18,14 +20,9 @@ public class HomeController : Controller
         return View();
     }
 
-    public IActionResult Privacy()
+    [Authorize(AuthenticationSchemes = HmacAuthenticationDefaults.AuthenticationScheme)]
+    public IActionResult Protected()
     {
-        return View();
-    }
-
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        return Ok("You've accessed a protected endpoint.");
     }
 }

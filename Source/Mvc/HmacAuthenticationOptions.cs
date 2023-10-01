@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 public class HmacEvents
 {
     public Func<HttpContext, Claim[]>? OnAuthenticationSuccess { get; set; }
+    public Func<HttpContext, Exception>? OnAuthenticationFailure { get; set; }
 }
 
 public class HmacAuthenticationOptions : AuthenticationSchemeOptions
