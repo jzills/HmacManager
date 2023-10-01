@@ -38,6 +38,33 @@ internal static class HttpRequestHeadersExtensions
         }
     }
 
+    public static bool TryParseRequiredHeaders(
+        this HttpRequestHeaders headers,
+        string[] headersToVerify,
+        out ICollection<Header> headersToSign
+    )
+    {
+        headersToSign = new List<Header>(headersToVerify.Length);
+        foreach (var headerToVerify in headersToVerify)
+        {
+            if (headers.TryGetValues(headerToVerify, out var contentHeaderValue))
+            {
+                var headerValue = contentHeaderValue.First();
+                headersToSign.Add(new Header
+                {
+                    Name = headerToVerify,
+                    Value = headerValue
+                });
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public static bool TryParseHmac(
         this HttpRequestHeaders headers,
         string[] headersToVerify,
@@ -48,12 +75,12 @@ internal static class HttpRequestHeadersExtensions
         var hasRequiredRequestedOnHeader    = headers.HasRequiredRequestedOnHeader(out var requestedOn);
         var hasRequiredNonceHeader          = headers.HasRequiredNonceHeader(out var nonce);
         
-        var headersToSign = new List<Header>(headers.Count());
+        var headersToSign = new List<Header>(headersToVerify.Length);
         foreach (var headerToVerify in headersToVerify)
         {
             if (headers.TryGetValues(headerToVerify, out var contentHeaderValue))
             {
-                var headerValue = contentHeaderValue.FirstOrDefault();
+                var headerValue = contentHeaderValue.First();
                 headersToSign.Add(new Header
                 {
                     Name = headerToVerify,

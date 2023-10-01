@@ -1,6 +1,7 @@
 using HmacManagement.Caching;
 using HmacManagement.Exceptions;
 using HmacManagement.Extensions;
+using HmacManagement.Policies;
 
 namespace HmacManagement.Components;
 
@@ -9,25 +10,29 @@ public class HmacManager : IHmacManager
     private readonly HmacManagerOptions _options;
     private readonly INonceCache _cache;
     private readonly IHmacProvider _provider;
+    private readonly ISigningPolicyCollection _signingPolicies;
 
     public HmacManager(
         HmacManagerOptions options,
         INonceCache cache,
-        IHmacProvider provider
+        IHmacProvider provider,
+        ISigningPolicyCollection signingPolicies
     )
     {
         _options = options;
         _cache = cache;
         _provider = provider;
+        _signingPolicies = signingPolicies;
     }
 
-    public async Task<HmacResult> VerifyAsync(HttpRequestMessage request)
+    public async Task<HmacResult> VerifyAsync(HttpRequestMessage request, string signingPolicy)
     {
-        if (request.Headers.TryParseHmac(_options.SignedHeaders, out var hmac))
+        var policy = _signingPolicies.GetPolicy(signingPolicy);
+        if (request.Headers.TryParseHmac(policy.HeaderClaimMappings.GetRequiredHeaders(), out var hmac))
         {
             var hasValidPrechecks = 
                 HasValidRequestedOn(hmac.RequestedOn) && await 
-                HasValidNonceAsync(hmac.Nonce);
+                HasValidNonceAsync (hmac.Nonce);
 
             if (hasValidPrechecks)
             {   
@@ -55,35 +60,38 @@ public class HmacManager : IHmacManager
         return new HmacResult();
     }
 
-    public async Task<HmacResult> SignAsync(
-        HttpRequestMessage request, 
-        Header[]? signedHeaders = null
-    )
+    public async Task<HmacResult> SignAsync(HttpRequestMessage request, string signingPolicy)
     {
-        MissingHeaderException.ThrowIfMissing(
-            _options.SignedHeaders,
-            signedHeaders
-        );
+        var policy = _signingPolicies.GetPolicy(signingPolicy);
+        var headers = policy.HeaderClaimMappings.GetRequiredHeaders();
+        // Check headers all exist in HttpRequestMessage
 
-        var hmac = new Hmac { SignedHeaders = signedHeaders };
+        if (request.Headers.TryParseRequiredHeaders(headers, out var headersToSign))
+        {   
+            var hmac = new Hmac { SignedHeaders = headersToSign.ToArray() };
 
-        hmac.SigningContent = await _provider.ComputeSigningContentAsync(
-            request, 
-            hmac.RequestedOn, 
-            hmac.Nonce,
-            hmac.SignedHeaders
-        );
+            hmac.SigningContent = await _provider.ComputeSigningContentAsync(
+                request, 
+                hmac.RequestedOn, 
+                hmac.Nonce,
+                hmac.SignedHeaders
+            );
 
-        hmac.Signature = _provider.ComputeSignature(
-            hmac.SigningContent
-        );
+            hmac.Signature = _provider.ComputeSignature(
+                hmac.SigningContent
+            );
 
-        request.Headers.AddSignature(hmac.Signature);
-        request.Headers.AddRequestedOn(hmac.RequestedOn);
-        request.Headers.AddNonce(hmac.Nonce);
-        request.Headers.AddSignedHeaders(hmac.SignedHeaders);
+            request.Headers.AddSignature(hmac.Signature);
+            request.Headers.AddRequestedOn(hmac.RequestedOn);
+            request.Headers.AddNonce(hmac.Nonce);
+            request.Headers.AddSignedHeaders(hmac.SignedHeaders);
 
-        return new HmacResult { Hmac = hmac, IsSuccess = true };
+            return new HmacResult { Hmac = hmac, IsSuccess = true };
+        }
+        else
+        {
+            throw new MissingHeaderException();
+        }
     }
 
     private bool HasValidRequestedOn(DateTimeOffset requestedOn) => 
@@ -91,4 +99,14 @@ public class HmacManager : IHmacManager
 
     private async Task<bool> HasValidNonceAsync(Guid nonce) => 
         !(await _cache.ContainsAsync(nonce));
+
+    public Task<HmacResult> SignAsync(HttpRequestMessage request)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<HmacResult> VerifyAsync(HttpRequestMessage request)
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -5,6 +5,7 @@ using HmacManagement.Caching;
 using HmacManagement.Caching.Distributed;
 using HmacManagement.Caching.Memory;
 using HmacManagement.Components;
+using HmacManagement.Policies;
 
 namespace HmacManagement.Mvc.Extensions;
 
@@ -26,7 +27,6 @@ public static class IServiceCollectionExtensions
         var managerOptions = new HmacManagerOptions
         {
             MaxAge = options.MaxAge,
-            SignedHeaders = options.SignedHeaders
         };
 
         var providerOptions = new HmacProviderOptions
@@ -44,19 +44,21 @@ public static class IServiceCollectionExtensions
         };
 
         return services
-            .AddHmacManager(managerOptions)
+            .AddHmacManager(managerOptions, new SigningPolicyCollection())
             .AddHmacProvider(providerOptions)
             .AddNonceCache(nonceCacheOptions);
     }
 
     private static IServiceCollection AddHmacManager(
         this IServiceCollection services, 
-        HmacManagerOptions options
+        HmacManagerOptions options,
+        ISigningPolicyCollection signingPolicies
     ) =>
         services.AddScoped<IHmacManager, HmacManager>(provider =>
             new HmacManager(options, 
                 provider.GetRequiredService<INonceCache>(), 
-                provider.GetRequiredService<IHmacProvider>()));
+                provider.GetRequiredService<IHmacProvider>(),
+                signingPolicies));
 
     private static IServiceCollection AddHmacProvider(
         this IServiceCollection services,

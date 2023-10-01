@@ -5,16 +5,43 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddHmacManagement(options =>
+// builder.Services.AddHmacManagement(options =>
+// {
+//     options.ClientId = "3b49aec6-517c-47b0-a681-3c0251037416"; 
+//     options.ClientSecret = "PBnebrN5WUmFdIZE01O3hA==";
+// });
+
+var a = new HmacManagement.Remodel.HmacOptions();
+a.AddDefaultKeys("", "");
+a.AddHeaderScheme("AccountEmailScheme", configureScheme => 
 {
-    options.ClientId = "3b49aec6-517c-47b0-a681-3c0251037416"; 
-    options.ClientSecret = "PBnebrN5WUmFdIZE01O3hA==";
+    configureScheme.AddRequiredHeader("X-Account-Id", "AccountId");
+    configureScheme.AddRequiredHeader("X-Email", "Email");
 });
 
 builder.Services
     .AddAuthentication()
     .AddHmac(options =>
     {
+        options.AddDefaultPolicy(policy =>
+        {
+            policy.Keys.PublicKey = Guid.Parse("4c59aec6-517c-47b0-a681-3c0251037416");
+            policy.Keys.PrivateKey = "CKnebrN5WUmFdIZE01O3hA==";
+            policy.AddHeaderScheme("Scheme1", scheme =>
+            {
+                scheme.AddRequiredHeader("");
+            });
+        });
+
+        options.AddPolicy("MyFirstPolicy", policy =>
+        {
+            policy.AddHeaderScheme("AccountEmailScheme", configureScheme =>
+            {
+                configureScheme.AddRequiredHeader("X-Account-Id", "AccountId");
+                configureScheme.AddRequiredHeader("X-Email", "Email");
+            });
+        });
+
         options.Events = new HmacEvents
         {
             OnAuthenticationSuccess = context =>
