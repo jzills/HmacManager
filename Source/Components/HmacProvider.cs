@@ -27,11 +27,11 @@ public class HmacProvider : IHmacProvider
     {
         var secretBytes = Convert.FromBase64String(_options.ClientSecret);
         var signingContentBytes = Encoding.UTF8.GetBytes(signingContent);
-        var hashBytes = _options.SignatureHashAlgorithm switch
+        var hashBytes = _options.SigningHashAlgorithm switch
         {
-            SignatureHashAlgorithm.HMACSHA1   => new HMACSHA1  (secretBytes).ComputeHash(signingContentBytes),
-            SignatureHashAlgorithm.HMACSHA256 => new HMACSHA256(secretBytes).ComputeHash(signingContentBytes),
-            SignatureHashAlgorithm.HMACSHA512 => new HMACSHA512(secretBytes).ComputeHash(signingContentBytes),
+            SigningHashAlgorithm.HMACSHA1   => new HMACSHA1  (secretBytes).ComputeHash(signingContentBytes),
+            SigningHashAlgorithm.HMACSHA256 => new HMACSHA256(secretBytes).ComputeHash(signingContentBytes),
+            SigningHashAlgorithm.HMACSHA512 => new HMACSHA512(secretBytes).ComputeHash(signingContentBytes),
             _                                 => new HMACSHA256(secretBytes).ComputeHash(signingContentBytes)
         };
         

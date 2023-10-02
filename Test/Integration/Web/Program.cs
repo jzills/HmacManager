@@ -11,14 +11,6 @@ builder.Services.AddControllersWithViews();
 //     options.ClientSecret = "PBnebrN5WUmFdIZE01O3hA==";
 // });
 
-var a = new HmacManagement.Remodel.HmacOptions();
-a.AddDefaultKeys("", "");
-a.AddHeaderScheme("AccountEmailScheme", configureScheme => 
-{
-    configureScheme.AddRequiredHeader("X-Account-Id", "AccountId");
-    configureScheme.AddRequiredHeader("X-Email", "Email");
-});
-
 builder.Services
     .AddAuthentication()
     .AddHmac(options =>
@@ -35,10 +27,10 @@ builder.Services
 
         options.AddPolicy("MyFirstPolicy", policy =>
         {
-            policy.AddHeaderScheme("AccountEmailScheme", configureScheme =>
+            policy.AddHeaderScheme("AccountEmailScheme", scheme =>
             {
-                configureScheme.AddRequiredHeader("X-Account-Id", "AccountId");
-                configureScheme.AddRequiredHeader("X-Email", "Email");
+                scheme.AddRequiredHeader("X-Account-Id", "AccountId");
+                scheme.AddRequiredHeader("X-Email", "Email");
             });
         });
 

@@ -34,7 +34,7 @@ public static class IServiceCollectionExtensions
             ClientId = options.ClientId!,
             ClientSecret = options.ClientSecret!,
             ContentHashAlgorithm = options.ContentHashAlgorithm,
-            SignatureHashAlgorithm = options.SignatureHashAlgorithm
+            SigningHashAlgorithm = options.SigningHashAlgorithm
         };
 
         var nonceCacheOptions = new NonceCacheOptions

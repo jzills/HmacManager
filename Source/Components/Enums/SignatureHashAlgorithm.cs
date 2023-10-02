@@ -1,6 +1,6 @@
 namespace HmacManagement.Components;
 
-public enum SignatureHashAlgorithm
+public enum SigningHashAlgorithm
 {
     HMACSHA1,
     HMACSHA256,
