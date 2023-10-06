@@ -1,3 +1,5 @@
+using HmacManagement.Remodel;
+
 namespace HmacManagement.Components;
 
 public class Hmac
@@ -6,5 +8,5 @@ public class Hmac
     public DateTimeOffset RequestedOn { get; init; } = DateTimeOffset.UtcNow;
     public Guid Nonce { get; init; } = Guid.NewGuid();
     public string? SigningContent { get; set; }
-    public Header[]? SignedHeaders { get; set; }
+    public HeaderValue[]? HeaderValues { get; set; }
 }

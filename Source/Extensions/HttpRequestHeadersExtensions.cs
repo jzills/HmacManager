@@ -1,6 +1,7 @@
 using System.Net.Http.Headers;
 using HmacManagement.Components;
 using HmacManagement.Mvc;
+using HmacManagement.Remodel;
 
 namespace HmacManagement.Extensions;
 
@@ -33,41 +34,44 @@ internal static class HttpRequestHeadersExtensions
         {
             foreach (var signedHeader in signedHeaders)
             {
-                headers.Add(signedHeader.Name!, signedHeader.Value);
+                //headers.Add(signedHeader.Name!, signedHeader.Value);
             }
         }
     }
 
-    public static bool TryParseRequiredHeaders(
+    public static bool TryParseHeaders(
         this HttpRequestHeaders headers,
-        string[] headersToVerify,
-        out ICollection<Header> headersToSign
+        HeaderScheme headerScheme,
+        out IReadOnlyCollection<HeaderValue> headerValues
     )
     {
-        headersToSign = new List<Header>(headersToVerify.Length);
-        foreach (var headerToVerify in headersToVerify)
+        var schemeHeaders = headerScheme.GetRequiredHeaders();
+        var schemeHeaderValues = new List<HeaderValue>(schemeHeaders.Count);
+        foreach (var schemeHeader in schemeHeaders)
         {
-            if (headers.TryGetValues(headerToVerify, out var contentHeaderValue))
+            if (headers.TryGetValues(schemeHeader.Name, out var values))
             {
-                var headerValue = contentHeaderValue.First();
-                headersToSign.Add(new Header
-                {
-                    Name = headerToVerify,
-                    Value = headerValue
-                });
+                var schemeHeaderValue = values.First();
+                schemeHeaderValues.Add(new HeaderValue(
+                    schemeHeader.Name, 
+                    schemeHeader.ClaimType, 
+                    schemeHeaderValue
+                ));
             }
             else
             {
+                headerValues = new List<HeaderValue>().AsReadOnly();
                 return false;
             }
         }
 
+        headerValues = schemeHeaderValues.AsReadOnly();
         return true;
     }
 
     public static bool TryParseHmac(
         this HttpRequestHeaders headers,
-        string[] headersToVerify,
+        HeaderScheme headerScheme,
         out Hmac value
     )
     {
@@ -75,17 +79,18 @@ internal static class HttpRequestHeadersExtensions
         var hasRequiredRequestedOnHeader    = headers.HasRequiredRequestedOnHeader(out var requestedOn);
         var hasRequiredNonceHeader          = headers.HasRequiredNonceHeader(out var nonce);
         
-        var headersToSign = new List<Header>(headersToVerify.Length);
-        foreach (var headerToVerify in headersToVerify)
+        var schemeHeaders = headerScheme.GetRequiredHeaders();
+        var schemeHeaderValues = new List<HeaderValue>(schemeHeaders.Count);
+        foreach (var schemeHeader in schemeHeaders)
         {
-            if (headers.TryGetValues(headerToVerify, out var contentHeaderValue))
+            if (headers.TryGetValues(schemeHeader.Name, out var values))
             {
-                var headerValue = contentHeaderValue.First();
-                headersToSign.Add(new Header
-                {
-                    Name = headerToVerify,
-                    Value = headerValue
-                });
+                var schemeHeaderValue = values.First();
+                schemeHeaderValues.Add(new HeaderValue(
+                    schemeHeader.Name, 
+                    schemeHeader.ClaimType, 
+                    schemeHeaderValue
+                ));
             }
         }
         
@@ -94,7 +99,7 @@ internal static class HttpRequestHeadersExtensions
             Signature = signature,
             RequestedOn = requestedOn,
             Nonce = nonce,
-            SignedHeaders = headersToSign.ToArray()
+            HeaderValues = schemeHeaderValues.ToArray()
         };
 
         return 

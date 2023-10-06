@@ -6,6 +6,7 @@ using HmacManagement.Caching.Distributed;
 using HmacManagement.Caching.Memory;
 using HmacManagement.Components;
 using HmacManagement.Policies;
+using HmacManagement.Remodel;
 
 namespace HmacManagement.Mvc.Extensions;
 
@@ -31,10 +32,16 @@ public static class IServiceCollectionExtensions
 
         var providerOptions = new HmacProviderOptions
         {
-            ClientId = options.ClientId!,
-            ClientSecret = options.ClientSecret!,
-            ContentHashAlgorithm = options.ContentHashAlgorithm,
-            SigningHashAlgorithm = options.SigningHashAlgorithm
+            Keys = new KeyCredentials
+            {
+                PublicKey = Guid.Parse(options.ClientId),
+                PrivateKey = options.ClientSecret
+            },
+            Algorithms = new Algorithms
+            {
+                ContentAlgorithm = options.ContentHashAlgorithm,
+                SigningAlgorithm = options.SigningHashAlgorithm
+            }
         };
 
         var nonceCacheOptions = new NonceCacheOptions
@@ -57,8 +64,8 @@ public static class IServiceCollectionExtensions
         services.AddScoped<IHmacManager, HmacManager>(provider =>
             new HmacManager(options, 
                 provider.GetRequiredService<INonceCache>(), 
-                provider.GetRequiredService<IHmacProvider>(),
-                signingPolicies));
+                provider.GetRequiredService<IHmacProvider>()
+            ));
 
     private static IServiceCollection AddHmacProvider(
         this IServiceCollection services,

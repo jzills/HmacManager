@@ -1,3 +1,5 @@
+using HmacManagement.Remodel;
+
 namespace HmacManagement.Components;
 
 public interface IHmacProvider
@@ -8,6 +10,6 @@ public interface IHmacProvider
         HttpRequestMessage request, 
         DateTimeOffset requestedOn, 
         Guid nonce,
-        Header[]? headersToSign = null
+        HeaderValue[]? headerValues = null
     );
 }

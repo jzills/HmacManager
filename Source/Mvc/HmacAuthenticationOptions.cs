@@ -15,8 +15,9 @@ public class HmacEvents
 
 public class HmacAuthenticationOptions : AuthenticationSchemeOptions
 {
+    private Dictionary<string, Action<HmacOptions>> _policies { get; set; } = new();
     public new HmacEvents Events { get; set; } = new();
-    private Dictionary<string, Action<HmacOptions>> Policies { get; set; } = new();
+    
     public void AddDefaultPolicy(Action<HmacOptions> configurePolicy)
     {
 
@@ -24,5 +25,19 @@ public class HmacAuthenticationOptions : AuthenticationSchemeOptions
     public void AddPolicy(string name, Action<HmacOptions> configurePolicy)
     {
 
+    }
+
+    public IDictionary<string, HmacOptions> GetPolicies()
+    {
+        var policies = new Dictionary<string, HmacOptions>();
+        foreach (var (policy, configureOptions) in _policies)
+        {
+            var options = new HmacOptions();
+            configureOptions.Invoke(options);
+
+            policies[policy] = options;
+        }
+
+        return policies;
     }
 }

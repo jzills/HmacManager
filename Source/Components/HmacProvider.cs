@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using System.Text;
+using HmacManagement.Remodel;
 
 namespace HmacManagement.Components;
 
@@ -12,7 +13,7 @@ public class HmacProvider : IHmacProvider
     public string ComputeContentHash(string content)
     {
         var contentBytes = Encoding.UTF8.GetBytes(content);
-        var hashBytes = _options.ContentHashAlgorithm switch
+        var hashBytes = _options.Algorithms.ContentAlgorithm switch
         {
             ContentHashAlgorithm.SHA1   => SHA1  .Create().ComputeHash(contentBytes),
             ContentHashAlgorithm.SHA256 => SHA256.Create().ComputeHash(contentBytes),
@@ -25,14 +26,14 @@ public class HmacProvider : IHmacProvider
 
     public string ComputeSignature(string signingContent)
     {
-        var secretBytes = Convert.FromBase64String(_options.ClientSecret);
+        var secretBytes = Convert.FromBase64String(_options.Keys.PrivateKey);
         var signingContentBytes = Encoding.UTF8.GetBytes(signingContent);
-        var hashBytes = _options.SigningHashAlgorithm switch
+        var hashBytes = _options.Algorithms.SigningAlgorithm switch
         {
             SigningHashAlgorithm.HMACSHA1   => new HMACSHA1  (secretBytes).ComputeHash(signingContentBytes),
             SigningHashAlgorithm.HMACSHA256 => new HMACSHA256(secretBytes).ComputeHash(signingContentBytes),
             SigningHashAlgorithm.HMACSHA512 => new HMACSHA512(secretBytes).ComputeHash(signingContentBytes),
-            _                                 => new HMACSHA256(secretBytes).ComputeHash(signingContentBytes)
+            _                               => new HMACSHA256(secretBytes).ComputeHash(signingContentBytes)
         };
         
         return Convert.ToBase64String(hashBytes);
@@ -42,7 +43,7 @@ public class HmacProvider : IHmacProvider
         HttpRequestMessage request, 
         DateTimeOffset requestedOn, 
         Guid nonce,
-        Header[]? signedHeaders = null
+        HeaderValue[]? headerValues = null
     )
     {
         var macBuilder = new StringBuilder($"{request.Method}");
@@ -65,7 +66,7 @@ public class HmacProvider : IHmacProvider
         }
 
         macBuilder.Append($":{requestedOn}");
-        macBuilder.Append($":{_options.ClientId}");
+        macBuilder.Append($":{_options.Keys.PublicKey}");
 
         if (request.Content is not null && request.Content.Headers.ContentLength > 0)
         {
@@ -73,9 +74,10 @@ public class HmacProvider : IHmacProvider
             macBuilder.Append($":{contentHash}");
         }
 
-        if (signedHeaders is not null)
+        if (headerValues?.Any() ?? false)
         {
-            macBuilder.AppendJoin(":", signedHeaders.Select(element => element.Value));
+            macBuilder.Append(":");
+            macBuilder.AppendJoin(":", headerValues.Select(element => element.Value));
         }
 
         macBuilder.Append($":{nonce}");
