@@ -12,125 +12,106 @@ namespace HmacManagement.Mvc;
 
 public class HmacAuthenticationHandler : AuthenticationHandler<HmacAuthenticationOptions>
 {
-    private readonly IHmacManager _hmacManager;
+    private readonly IHmacManagerFactory _hmacManagerFactory;
 
     public HmacAuthenticationHandler(
-        IHmacManager hmacManager,
+        IHmacManagerFactory hmacManagerFactory,
         IOptionsMonitor<HmacAuthenticationOptions> options, 
         ILoggerFactory logger, 
         ISystemClock clock,
         UrlEncoder encoder
     ) : base(options, logger, encoder, clock)
     {
-        _hmacManager = hmacManager;
+        _hmacManagerFactory = hmacManagerFactory;
     }
 
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        return null;
-        // if (Request.Headers.ContainsKey("X-Signing-Policy"))
-        // {   
-        //     var signingPolicyHeader = Request.Headers.First(header => header.Key == "X-Signing-Policy");
-        //     if (string.IsNullOrEmpty(signingPolicyHeader.Value))
-        //     {
-        //         throw new Exception();
-        //     }
+        if (Request.Headers.TryGetValue("X-Hmac", out var value))
+        {
+            IHmacManager hmacManager;
+            string? policy = null;
+            string? scheme = null;
 
+            // Key: X-Hmac-Policy Value: MyPolicy HmacSignature
+            // Key: X-Hmac-Policy Value: MyPolicy MyScheme HmacSignature
+            var hmacHeaderValues = value.First()?.Split(" ");
+            if (hmacHeaderValues?.Length == 2)
+            {
+                policy = hmacHeaderValues[0];
+                hmacManager = _hmacManagerFactory.Create(policy);
+            }
+            else if (hmacHeaderValues?.Length == 3)
+            {
+                policy = hmacHeaderValues[0];
+                scheme = hmacHeaderValues[1];
+                hmacManager = _hmacManagerFactory.Create(policy, scheme);
+            }
+            else
+            {
+                throw new Exception();
+            }
 
-        //     var hmacResult = await _hmacManager.VerifyAsync(
-        //         Request.HttpContext.GetHttpRequestMessage(), 
-        //         signingPolicy.PolicyName
-        //     );
-            
-        //     if (Request.HttpContext.Request.Body.CanSeek)
-        //     {
-        //         Request.HttpContext.Request.Body.Seek(0, SeekOrigin.Begin);
-        //     }
+            var hmacResult = await hmacManager.VerifyAsync(Request.HttpContext.GetHttpRequestMessage());
+            if (Request.HttpContext.Request.Body.CanSeek)
+            {
+                Request.HttpContext.Request.Body.Seek(0, SeekOrigin.Begin);
+            }
 
-        //     if (hmacResult.IsSuccess)
-        //     {
-        //         List<Claim> claims = new List<Claim>();
+            if (hmacResult.IsSuccess)
+            {
+                List<Claim> claims = new List<Claim>();
 
-        //         var mappings = signingPolicy.HeaderClaimMappings.GetHeaderClaimMappings();
-        //         foreach (var mapping in mappings)
-        //         {
-        //             var value = Request.Headers[mapping.HeaderName];
-        //             claims.Add(new Claim(mapping.ClaimType, value.First()));
-        //         }
+                if (!string.IsNullOrEmpty(scheme))
+                {
+                    var claimsHeaders = Options.GetPolicy(policy)
+                        !.GetHeaderScheme(scheme)
+                        !.GetRequiredHeaders();
 
-        //         if (Options.Events?.OnAuthenticationSuccess is not null)
-        //         {
-        //             var handlerClaims = Options.Events.OnAuthenticationSuccess(Request.HttpContext);
-        //             foreach (var claim in handlerClaims)
-        //             {
-        //                 if (!claims.Contains(claim))
-        //                 {
-        //                     claims.Add(claim);
-        //                 }
-        //             }
-        //         }
+                    foreach (var claimsHeader in claimsHeaders)
+                    {
+                        var claimsValue = Request.Headers[claimsHeader.Name];
+                        claims.Add(new Claim(claimsHeader.ClaimType, claimsValue!.First()!));
+                    }
+                }
 
-        //         return AuthenticateResult.Success(
-        //             new AuthenticationTicket(
-        //                 new ClaimsPrincipal(
-        //                     new ClaimsIdentity(claims, 
-        //                         HmacAuthenticationDefaults.AuthenticationScheme)), 
-        //                 new AuthenticationProperties(), 
-        //                 HmacAuthenticationDefaults.AuthenticationScheme
-        //             ));
-        //     }
-        //     else
-        //     {
-        //         if (Options.Events?.OnAuthenticationFailure is not null)
-        //         {
-        //             var exception = Options.Events.OnAuthenticationFailure(Request.HttpContext);
-        //             return AuthenticateResult.Fail(exception);
-        //         }
-        //         else
-        //         {
-        //             return AuthenticateResult.Fail(new HmacAuthenticationException());
-        //         }
-        //     }
-        // }
-        // else
-        // {
-        //     var hmacResult = await _hmacManager.VerifyAsync(
-        //         Request.HttpContext.GetHttpRequestMessage(), new HeaderScheme(""));
-            
-        //     if (Request.HttpContext.Request.Body.CanSeek)
-        //     {
-        //         Request.HttpContext.Request.Body.Seek(0, SeekOrigin.Begin);
-        //     }
+                if (Options.Events?.OnAuthenticationSuccess is not null)
+                {
+                    var successHandlerClaims = Options.Events.OnAuthenticationSuccess(Request.HttpContext);
+                    foreach (var claim in successHandlerClaims)
+                    {
+                        if (!claims.Contains(claim))
+                        {
+                            claims.Add(claim);
+                        }
+                    }
+                }
 
-        //     if (hmacResult.IsSuccess)
-        //     {
-        //         IEnumerable<Claim> claims = Enumerable.Empty<Claim>();
-        //         if (Options.Events?.OnAuthenticationSuccess is not null)
-        //         {
-        //             claims = Options.Events.OnAuthenticationSuccess(Request.HttpContext);
-        //         }
-
-        //         return AuthenticateResult.Success(
-        //             new AuthenticationTicket(
-        //                 new ClaimsPrincipal(
-        //                     new ClaimsIdentity(claims, 
-        //                         HmacAuthenticationDefaults.AuthenticationScheme)), 
-        //                 new AuthenticationProperties(), 
-        //                 HmacAuthenticationDefaults.AuthenticationScheme
-        //             ));
-        //     }
-        //     else
-        //     {
-        //         if (Options.Events?.OnAuthenticationFailure is not null)
-        //         {
-        //             var exception = Options.Events.OnAuthenticationFailure(Request.HttpContext);
-        //             return AuthenticateResult.Fail(exception);
-        //         }
-        //         else
-        //         {
-        //             return AuthenticateResult.Fail(new HmacAuthenticationException());
-        //         }
-        //     }
-        // }
+                return AuthenticateResult.Success(
+                    new AuthenticationTicket(
+                        new ClaimsPrincipal(
+                            new ClaimsIdentity(claims, 
+                                HmacAuthenticationDefaults.AuthenticationScheme)), 
+                        new AuthenticationProperties(), 
+                        HmacAuthenticationDefaults.AuthenticationScheme
+                    ));
+            }
+            else
+            {
+                if (Options.Events?.OnAuthenticationFailure is not null)
+                {
+                    var exception = Options.Events.OnAuthenticationFailure(Request.HttpContext);
+                    return AuthenticateResult.Fail(exception);
+                }
+                else
+                {
+                    return AuthenticateResult.Fail(new HmacAuthenticationException());
+                }
+            }
+        }
+        else
+        {
+            return AuthenticateResult.NoResult();
+        }
     }
 }

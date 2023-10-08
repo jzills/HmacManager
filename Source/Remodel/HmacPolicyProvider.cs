@@ -1,17 +1,17 @@
 namespace HmacManagement.Remodel;
 
-public interface IHmacOptionsProvider
+public interface IHmacPolicyProvider
 {
-    HmacOptions? Get(string name);
+    HmacPolicy? Get(string name);
 }
 
-public class HmacOptionsProvider : IHmacOptionsProvider
+public class HmacPolicyProvider : IHmacPolicyProvider
 {
-    protected IDictionary<string, HmacOptions> Options;
-    internal HmacOptionsProvider(IDictionary<string, HmacOptions> options) 
+    protected IDictionary<string, HmacPolicy> Options;
+    public HmacPolicyProvider(IDictionary<string, HmacPolicy> options) 
         => Options = options;
 
-    public HmacOptions? Get(string name)
+    public HmacPolicy? Get(string name)
     {
         ArgumentNullException.ThrowIfNullOrEmpty(name, nameof(name));
 

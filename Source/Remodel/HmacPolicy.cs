@@ -8,7 +8,7 @@ public class Nonce
     public NonceCacheType CacheType { get; set; } = NonceCacheType.Memory;
 }
 
-public class HmacOptions
+public class HmacPolicy
 {
     public KeyCredentials Keys { get; set; } = new();
     public Algorithms Algorithms { get; set; } = new();
@@ -27,7 +27,6 @@ public class HmacOptions
             return default;
         }
     }
-
     public void AddDefaultKeys(string publicKey, string privateKey)
     {
 

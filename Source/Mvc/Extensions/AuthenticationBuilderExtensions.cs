@@ -35,7 +35,7 @@ public static class AuthenticationBuilderExtensions
             if (request.Headers.TryGetValues("X-Hmac-Policy", out var values))
             {
                 var policyValue = values.First();
-                var optionsSnapshot = provider.GetRequiredService<IOptionsSnapshot<HmacOptions>>();
+                var optionsSnapshot = provider.GetRequiredService<IOptionsSnapshot<HmacPolicy>>();
                 var policyOptions = optionsSnapshot.Get(policyValue);
                 
                 // Get HeaderScheme in AuthenticationHandler and

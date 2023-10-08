@@ -4,6 +4,6 @@ namespace HmacManagement.Components;
 
 public class HmacProviderOptions
 {
-    public KeyCredentials Keys { get; set; }
-    public Algorithms Algorithms { get; set; }
+    public required KeyCredentials Keys { get; set; }
+    public required Algorithms Algorithms { get; set; }
 }

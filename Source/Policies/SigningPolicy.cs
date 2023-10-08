@@ -38,7 +38,7 @@ public class SigningPolicyCollection : ISigningPolicyCollection
 public class SigningPolicy
 {
     public string PolicyName { get; set; }
-    public HmacOptions Manager { get; set; }
+    public HmacPolicy Manager { get; set; }
     public HeaderClaimMappingCollection HeaderClaimMappings { get; init; }
 }
 

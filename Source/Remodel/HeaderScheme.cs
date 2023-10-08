@@ -2,6 +2,18 @@ using HmacManagement.Components;
 
 namespace HmacManagement.Remodel;
 
+public class Policy
+{
+    public Policy(string name, HeaderScheme scheme)
+    {
+        Name = name;
+        Scheme = scheme;
+    }
+
+    public readonly string Name;
+    public readonly HeaderScheme Scheme;
+}
+
 public class HeaderScheme
 {
     protected HashSet<Header> Headers = new();
