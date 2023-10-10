@@ -28,11 +28,7 @@ public class HmacManagerFactory : IHmacManagerFactory
         NonceCacheProvider = nonceCacheProvider;
     }
 
-    public IHmacManager Create()
-    {
-        // Get default
-        throw new NotImplementedException();
-    }
+    public IHmacManager Create() => Create("Default");
 
     public IHmacManager Create(string policy)
     {

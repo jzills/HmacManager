@@ -1,6 +1,6 @@
 using HmacManagement.Caching;
 
-namespace Unit;
+namespace Unit.Mocks;
 
 public class NonceCacheMock : INonceCache
 {

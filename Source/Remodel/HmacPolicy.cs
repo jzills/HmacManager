@@ -16,6 +16,8 @@ public class HmacPolicy
 
     protected readonly Dictionary<string, HeaderScheme> HeaderSchemes = new();
 
+    public IReadOnlyDictionary<string, HeaderScheme> GetHeaderSchemes() => HeaderSchemes.AsReadOnly();
+
     public HeaderScheme? GetHeaderScheme(string name)
     {
         if (HeaderSchemes.ContainsKey(name))
@@ -27,10 +29,12 @@ public class HmacPolicy
             return default;
         }
     }
+
     public void AddDefaultKeys(string publicKey, string privateKey)
     {
 
     }
+
     public void AddHeaderScheme(string name, Action<HeaderScheme> configureScheme)
     {
         ArgumentNullException.ThrowIfNullOrEmpty(name, nameof(name));
