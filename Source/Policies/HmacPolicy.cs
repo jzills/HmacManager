@@ -1,12 +1,7 @@
 using HmacManagement.Caching;
+using HmacManagement.Headers;
 
-namespace HmacManagement.Remodel;
-
-public class Nonce
-{
-    public TimeSpan MaxAge { get; set; } = TimeSpan.FromSeconds(30);
-    public NonceCacheType CacheType { get; set; } = NonceCacheType.Memory;
-}
+namespace HmacManagement.Policies;
 
 public class HmacPolicy
 {

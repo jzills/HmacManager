@@ -1,6 +1,4 @@
-using HmacManagement.Components;
-
-namespace HmacManagement.Remodel;
+namespace HmacManagement.Headers;
 
 public class HeaderValue : Header
 {

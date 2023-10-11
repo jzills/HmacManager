@@ -1,13 +1,6 @@
-using System.Security.Claims;
-using HmacManagement.Remodel;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
-
-public class HmacEvents
-{
-    public Func<HttpContext, Claim[]>? OnAuthenticationSuccess { get; set; }
-    public Func<HttpContext, Exception>? OnAuthenticationFailure { get; set; }
-}
+using HmacManagement.Policies;
+using HmacManagement.Mvc;
 
 public class HmacAuthenticationOptions : AuthenticationSchemeOptions
 {

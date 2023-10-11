@@ -1,4 +1,4 @@
-namespace HmacManagement.Remodel;
+namespace HmacManagement.Policies;
 
 public class KeyCredentials
 {
@@ -24,6 +24,6 @@ public class KeyCredentials
     //     }
     // }
 
-    public Guid PublicKey { get; set; }
-    public string PrivateKey { get; set; }
+    public Guid PublicKey { get; set; } = Guid.Empty;
+    public string PrivateKey { get; set; } = string.Empty;
 }

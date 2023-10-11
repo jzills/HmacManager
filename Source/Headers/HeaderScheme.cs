@@ -1,33 +1,41 @@
-// using System.Collections.ObjectModel;
+namespace HmacManagement.Headers;
 
-// namespace HmacManagement.Headers;
+public class Policy
+{
+    public Policy(string name, HeaderScheme scheme)
+    {
+        Name = name;
+        Scheme = scheme;
+    }
 
-// public class HeaderSchemeCollection
-// {
-//     private Dictionary<string, List<string>> _headerSchemes = new();
-//     public void Add(string headerScheme, Action<HeaderSchemeOptions> configureScheme)
-//     {
-//         var options = new HeaderSchemeOptions();
-//         configureScheme.Invoke(options);
+    public readonly string Name;
+    public readonly HeaderScheme Scheme;
+}
 
-//         if (_headerSchemes.TryGetValue(headerScheme, out var headers))
-//         {
-//             headers.AddRange(options.Headers);
-//         }
-//         else
-//         {
-//             _headerSchemes[headerScheme] = new List<string>(options.Headers);
-//         }
-//     }
-//     public List<string> GetScheme(string headerScheme) =>
-//         _headerSchemes.TryGetValue(headerScheme, out var scheme) ?
-//             scheme : 
-//             new List<string>(0);
-// }
+public class HeaderScheme
+{
+    protected HashSet<Header> Headers = new();
 
-// public class HeaderSchemeOptions
-// {
-//     private HashSet<string> _headers = new();
-//     public ReadOnlyCollection<string> Headers => _headers.ToList().AsReadOnly();
-//     public void Add(string name) => _headers.Add(name);
-// }
+    public HeaderScheme(string name)
+    {
+        ArgumentNullException.ThrowIfNullOrEmpty(name, nameof(name));
+        
+        Name = name;
+    }
+
+    public readonly string Name;
+
+    public IReadOnlyCollection<Header> GetRequiredHeaders() => 
+        Headers.ToList().AsReadOnly();
+
+    public void AddRequiredHeader(string name) =>
+        AddRequiredHeader(name, name);
+
+    public void AddRequiredHeader(string name, string claimType)
+    {
+        ArgumentNullException.ThrowIfNullOrEmpty(name, nameof(name));
+        ArgumentNullException.ThrowIfNullOrEmpty(claimType, nameof(claimType));
+
+        Headers.Add(new Header(name, claimType));
+    }
+}

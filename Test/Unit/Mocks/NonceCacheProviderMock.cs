@@ -5,5 +5,5 @@ namespace Unit.Mocks;
 
 public class NonceCacheProviderMock : INonceCacheProvider
 {
-    public INonceCache Get(NonceCacheType cacheType) => new NonceCacheMock();
+    public INonceCache? GetCache(NonceCacheType cacheType) => new NonceCacheMock();
 }

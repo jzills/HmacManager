@@ -1,4 +1,4 @@
-using HmacManagement.Components;
+using HmacManagement.Headers;
 
 namespace HmacManagement.Exceptions;
 

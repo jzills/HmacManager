@@ -1,4 +1,4 @@
-namespace HmacManagement.Remodel;
+namespace HmacManagement.Headers;
 
 public class HeaderSchemeCollection
 {

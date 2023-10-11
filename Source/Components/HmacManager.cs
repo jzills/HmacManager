@@ -1,7 +1,7 @@
 using HmacManagement.Caching;
 using HmacManagement.Exceptions;
 using HmacManagement.Extensions;
-using HmacManagement.Remodel;
+using HmacManagement.Headers;
 
 namespace HmacManagement.Components;
 
@@ -69,7 +69,7 @@ public class HmacManager : IHmacManager
 
     private async Task<Hmac> GenerateHmacAsync(
         HttpRequestMessage request, 
-        HeaderValue[]? headerValues = null
+        HeaderValue[] headerValues
     )
     {
         var hmac = new Hmac { HeaderValues = headerValues };

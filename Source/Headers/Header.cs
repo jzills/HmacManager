@@ -1,4 +1,4 @@
-namespace HmacManagement.Components;
+namespace HmacManagement.Headers;
 
 public class Header
 {

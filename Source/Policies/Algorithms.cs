@@ -1,6 +1,6 @@
 using HmacManagement.Components;
 
-namespace HmacManagement.Remodel;
+namespace HmacManagement.Policies;
 
 public class Algorithms
 {
