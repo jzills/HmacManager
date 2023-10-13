@@ -1,4 +1,4 @@
-using HmacManagement.Remodel;
+using HmacManagement.Headers;
 
 namespace Unit.Tests;
 
@@ -8,7 +8,6 @@ public class Test_HeaderSchemeCollection
     public void Test()
     {
         var schemeCollection = new HeaderSchemeCollection();
-        schemeCollection.Add(new HeaderScheme());
-        schemeCollection.
+        schemeCollection.Add(new HeaderScheme(""));
     }
 }

@@ -1,7 +1,4 @@
-using System.Text;
-using HmacManagement.Caching;
-using HmacManagement.Components;
-using HmacManagement.Remodel;
+using HmacManagement.Policies;
 
 namespace Unit.Tests;
 
@@ -14,7 +11,7 @@ public class Test_HmacPolicyProvider
         var provider = new HmacPolicyProvider(policies);
         foreach (var policyName in policies.Keys)
         {
-            var policy = provider.Get(policyName);
+            var policy = provider.GetPolicy(policyName);
             if (policy is not null)
             {
                 var sourcePolicy = policies[policyName];

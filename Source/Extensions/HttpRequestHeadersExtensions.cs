@@ -27,14 +27,14 @@ internal static class HttpRequestHeadersExtensions
 
     public static void AddSignedHeaders(
         this HttpRequestHeaders headers, 
-        Header[]? signedHeaders
+        HeaderValue[]? signedHeaders
     )
     {
         if (signedHeaders is not null)
         {
             foreach (var signedHeader in signedHeaders)
             {
-                //headers.Add(signedHeader.Name!, signedHeader.Value);
+                headers.Add(signedHeader.Name!, signedHeader.Value);
             }
         }
     }
