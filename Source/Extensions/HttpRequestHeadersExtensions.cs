@@ -41,74 +41,85 @@ internal static class HttpRequestHeadersExtensions
 
     public static bool TryParseHeaders(
         this HttpRequestHeaders headers,
-        HeaderScheme headerScheme,
+        HeaderScheme? headerScheme,
         out IReadOnlyCollection<HeaderValue> headerValues
     )
     {
-        var schemeHeaders = headerScheme.GetRequiredHeaders();
-        var schemeHeaderValues = new List<HeaderValue>(schemeHeaders.Count);
-        foreach (var schemeHeader in schemeHeaders)
+        if (headerScheme is null)
         {
-            if (headers.TryGetValues(schemeHeader.Name, out var values))
-            {
-                var schemeHeaderValue = values.First();
-                schemeHeaderValues.Add(new HeaderValue(
-                    schemeHeader.Name, 
-                    schemeHeader.ClaimType, 
-                    schemeHeaderValue
-                ));
-            }
-            else
-            {
-                headerValues = new List<HeaderValue>().AsReadOnly();
-                return false;
-            }
+            headerValues = new List<HeaderValue>().AsReadOnly();
+            return true;
         }
+        else
+        {
+            var schemeHeaders = headerScheme.GetRequiredHeaders();
+            var schemeHeaderValues = new List<HeaderValue>(schemeHeaders.Count);
+            foreach (var schemeHeader in schemeHeaders)
+            {
+                if (headers.TryGetValues(schemeHeader.Name, out var values))
+                {
+                    var schemeHeaderValue = values.First();
+                    schemeHeaderValues.Add(new HeaderValue(
+                        schemeHeader.Name, 
+                        schemeHeader.ClaimType, 
+                        schemeHeaderValue
+                    ));
+                }
+                else
+                {
+                    headerValues = new List<HeaderValue>().AsReadOnly();
+                    return false;
+                }
+            }
 
-        headerValues = schemeHeaderValues.AsReadOnly();
-        return true;
+            headerValues = schemeHeaderValues.AsReadOnly();
+            return true;
+        }
     }
 
     public static bool TryParseHmac(
         this HttpRequestHeaders headers,
-        HeaderScheme headerScheme,
+        HeaderScheme? headerScheme,
+        TimeSpan maxAge,
         out Hmac value
     )
     {
-        var hasRequiredAuthorizationHeader  = headers.HasRequiredAuthorizationHeader(out var signature);
-        var hasRequiredRequestedOnHeader    = headers.HasRequiredRequestedOnHeader(out var requestedOn);
-        var hasRequiredNonceHeader          = headers.HasRequiredNonceHeader(out var nonce);
+        var hasAuthorizationHeader  = headers.TryGetAuthorizationHeader(out var signature);
+        var hasRequestedOnHeader    = headers.TryGetRequestedOnHeader(out var requestedOn) && requestedOn.HasValidRequestedOn(maxAge);
+        var hasNonceHeader          = headers.TryGetNonceHeader(out var nonce);
         
-        var schemeHeaders = headerScheme.GetRequiredHeaders();
-        var schemeHeaderValues = new List<HeaderValue>(schemeHeaders.Count);
-        foreach (var schemeHeader in schemeHeaders)
+        if (headerScheme is null)
         {
-            if (headers.TryGetValues(schemeHeader.Name, out var values))
+            value = new Hmac
             {
-                var schemeHeaderValue = values.First();
-                schemeHeaderValues.Add(new HeaderValue(
-                    schemeHeader.Name, 
-                    schemeHeader.ClaimType, 
-                    schemeHeaderValue
-                ));
-            }
+                Signature = signature ?? string.Empty,
+                RequestedOn = requestedOn,
+                Nonce = nonce,
+                HeaderValues = new HeaderValue[] { }
+            };
         }
-        
-        value = new Hmac
+        else if (TryParseHeaders(headers, headerScheme, out var headerValues))
         {
-            Signature = signature,
-            RequestedOn = requestedOn,
-            Nonce = nonce,
-            HeaderValues = schemeHeaderValues.ToArray()
-        };
+            value = new Hmac
+            {
+                Signature = signature ?? string.Empty,
+                RequestedOn = requestedOn,
+                Nonce = nonce,
+                HeaderValues = headerValues.ToArray()
+            };
+        }
+        else
+        {
+            value = new Hmac() { RequestedOn = DateTime.MinValue };
+        }
 
         return 
-            hasRequiredAuthorizationHeader && 
-            hasRequiredRequestedOnHeader && 
-            hasRequiredNonceHeader;
+            hasAuthorizationHeader && 
+            hasRequestedOnHeader && 
+            hasNonceHeader;
     }
 
-    public static bool HasRequiredAuthorizationHeader(
+    public static bool TryGetAuthorizationHeader(
         this HttpRequestHeaders headers, 
         out string? signature
     )
@@ -117,22 +128,27 @@ internal static class HttpRequestHeadersExtensions
             headers?.Authorization?.Scheme == HmacAuthenticationDefaults.AuthenticationScheme &&
             !string.IsNullOrEmpty(headers?.Authorization?.Parameter);
         
-        signature = hasValidHeader ? 
-            headers!.Authorization!.Parameter :
-            default;
+        if (hasValidHeader)
+        {
+            signature = headers!.Authorization!.Parameter;
+        }
+        else
+        {
+            signature = default;
+        }
 
         return hasValidHeader;
     }
 
-    public static bool HasRequiredRequestedOnHeader(
+    public static bool TryGetRequestedOnHeader(
         this HttpRequestHeaders headers, 
         out DateTimeOffset requestedOn
     )
     {
-        if (headers.TryGetValues(HmacAuthenticationDefaults.Headers.RequestedOn, out var requestOnValues))
+        if (headers.TryGetValues(HmacAuthenticationDefaults.Headers.RequestedOn, out var value))
         {
             return DateTimeOffset.TryParse(
-                requestOnValues.FirstOrDefault(), 
+                value.FirstOrDefault(), 
                 out requestedOn
             );
         }
@@ -141,14 +157,14 @@ internal static class HttpRequestHeadersExtensions
         return false;
     }
 
-    public static bool HasRequiredNonceHeader(
+    public static bool TryGetNonceHeader(
         this HttpRequestHeaders headers, 
         out Guid nonce
     )
     {
-        if (headers.TryGetValues(HmacAuthenticationDefaults.Headers.Nonce, out var nonceValues))
+        if (headers.TryGetValues(HmacAuthenticationDefaults.Headers.Nonce, out var value))
         {
-            return Guid.TryParse(nonceValues.FirstOrDefault(), out nonce);
+            return Guid.TryParse(value.FirstOrDefault(), out nonce);
         }
 
         nonce = default;

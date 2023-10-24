@@ -1,13 +1,15 @@
 namespace HmacManagement.Policies;
 
-public class HmacPolicyProvider : IHmacPolicyProvider
+public class HmacPolicyCollection : IHmacPolicyCollection
 {
     protected IDictionary<string, HmacPolicy> Policies;
 
-    public HmacPolicyProvider(IDictionary<string, HmacPolicy> policies)
+    public void AddPolicy(string name, Action<HmacPolicy> configurePolicy)
     {
-        ArgumentNullException.ThrowIfNull(policies);
-        Policies = policies;
+        var policy = new HmacPolicy();
+        configurePolicy.Invoke(policy);
+
+        Policies.Add(name, policy);
     }
 
     public HmacPolicy? GetPolicy(string name)

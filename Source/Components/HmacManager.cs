@@ -1,7 +1,7 @@
 using HmacManagement.Caching;
+using HmacManagement.Caching.Extensions;
 using HmacManagement.Exceptions;
 using HmacManagement.Extensions;
-using HmacManagement.Headers;
 
 namespace HmacManagement.Components;
 
@@ -24,9 +24,9 @@ public class HmacManager : IHmacManager
 
     public async Task<HmacResult> VerifyAsync(HttpRequestMessage request)
     {
-        if (request.Headers.TryParseHmac(_options.HeaderScheme, out var hmac))
+        if (request.Headers.TryParseHmac(_options.HeaderScheme, _options.MaxAge, out var hmac))
         {
-            if (await HasValidPreChecksAsync(hmac))
+            if (await _cache.HasValidNonceAsync(hmac.Nonce))
             {   
                 await _cache.SetAsync(
                     hmac.Nonce, 
@@ -56,8 +56,18 @@ public class HmacManager : IHmacManager
     {
         if (request.Headers.TryParseHeaders(_options.HeaderScheme, out var headerValues))
         {   
-            var hmac = await GenerateHmacAsync(request, headerValues.ToArray());
-            AddHmacHeaders(request, hmac);
+            var hmac = new Hmac { HeaderValues = headerValues.ToArray() };
+
+            hmac.SigningContent = await _provider.ComputeSigningContentAsync(
+                request, 
+                hmac.RequestedOn, 
+                hmac.Nonce,
+                hmac.HeaderValues
+            );
+
+            hmac.Signature = _provider.ComputeSignature(
+                hmac.SigningContent
+            );
 
             return new HmacResult { Hmac = hmac, IsSuccess = true };
         }
@@ -66,48 +76,4 @@ public class HmacManager : IHmacManager
             throw new MissingHeaderException();
         }
     }
-
-    private async Task<Hmac> GenerateHmacAsync(
-        HttpRequestMessage request, 
-        HeaderValue[] headerValues
-    )
-    {
-        var hmac = new Hmac { HeaderValues = headerValues };
-
-        hmac.SigningContent = await _provider.ComputeSigningContentAsync(
-            request, 
-            hmac.RequestedOn, 
-            hmac.Nonce,
-            hmac.HeaderValues
-        );
-
-        hmac.Signature = _provider.ComputeSignature(
-            hmac.SigningContent
-        );
-
-        return hmac;
-    }
-
-    private void AddHmacHeaders(HttpRequestMessage request, Hmac hmac)
-    {
-        request.Headers.AddSignature(hmac.Signature);
-        request.Headers.AddRequestedOn(hmac.RequestedOn);
-        request.Headers.AddNonce(hmac.Nonce);
-        request.Headers.AddSignedHeaders(hmac.HeaderValues);
-    }
-
-    private async Task<bool> HasValidPreChecksAsync(Hmac hmac)
-    {
-        var hasValidPrechecks = 
-            HasValidRequestedOn(hmac.RequestedOn) && await 
-            HasValidNonceAsync (hmac.Nonce);
-
-        return hasValidPrechecks;
-    }
-
-    private bool HasValidRequestedOn(DateTimeOffset requestedOn) => 
-        DateTimeOffset.UtcNow.Subtract(requestedOn) < _options.MaxAge;
-
-    private async Task<bool> HasValidNonceAsync(Guid nonce) => 
-        !(await _cache.ContainsAsync(nonce));
 }

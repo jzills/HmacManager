@@ -1,6 +1,6 @@
 using System.Security.Claims;
+using HmacManagement.Mvc;
 using HmacManagement.Mvc.Extensions;
-using HmacManagement.Remodel;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,19 +16,19 @@ builder.Services
     .AddAuthentication()
     .AddHmac(options =>
     {
-        options.AddDefaultPolicy(policy =>
+        options.Policies.AddPolicy("Default", policy =>
         {
             policy.Keys.PublicKey = Guid.Parse("4c59aec6-517c-47b0-a681-3c0251037416");
             policy.Keys.PrivateKey = "CKnebrN5WUmFdIZE01O3hA==";
-            policy.AddHeaderScheme("Scheme1", scheme =>
+            policy.HeaderSchemes.AddHeaderScheme("Scheme1", scheme =>
             {
                 scheme.AddRequiredHeader("");
             });
         });
 
-        options.AddPolicy("MyFirstPolicy", policy =>
+        options.Policies.AddPolicy("MyFirstPolicy", policy =>
         {
-            policy.AddHeaderScheme("AccountEmailScheme", scheme =>
+            policy.HeaderSchemes.AddHeaderScheme("AccountEmailScheme", scheme =>
             {
                 scheme.AddRequiredHeader("X-Account-Id", "AccountId");
                 scheme.AddRequiredHeader("X-Email", "Email");

@@ -19,13 +19,13 @@ public static class AuthenticationBuilderExtensions
             configureOptions
         );
 
-        var options = new HmacAuthenticationOptions();
-        configureOptions.Invoke(options);
-        var policies = options.GetPolicies();
+        // var options = new HmacAuthenticationOptions();
+        // configureOptions.Invoke(options);
+        // var policies = options.GetPolicies();
 
         builder.Services.AddHttpContextAccessor();
-        builder.Services.AddScoped<INonceCacheProvider, NonceCacheProvider>();
-        builder.Services.AddScoped<IHmacPolicyProvider, HmacPolicyProvider>();
+        builder.Services.AddScoped<INonceCacheCollection, NonceCacheCollection>();
+        builder.Services.AddScoped<IHmacPolicyCollection, HmacPolicyCollection>();
         builder.Services.AddScoped<IHmacManagerFactory, HmacManagerFactory>();
         
         return builder;
