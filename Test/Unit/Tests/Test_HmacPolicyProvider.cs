@@ -8,7 +8,7 @@ public class Test_HmacPolicyProvider
     [TestCaseSource(typeof(DataSource_HmacPolicies), nameof(DataSource_HmacPolicies.GetPolicies))]
     public void Init_Provider_Returns_SamePolicies(IDictionary<string, HmacPolicy> policies)
     {
-        var provider = new HmacPolicyProvider(policies);
+        var provider = new HmacPolicyCollection();
         foreach (var policyName in policies.Keys)
         {
             var policy = provider.GetPolicy(policyName);

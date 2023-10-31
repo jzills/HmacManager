@@ -8,6 +8,15 @@ public class Test_HeaderSchemeCollection
     public void Test()
     {
         var schemeCollection = new HeaderSchemeCollection();
-        schemeCollection.Add(new HeaderScheme(""));
+        schemeCollection.AddHeaderScheme("MyScheme", options =>
+        {
+            options.AddRequiredHeader("X-Account-Id");
+            options.AddRequiredHeader("X-Email");
+        });
+
+        var myScheme = schemeCollection.GetHeaderScheme("MyScheme");
+        
+        Assert.True(myScheme.Name == "MyScheme");
+        Assert.True(myScheme.GetRequiredHeaders().Count == 2);
     }
 }

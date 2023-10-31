@@ -4,27 +4,20 @@ using HmacManagement.Mvc.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
-// builder.Services.AddHmacManagement(options =>
-// {
-//     options.ClientId = "3b49aec6-517c-47b0-a681-3c0251037416"; 
-//     options.ClientSecret = "PBnebrN5WUmFdIZE01O3hA==";
-// });
-
 builder.Services
     .AddAuthentication()
     .AddHmac(options =>
     {
-        options.Policies.AddPolicy("Default", policy =>
-        {
-            policy.Keys.PublicKey = Guid.Parse("4c59aec6-517c-47b0-a681-3c0251037416");
-            policy.Keys.PrivateKey = "CKnebrN5WUmFdIZE01O3hA==";
-            policy.HeaderSchemes.AddHeaderScheme("Scheme1", scheme =>
-            {
-                scheme.AddRequiredHeader("");
-            });
-        });
+        // options.Policies.AddPolicy("Default", policy =>
+        // {
+        //     policy.Keys.PublicKey = Guid.Parse("4c59aec6-517c-47b0-a681-3c0251037416");
+        //     policy.Keys.PrivateKey = "CKnebrN5WUmFdIZE01O3hA==";
+        //     policy.HeaderSchemes.AddHeaderScheme("Scheme1", scheme =>
+        //     {
+        //         scheme.AddRequiredHeader("");
+        //     });
+        // });
 
         options.Policies.AddPolicy("MyFirstPolicy", policy =>
         {

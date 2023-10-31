@@ -9,9 +9,4 @@ public class HmacPolicy
     public Algorithms Algorithms { get; set; } = new();
     public Nonce Nonce { get; set; } = new();
     public readonly HeaderSchemeCollection HeaderSchemes = new();
-
-    // public void AddDefaultKeys(string publicKey, string privateKey)
-    // {
-
-    // }
 }

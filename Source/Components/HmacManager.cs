@@ -69,6 +69,12 @@ public class HmacManager : IHmacManager
                 hmac.SigningContent
             );
 
+            // Add required headers to the request
+            request.Headers.AddNonce(hmac.Nonce);
+            request.Headers.AddRequestedOn(hmac.RequestedOn);
+            request.Headers.AddSignedHeaders(hmac.HeaderValues);
+            request.Headers.AddSignature(hmac.Signature);
+
             return new HmacResult { Hmac = hmac, IsSuccess = true };
         }
         else

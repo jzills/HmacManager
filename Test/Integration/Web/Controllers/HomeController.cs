@@ -1,28 +1,27 @@
 ﻿using System.Diagnostics;
+using HmacManagement.Components;
 using HmacManagement.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Web.Models;
+using Microsoft.AspNetCore.Mvc.WebApiCompatShim;
 
 namespace Web.Controllers;
 
 public class HomeController : Controller
 {
-    private readonly ILogger<HomeController> _logger;
+    private readonly IHmacManagerFactory _hmacFactory;
 
-    public HomeController(ILogger<HomeController> logger)
-    {
-        _logger = logger;
-    }
+    public HomeController(IHmacManagerFactory hmacFactory) => _hmacFactory = hmacFactory;
 
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
+        var _hmacManager = _hmacFactory.Create("MyFirstPolicy", "AccountEmailScheme");
+        var requestMessage = HttpContext.GetHttpRequestMessage();
+        requestMessage.Headers.Add("X-Account-Id", Guid.NewGuid().ToString());
+        requestMessage.Headers.Add("X-Email", "joshzillwood@gmail.com");
+        var signingResult = await _hmacManager.SignAsync(requestMessage);
+        var verificationResult = await _hmacManager.VerifyAsync(HttpContext.GetHttpRequestMessage());
         return View();
-    }
-
-    [Authorize(AuthenticationSchemes = HmacAuthenticationDefaults.AuthenticationScheme)]
-    public IActionResult Protected()
-    {
-        return Ok("You've accessed a protected endpoint.");
     }
 }

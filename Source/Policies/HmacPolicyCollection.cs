@@ -2,7 +2,8 @@ namespace HmacManagement.Policies;
 
 public class HmacPolicyCollection : IHmacPolicyCollection
 {
-    protected IDictionary<string, HmacPolicy> Policies;
+    protected IDictionary<string, HmacPolicy> Policies = 
+        new Dictionary<string, HmacPolicy>();
 
     public void AddPolicy(string name, Action<HmacPolicy> configurePolicy)
     {
