@@ -1,6 +1,5 @@
 using HmacManagement.Caching;
 using HmacManagement.Caching.Extensions;
-using HmacManagement.Exceptions;
 using HmacManagement.Extensions;
 
 namespace HmacManagement.Components;
@@ -30,26 +29,35 @@ public class HmacManager : IHmacManager
             {   
                 await _cache.SetAsync(
                     hmac.Nonce, 
-                    hmac.RequestedOn
+                    hmac.DateRequested
                 );
 
                 hmac.SigningContent = await _provider.ComputeSigningContentAsync(
                     request, 
-                    hmac.RequestedOn, 
+                    hmac.DateRequested, 
                     hmac.Nonce,
                     hmac.HeaderValues
                 );
 
                 var signature = _provider.ComputeSignature(hmac.SigningContent);
+
                 return new HmacResult
                 {
+                    Policy = _options.Policy,
+                    HeaderScheme = _options.HeaderScheme?.Name,
                     Hmac = hmac,
                     IsSuccess = signature == hmac.Signature
                 };
             }
         }
-
-        return new HmacResult();
+        
+        return new HmacResult 
+        { 
+            Policy = _options.Policy,
+            HeaderScheme = _options.HeaderScheme?.Name,
+            Hmac = null, 
+            IsSuccess = false
+        };
     }
 
     public async Task<HmacResult> SignAsync(HttpRequestMessage request)
@@ -58,28 +66,47 @@ public class HmacManager : IHmacManager
         {   
             var hmac = new Hmac { HeaderValues = headerValues.ToArray() };
 
+            // Generate the formatted signing content based on
+            // the provided hmac values
             hmac.SigningContent = await _provider.ComputeSigningContentAsync(
                 request, 
-                hmac.RequestedOn, 
+                hmac.DateRequested, 
                 hmac.Nonce,
                 hmac.HeaderValues
             );
 
+            // Compute the signature against the signing content
             hmac.Signature = _provider.ComputeSignature(
                 hmac.SigningContent
             );
 
             // Add required headers to the request
             request.Headers.AddNonce(hmac.Nonce);
-            request.Headers.AddRequestedOn(hmac.RequestedOn);
+            request.Headers.AddDateRequested(hmac.DateRequested);
             request.Headers.AddSignedHeaders(hmac.HeaderValues);
-            request.Headers.AddSignature(hmac.Signature);
+            request.Headers.AddSignature(
+                hmac.Signature, 
+                _options.Policy, 
+                _options.HeaderScheme?.Name
+            );
 
-            return new HmacResult { Hmac = hmac, IsSuccess = true };
+            return new HmacResult 
+            { 
+                Policy = _options.Policy,
+                HeaderScheme = _options.HeaderScheme?.Name,
+                Hmac = hmac, 
+                IsSuccess = true
+            };
         }
         else
         {
-            throw new MissingHeaderException();
+            return new HmacResult 
+            { 
+                Policy = _options.Policy,
+                HeaderScheme = _options.HeaderScheme?.Name,
+                Hmac = null, 
+                IsSuccess = false
+            };
         }
     }
 }

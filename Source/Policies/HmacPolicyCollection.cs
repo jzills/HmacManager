@@ -1,32 +1,37 @@
-namespace HmacManagement.Policies;
+// using HmacManagement.Mvc;
 
-public class HmacPolicyCollection : IHmacPolicyCollection
-{
-    protected IDictionary<string, HmacPolicy> Policies = 
-        new Dictionary<string, HmacPolicy>();
+// namespace HmacManagement.Policies;
 
-    public void AddPolicy(string name, Action<HmacPolicy> configurePolicy)
-    {
-        var policy = new HmacPolicy();
-        configurePolicy.Invoke(policy);
+// public class HmacPolicyCollection : IHmacPolicyCollection
+// {
+//     protected IDictionary<string, HmacPolicy> Policies = 
+//         new Dictionary<string, HmacPolicy>();
 
-        Policies.Add(name, policy);
-    }
+//     public void AddDefaultPolicy(Action<HmacPolicy> configurePolicy) =>
+//         Add(HmacAuthenticationDefaults.DefaultPolicy, configurePolicy);
 
-    public HmacPolicy? GetPolicy(string name)
-    {
-        ArgumentNullException.ThrowIfNullOrEmpty(name, nameof(name));
+//     public void Add(string name, Action<HmacPolicy> configurePolicy)
+//     {
+//         var policy = new HmacPolicy(name);
+//         configurePolicy.Invoke(policy);
 
-        if (Policies.ContainsKey(name))
-        {
-            return Policies[name];
-        }
-        else
-        {
-            return default;
-        }
-    }
+//         Policies.Add(name, policy);
+//     }
 
-    public IReadOnlyCollection<HmacPolicy> GetPolicies() => 
-        Policies.Values.ToList().AsReadOnly();
-}
+//     public HmacPolicy? Get(string name)
+//     {
+//         ArgumentNullException.ThrowIfNullOrEmpty(name, nameof(name));
+
+//         if (Policies.ContainsKey(name))
+//         {
+//             return Policies[name];
+//         }
+//         else
+//         {
+//             return default;
+//         }
+//     }
+
+//     public IReadOnlyCollection<HmacPolicy> GetAll() => 
+//         Policies.Values.ToList().AsReadOnly();
+// }

@@ -17,12 +17,12 @@ public class NonceDistributedCache : INonceCache
         _options = options;
     }
 
-    public Task SetAsync(Guid nonce, DateTimeOffset requestedOn) =>
+    public Task SetAsync(Guid nonce, DateTimeOffset DateRequested) =>
         _cache.SetStringAsync(
             $"{nameof(NonceDistributedCache)}_{nonce.ToString()}", 
             nonce.ToString(), new DistributedCacheEntryOptions
             {
-                AbsoluteExpiration = requestedOn.Add(_options.MaxAge)
+                AbsoluteExpiration = DateRequested.Add(_options.MaxAge)
             });
 
     public async Task<bool> ContainsAsync(Guid nonce)

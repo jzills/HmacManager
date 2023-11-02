@@ -11,19 +11,19 @@ public class NonceMemoryCache : INonceCache
     public NonceMemoryCache(
         IMemoryCache cache,
         NonceCacheOptions options
-    )
+    ) 
     {
         _cache = cache;
         _options = options;
     }
 
-    public Task SetAsync(Guid nonce, DateTimeOffset requestedOn)
+    public Task SetAsync(Guid nonce, DateTimeOffset dateRequested)
     {
         _cache.Set(
             $"{nameof(NonceMemoryCache)}_{nonce.ToString()}", 
             nonce.ToString(), new MemoryCacheEntryOptions
             {
-                AbsoluteExpiration = requestedOn.Add(_options.MaxAge)
+                AbsoluteExpiration = dateRequested.Add(_options.MaxAge)
             });
 
         return Task.CompletedTask;

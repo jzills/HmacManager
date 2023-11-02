@@ -63,10 +63,10 @@ public class HmacAuthenticationHandler : AuthenticationHandler<HmacAuthenticatio
 
                 if (!string.IsNullOrEmpty(scheme))
                 {
-                    var claimsHeaders = Options.Policies.GetPolicy(policy)
+                    var claimsHeaders = Options.Policies.Get(policy)
                         !.HeaderSchemes
-                        !.GetHeaderScheme(scheme)
-                        !.GetRequiredHeaders();
+                        !.Get(scheme)
+                        !.GetHeaders();
 
                     foreach (var claimsHeader in claimsHeaders)
                     {

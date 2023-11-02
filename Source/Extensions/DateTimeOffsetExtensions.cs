@@ -2,8 +2,8 @@ namespace HmacManagement.Extensions;
 
 public static class DateTimeOffsetExtensions
 {
-    public static bool HasValidRequestedOn(
-        this DateTimeOffset requestedOn, 
+    public static bool HasValidDateRequested(
+        this DateTimeOffset dateRequested, 
         TimeSpan maxAge
-    ) => DateTimeOffset.UtcNow.Subtract(requestedOn) < maxAge;
+    ) => DateTimeOffset.UtcNow.Subtract(dateRequested) < maxAge;
 }

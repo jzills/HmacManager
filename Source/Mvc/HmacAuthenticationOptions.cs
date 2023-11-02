@@ -4,6 +4,6 @@ using HmacManagement.Mvc;
 
 public class HmacAuthenticationOptions : AuthenticationSchemeOptions
 {
-    public IHmacPolicyCollection Policies = new HmacPolicyCollection();
+    public IComponentCollection<HmacPolicy> Policies = new HmacPolicyCollection();
     public new HmacEvents Events { get; set; } = new();
 }

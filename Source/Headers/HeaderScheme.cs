@@ -1,3 +1,5 @@
+using HmacManagement.Policies;
+
 namespace HmacManagement.Headers;
 
 public class Policy
@@ -14,28 +16,36 @@ public class Policy
 
 public class HeaderScheme
 {
-    protected HashSet<Header> Headers = new();
+    protected HeaderCollection Headers = new();
 
     public HeaderScheme(string name)
     {
         ArgumentNullException.ThrowIfNullOrEmpty(name, nameof(name));
-        
         Name = name;
     }
 
     public readonly string Name;
 
-    public IReadOnlyCollection<Header> GetRequiredHeaders() => 
-        Headers.ToList().AsReadOnly();
+    public IReadOnlyCollection<Header> GetHeaders() => Headers.GetAll();
 
-    public void AddRequiredHeader(string name) =>
-        AddRequiredHeader(name, name);
+    public void AddHeader(string name) =>
+        AddHeader(name, name);
 
-    public void AddRequiredHeader(string name, string claimType)
+    public void AddHeader(string name, string claimType) =>
+        Headers.Add(name, configureHeader =>
+        {
+            configureHeader.Name = name;
+            configureHeader.ClaimType = claimType;
+        });
+}
+
+public class HeaderCollection : ComponentCollection<Header>, IConfigurator<Header>
+{
+    // TODO: Add validator
+    
+    public void Add(string name, Action<Header> configureHeader)
     {
-        ArgumentNullException.ThrowIfNullOrEmpty(name, nameof(name));
-        ArgumentNullException.ThrowIfNullOrEmpty(claimType, nameof(claimType));
-
-        Headers.Add(new Header(name, claimType));
+        var header = new Header();
+        configureHeader.Invoke(header);
     }
 }

@@ -7,23 +7,23 @@ using HmacManagement.Components;
 using HmacManagement.Policies;
 
 var policies = new HmacPolicyCollection();
-policies.AddPolicy("Policy1", options =>
+policies.Add("Policy1", options =>
 {
     options.Keys.PublicKey = Guid.NewGuid();
     options.Keys.PrivateKey = Convert.ToBase64String(Encoding.UTF8.GetBytes("myPrivateKey"));
     options.Algorithms.ContentAlgorithm = ContentHashAlgorithm.SHA256;
     options.Algorithms.SigningAlgorithm = SigningHashAlgorithm.HMACSHA256;
     options.Nonce.MaxAge = TimeSpan.FromMinutes(1);
-    options.Nonce.CacheType = NonceCacheType.Memory;
-    options.HeaderSchemes.AddHeaderScheme("Policy1_Scheme1", options =>
+    options.Nonce.CacheName = "MemoryCache";
+    options.HeaderSchemes.Add("Policy1_Scheme1", options =>
     {
-        options.AddRequiredHeader("Header1");
-        options.AddRequiredHeader("Header2");
+        options.AddHeader("Header1");
+        options.AddHeader("Header2");
     });
 });
 
 var caches = new NonceCacheCollection();
-caches.Add(NonceCacheType.Memory, new NonceCacheMock());
+caches.Add("MemoryCache", new NonceCacheMock1());
 
 var factory = new HmacManagerFactory(policies, caches);
 

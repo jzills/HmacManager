@@ -6,7 +6,12 @@ public class HeaderValue : Header
         string name, 
         string claimType, 
         string value
-    ) : base(name, claimType) => Value = value;
+    )
+    {
+        Name = name;
+        ClaimType = claimType;
+        Value = value;
+    }
 
     public readonly string Value;
 }

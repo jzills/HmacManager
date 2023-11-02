@@ -9,16 +9,34 @@ internal static class HttpRequestHeadersExtensions
 {
     public static void AddSignature(
         this HttpRequestHeaders headers, 
-        string signature
-    ) => headers.Authorization = new AuthenticationHeaderValue(
-            HmacAuthenticationDefaults.AuthenticationScheme, 
-            signature
-        );
+        string signature,
+        string policy,
+        string? headerScheme = null
+    )
+    {
+        ArgumentNullException.ThrowIfNullOrEmpty(signature, nameof(signature));
+        ArgumentNullException.ThrowIfNullOrEmpty(policy, nameof(policy));
 
-    public static void AddRequestedOn(
+        if (string.IsNullOrEmpty(headerScheme))
+        {
+            headers.Authorization = new AuthenticationHeaderValue(
+                $"{HmacAuthenticationDefaults.AuthenticationScheme}-{policy}", 
+                signature
+            );
+        }
+        else
+        {
+            headers.Authorization = new AuthenticationHeaderValue(
+                $"{HmacAuthenticationDefaults.AuthenticationScheme}-{policy}-{headerScheme}", 
+                signature
+            );
+        }
+    }
+
+    public static void AddDateRequested(
         this HttpRequestHeaders headers, 
-        DateTimeOffset requestedOn
-    ) => headers.Add(HmacAuthenticationDefaults.Headers.RequestedOn, requestedOn.ToString());
+        DateTimeOffset dateRequested
+    ) => headers.Add(HmacAuthenticationDefaults.Headers.DateRequested, dateRequested.ToString());
 
     public static void AddNonce(
         this HttpRequestHeaders headers, 
@@ -52,7 +70,7 @@ internal static class HttpRequestHeadersExtensions
         }
         else
         {
-            var schemeHeaders = headerScheme.GetRequiredHeaders();
+            var schemeHeaders = headerScheme.GetHeaders();
             var schemeHeaderValues = new List<HeaderValue>(schemeHeaders.Count);
             foreach (var schemeHeader in schemeHeaders)
             {
@@ -85,7 +103,7 @@ internal static class HttpRequestHeadersExtensions
     )
     {
         var hasAuthorizationHeader  = headers.TryGetAuthorizationHeader(out var signature);
-        var hasRequestedOnHeader    = headers.TryGetRequestedOnHeader(out var requestedOn) && requestedOn.HasValidRequestedOn(maxAge);
+        var hasDateRequestedHeader  = headers.TryGetDateRequestedHeader(out var dateRequested) && dateRequested.HasValidDateRequested(maxAge);
         var hasNonceHeader          = headers.TryGetNonceHeader(out var nonce);
         
         if (headerScheme is null)
@@ -93,7 +111,7 @@ internal static class HttpRequestHeadersExtensions
             value = new Hmac
             {
                 Signature = signature ?? string.Empty,
-                RequestedOn = requestedOn,
+                DateRequested = dateRequested,
                 Nonce = nonce,
                 HeaderValues = new HeaderValue[] { }
             };
@@ -103,19 +121,19 @@ internal static class HttpRequestHeadersExtensions
             value = new Hmac
             {
                 Signature = signature ?? string.Empty,
-                RequestedOn = requestedOn,
+                DateRequested = dateRequested,
                 Nonce = nonce,
                 HeaderValues = headerValues.ToArray()
             };
         }
         else
         {
-            value = new Hmac() { RequestedOn = DateTime.MinValue };
+            value = new Hmac() { DateRequested = DateTime.MinValue };
         }
 
         return 
             hasAuthorizationHeader && 
-            hasRequestedOnHeader && 
+            hasDateRequestedHeader && 
             hasNonceHeader;
     }
 
@@ -124,36 +142,36 @@ internal static class HttpRequestHeadersExtensions
         out string? signature
     )
     {
-        var hasValidHeader = 
-            headers?.Authorization?.Scheme == HmacAuthenticationDefaults.AuthenticationScheme &&
-            !string.IsNullOrEmpty(headers?.Authorization?.Parameter);
+        var hasValidAuthorizationHeader = 
+            headers.Authorization is not null && 
+            headers.Authorization.Scheme.StartsWith(HmacAuthenticationDefaults.AuthenticationScheme);
         
-        if (hasValidHeader)
+        if (hasValidAuthorizationHeader)
         {
-            signature = headers!.Authorization!.Parameter;
+            signature = headers.Authorization!.Parameter;
         }
         else
         {
             signature = default;
         }
 
-        return hasValidHeader;
+        return hasValidAuthorizationHeader;
     }
 
-    public static bool TryGetRequestedOnHeader(
+    public static bool TryGetDateRequestedHeader(
         this HttpRequestHeaders headers, 
-        out DateTimeOffset requestedOn
+        out DateTimeOffset DateRequested
     )
     {
-        if (headers.TryGetValues(HmacAuthenticationDefaults.Headers.RequestedOn, out var value))
+        if (headers.TryGetValues(HmacAuthenticationDefaults.Headers.DateRequested, out var value))
         {
             return DateTimeOffset.TryParse(
                 value.FirstOrDefault(), 
-                out requestedOn
+                out DateRequested
             );
         }
 
-        requestedOn = default;
+        DateRequested = default;
         return false;
     }
 

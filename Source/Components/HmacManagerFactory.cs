@@ -1,40 +1,41 @@
 using HmacManagement.Caching;
+using HmacManagement.Mvc;
 using HmacManagement.Policies;
 
 namespace HmacManagement.Components;
 
 public class HmacManagerFactory : IHmacManagerFactory
 {
-    protected IHmacPolicyCollection Policies;
-    protected INonceCacheCollection Caches;
+    protected IComponentCollection<HmacPolicy> Policies;
+    protected IComponentCollection<INonceCache> Caches;
 
     public HmacManagerFactory(
-        IHmacPolicyCollection policies,
-        INonceCacheCollection caches
+        IComponentCollection<HmacPolicy> policies,
+        IComponentCollection<INonceCache> caches
     )
     {
         Policies = policies;
         Caches = caches;
     }
 
-    public IHmacManager Create() => Create("Default");
+    public IHmacManager Create() => Create(HmacAuthenticationDefaults.DefaultPolicy);
 
     public IHmacManager Create(string policy)
     {
-        var policyOptions = Policies.GetPolicy(policy);
+        var policyOptions = Policies.Get(policy);
         if (policyOptions is null)
         {
             throw new Exception($"There are no \"HmacPolicy\" registered for the policy \"{policy}\".");
         }
 
-        var nonceCache = Caches.GetCache(policyOptions.Nonce.CacheType);
+        var nonceCache = Caches.Get(policyOptions.Nonce.CacheName);
         if (nonceCache is null)
         {
-            throw new Exception($"There is no cache registered for the cache type \"{policyOptions.Nonce.CacheType}\".");
+            throw new Exception($"There is no cache registered for the cache type \"{policyOptions.Nonce.CacheName}\".");
         }
 
         return new HmacManager(
-            new HmacManagerOptions { MaxAge = policyOptions.Nonce.MaxAge },
+            new HmacManagerOptions(policyOptions.Name) { MaxAge = policyOptions.Nonce.MaxAge },
             nonceCache,
             new HmacProvider(
                 new HmacProviderOptions 
@@ -51,23 +52,23 @@ public class HmacManagerFactory : IHmacManagerFactory
         ArgumentNullException.ThrowIfNullOrEmpty(policy, nameof(policy));
         ArgumentNullException.ThrowIfNullOrEmpty(scheme, nameof(scheme));
 
-        var policyOptions = Policies.GetPolicy(policy);
+        var policyOptions = Policies.Get(policy);
         if (policyOptions is null)
         {
             throw new Exception($"There are no \"HmacPolicy\" registered for the policy \"{policy}\".");
         }
 
-        var nonceCache = Caches.GetCache(policyOptions.Nonce.CacheType);
+        var nonceCache = Caches.Get(policyOptions.Nonce.CacheName);
         if (nonceCache is null)
         {
-            throw new Exception($"There is no cache registered for the cache type \"{policyOptions.Nonce.CacheType}\".");
+            throw new Exception($"There is no cache registered for the cache type \"{policyOptions.Nonce.CacheName}\".");
         }
 
         return new HmacManager(
-            new HmacManagerOptions 
+            new HmacManagerOptions(policyOptions.Name) 
             { 
                 MaxAge = policyOptions.Nonce.MaxAge,
-                HeaderScheme = policyOptions.HeaderSchemes.GetHeaderScheme(scheme)
+                HeaderScheme = policyOptions.HeaderSchemes.Get(scheme)
             },
             nonceCache,
             new HmacProvider(
