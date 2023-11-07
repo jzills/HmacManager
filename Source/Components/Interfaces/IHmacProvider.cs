@@ -8,7 +8,7 @@ public interface IHmacProvider
     string ComputeSignature(string signingContent);
     Task<string> ComputeSigningContentAsync(
         HttpRequestMessage request, 
-        DateTimeOffset DateRequested, 
+        DateTimeOffset dateRequested, 
         Guid nonce,
         HeaderValue[]? headerValues = null
     );

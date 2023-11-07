@@ -160,18 +160,18 @@ internal static class HttpRequestHeadersExtensions
 
     public static bool TryGetDateRequestedHeader(
         this HttpRequestHeaders headers, 
-        out DateTimeOffset DateRequested
+        out DateTimeOffset dateRequested
     )
     {
         if (headers.TryGetValues(HmacAuthenticationDefaults.Headers.DateRequested, out var value))
         {
             return DateTimeOffset.TryParse(
                 value.FirstOrDefault(), 
-                out DateRequested
+                out dateRequested
             );
         }
 
-        DateRequested = default;
+        dateRequested = default;
         return false;
     }
 

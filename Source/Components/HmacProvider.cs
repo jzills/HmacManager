@@ -41,7 +41,7 @@ public class HmacProvider : IHmacProvider
 
     public async Task<string> ComputeSigningContentAsync(
         HttpRequestMessage request, 
-        DateTimeOffset DateRequested, 
+        DateTimeOffset dateRequested, 
         Guid nonce,
         HeaderValue[]? headerValues = null
     )
@@ -65,7 +65,7 @@ public class HmacProvider : IHmacProvider
             }
         }
 
-        macBuilder.Append($":{DateRequested}");
+        macBuilder.Append($":{dateRequested}");
         macBuilder.Append($":{_options.Keys.PublicKey}");
 
         if (request.Content is not null && request.Content.Headers.ContentLength > 0)

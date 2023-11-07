@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Caching.Distributed;
-using HmacManagement.Components;
 
 namespace HmacManagement.Caching.Distributed;
 
@@ -17,17 +16,17 @@ public class NonceDistributedCache : INonceCache
         _options = options;
     }
 
-    public Task SetAsync(Guid nonce, DateTimeOffset DateRequested) =>
+    public Task SetAsync(Guid nonce, DateTimeOffset dateRequested) =>
         _cache.SetStringAsync(
-            $"{nameof(NonceDistributedCache)}_{nonce.ToString()}", 
+            $"{nameof(NonceDistributedCache)}_{_options.CacheName}_{nonce.ToString()}", 
             nonce.ToString(), new DistributedCacheEntryOptions
             {
-                AbsoluteExpiration = DateRequested.Add(_options.MaxAge)
+                AbsoluteExpiration = dateRequested.Add(_options.MaxAge)
             });
 
     public async Task<bool> ContainsAsync(Guid nonce)
     {
-        var cacheNonce = await _cache.GetAsync($"{nameof(NonceDistributedCache)}_{nonce.ToString()}");
+        var cacheNonce = await _cache.GetAsync($"{nameof(NonceDistributedCache)}_{_options.CacheName}_{nonce.ToString()}");
         return cacheNonce is not null;
     }
 }
