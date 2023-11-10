@@ -38,8 +38,8 @@
 //             },
 //             Algorithms = new Algorithms
 //             {
-//                 ContentAlgorithm = options.ContentHashAlgorithm,
-//                 SigningAlgorithm = options.SigningHashAlgorithm
+//                 ContentHashAlgorithm = options.ContentHashAlgorithm,
+//                 SigningHashAlgorithm = options.SigningHashAlgorithm
 //             }
 //         };
 

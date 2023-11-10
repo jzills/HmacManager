@@ -44,7 +44,7 @@ public class HmacManager : IHmacManager
                 return new HmacResult
                 {
                     Policy = _options.Policy,
-                    HeaderScheme = _options.HeaderScheme?.Name,
+                    HeaderScheme = _options.HeaderScheme?.Name!,
                     Hmac = hmac,
                     IsSuccess = signature == hmac.Signature
                 };
@@ -54,7 +54,7 @@ public class HmacManager : IHmacManager
         return new HmacResult 
         { 
             Policy = _options.Policy,
-            HeaderScheme = _options.HeaderScheme?.Name,
+            HeaderScheme = _options.HeaderScheme?.Name!,
             Hmac = null, 
             IsSuccess = false
         };
@@ -93,7 +93,7 @@ public class HmacManager : IHmacManager
             return new HmacResult 
             { 
                 Policy = _options.Policy,
-                HeaderScheme = _options.HeaderScheme?.Name,
+                HeaderScheme = _options.HeaderScheme?.Name!,
                 Hmac = hmac, 
                 IsSuccess = true
             };
@@ -103,7 +103,7 @@ public class HmacManager : IHmacManager
             return new HmacResult 
             { 
                 Policy = _options.Policy,
-                HeaderScheme = _options.HeaderScheme?.Name,
+                HeaderScheme = _options.HeaderScheme?.Name!,
                 Hmac = null, 
                 IsSuccess = false
             };

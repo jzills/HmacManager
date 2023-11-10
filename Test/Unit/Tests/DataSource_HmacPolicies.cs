@@ -15,8 +15,8 @@ public class DataSource_HmacPolicies
                     {
                         Algorithms = new Algorithms
                         {
-                            ContentAlgorithm = ContentHashAlgorithm.SHA1,
-                            SigningAlgorithm = SigningHashAlgorithm.HMACSHA1
+                            ContentHashAlgorithm = ContentHashAlgorithm.SHA1,
+                            SigningHashAlgorithm = SigningHashAlgorithm.HMACSHA1
                         },
                         Keys = new KeyCredentials
                         {
@@ -35,8 +35,8 @@ public class DataSource_HmacPolicies
                     {
                         Algorithms = new Algorithms
                         {
-                            ContentAlgorithm = ContentHashAlgorithm.SHA1,
-                            SigningAlgorithm = SigningHashAlgorithm.HMACSHA1
+                            ContentHashAlgorithm = ContentHashAlgorithm.SHA1,
+                            SigningHashAlgorithm = SigningHashAlgorithm.HMACSHA1
                         },
                         Keys = new KeyCredentials
                         {
@@ -55,8 +55,8 @@ public class DataSource_HmacPolicies
                     {
                         Algorithms = new Algorithms
                         {
-                            ContentAlgorithm = ContentHashAlgorithm.SHA256,
-                            SigningAlgorithm = SigningHashAlgorithm.HMACSHA256
+                            ContentHashAlgorithm = ContentHashAlgorithm.SHA256,
+                            SigningHashAlgorithm = SigningHashAlgorithm.HMACSHA256
                         },
                         Keys = new KeyCredentials
                         {
@@ -75,8 +75,8 @@ public class DataSource_HmacPolicies
                     {
                         Algorithms = new Algorithms
                         {
-                            ContentAlgorithm = ContentHashAlgorithm.SHA512,
-                            SigningAlgorithm = SigningHashAlgorithm.HMACSHA512
+                            ContentHashAlgorithm = ContentHashAlgorithm.SHA512,
+                            SigningHashAlgorithm = SigningHashAlgorithm.HMACSHA512
                         },
                         Keys = new KeyCredentials
                         {

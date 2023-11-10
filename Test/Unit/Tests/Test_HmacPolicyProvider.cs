@@ -16,8 +16,8 @@ public class Test_HmacPolicyProvider
             {
                 var sourcePolicy = policies[policyName];
 
-                Assert.True(policy!.Algorithms.ContentAlgorithm == sourcePolicy.Algorithms.ContentAlgorithm);
-                Assert.True(policy!.Algorithms.SigningAlgorithm == sourcePolicy.Algorithms.SigningAlgorithm);
+                Assert.True(policy!.Algorithms.ContentHashAlgorithm == sourcePolicy.Algorithms.ContentHashAlgorithm);
+                Assert.True(policy!.Algorithms.SigningHashAlgorithm == sourcePolicy.Algorithms.SigningHashAlgorithm);
                 Assert.True(policy!.Keys.PrivateKey == sourcePolicy.Keys.PrivateKey);
                 Assert.True(policy!.Keys.PublicKey == sourcePolicy.Keys.PublicKey);
                 Assert.True(policy!.Nonce.CacheType == sourcePolicy.Nonce.CacheType);

@@ -8,7 +8,7 @@ public class Test_HeaderSchemeCollection
     public void Test()
     {
         var schemeCollection = new HeaderSchemeCollection();
-        schemeCollection.AddHeaderScheme("MyScheme", options =>
+        schemeCollection.AddScheme("MyScheme", options =>
         {
             options.AddRequiredHeader("X-Account-Id");
             options.AddRequiredHeader("X-Email");

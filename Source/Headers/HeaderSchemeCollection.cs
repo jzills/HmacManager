@@ -20,7 +20,7 @@ namespace HmacManagement.Headers;
 //         }
 //     }
 
-//     public void AddHeaderScheme(string name, Action<HeaderScheme> configureScheme)
+//     public void AddScheme(string name, Action<HeaderScheme> configureScheme)
 //     {
 //         ArgumentNullException.ThrowIfNullOrEmpty(name, nameof(name));
 

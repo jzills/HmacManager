@@ -59,21 +59,22 @@ public class HmacAuthenticationHandler : AuthenticationHandler<HmacAuthenticatio
 
             if (hmacResult.IsSuccess)
             {
+                // TODO: Get claims from HmacManager result
                 List<Claim> claims = new List<Claim>();
 
-                if (!string.IsNullOrEmpty(scheme))
-                {
-                    var claimsHeaders = Options.Policies.Get(policy)
-                        !.HeaderSchemes
-                        !.Get(scheme)
-                        !.GetHeaders();
+                // if (!string.IsNullOrEmpty(scheme))
+                // {
+                //     var claimsHeaders = Options.Policies.Get(policy)
+                //         !.HeaderSchemes
+                //         !.Get(scheme)
+                //         !.GetHeaders();
 
-                    foreach (var claimsHeader in claimsHeaders)
-                    {
-                        var claimsValue = Request.Headers[claimsHeader.Name];
-                        claims.Add(new Claim(claimsHeader.ClaimType, claimsValue!.First()!));
-                    }
-                }
+                //     foreach (var claimsHeader in claimsHeaders)
+                //     {
+                //         var claimsValue = Request.Headers[claimsHeader.Name];
+                //         claims.Add(new Claim(claimsHeader.ClaimType, claimsValue!.First()!));
+                //     }
+                // }
 
                 if (Options.Events?.OnAuthenticationSuccess is not null)
                 {

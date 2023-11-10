@@ -13,7 +13,7 @@ builder.Services
         // {
         //     policy.Keys.PublicKey = Guid.Parse("4c59aec6-517c-47b0-a681-3c0251037416");
         //     policy.Keys.PrivateKey = "CKnebrN5WUmFdIZE01O3hA==";
-        //     policy.HeaderSchemes.AddHeaderScheme("Scheme1", scheme =>
+        //     policy.HeaderSchemes.AddScheme("Scheme1", scheme =>
         //     {
         //         scheme.AddRequiredHeader("");
         //     });
@@ -21,7 +21,7 @@ builder.Services
 
         options.Policies.AddPolicy("MyFirstPolicy", policy =>
         {
-            policy.HeaderSchemes.AddHeaderScheme("AccountEmailScheme", scheme =>
+            policy.HeaderSchemes.AddScheme("AccountEmailScheme", scheme =>
             {
                 scheme.AddRequiredHeader("X-Account-Id", "AccountId");
                 scheme.AddRequiredHeader("X-Email", "Email");

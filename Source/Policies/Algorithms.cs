@@ -4,6 +4,6 @@ namespace HmacManagement.Policies;
 
 public class Algorithms
 {
-    public ContentHashAlgorithm ContentAlgorithm { get; set; } = ContentHashAlgorithm.SHA256;
-    public SigningHashAlgorithm SigningAlgorithm { get; set; } = SigningHashAlgorithm.HMACSHA256;
+    public ContentHashAlgorithm ContentHashAlgorithm { get; set; } = ContentHashAlgorithm.SHA256;
+    public SigningHashAlgorithm SigningHashAlgorithm { get; set; } = SigningHashAlgorithm.HMACSHA256;
 }

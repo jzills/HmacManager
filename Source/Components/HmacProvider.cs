@@ -13,7 +13,7 @@ public class HmacProvider : IHmacProvider
     public string ComputeContentHash(string content)
     {
         var contentBytes = Encoding.UTF8.GetBytes(content);
-        var hashBytes = _options.Algorithms.ContentAlgorithm switch
+        var hashBytes = _options.Algorithms.ContentHashAlgorithm switch
         {
             ContentHashAlgorithm.SHA1   => SHA1  .Create().ComputeHash(contentBytes),
             ContentHashAlgorithm.SHA256 => SHA256.Create().ComputeHash(contentBytes),
@@ -28,7 +28,7 @@ public class HmacProvider : IHmacProvider
     {
         var secretBytes = Convert.FromBase64String(_options.Keys.PrivateKey);
         var signingContentBytes = Encoding.UTF8.GetBytes(signingContent);
-        var hashBytes = _options.Algorithms.SigningAlgorithm switch
+        var hashBytes = _options.Algorithms.SigningHashAlgorithm switch
         {
             SigningHashAlgorithm.HMACSHA1   => new HMACSHA1  (secretBytes).ComputeHash(signingContentBytes),
             SigningHashAlgorithm.HMACSHA256 => new HMACSHA256(secretBytes).ComputeHash(signingContentBytes),
