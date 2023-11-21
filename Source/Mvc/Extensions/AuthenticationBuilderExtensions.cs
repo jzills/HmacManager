@@ -1,12 +1,12 @@
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using HmacManagement.Caching;
 using HmacManagement.Components;
 using HmacManagement.Policies;
-using Microsoft.Extensions.Caching.Memory;
-using HmacManagement.Caching.Memory;
-using Microsoft.Extensions.Caching.Distributed;
 using HmacManagement.Caching.Distributed;
+using HmacManagement.Caching.Memory;
 
 namespace HmacManagement.Mvc.Extensions;
 
@@ -29,7 +29,7 @@ public static class AuthenticationBuilderExtensions
         configureOptions.Invoke(options);
 
         var serviceProvider = builder.Services.BuildServiceProvider();
-
+  
         // TODO: The caches are not configured
         // based on user configuration. Right now,
         // these values are hard coded. Max age and cache name
@@ -39,14 +39,20 @@ public static class AuthenticationBuilderExtensions
         if (memoryCache is not null)
         {
             caches.Add("InMemory", new NonceMemoryCache(memoryCache, new NonceCacheOptions
-                { MaxAge = TimeSpan.FromMinutes(1) }));
+            { 
+                CacheName = "InMemory",
+                MaxAge = TimeSpan.FromMinutes(1) 
+            }));
         }
 
         var distributedCache = serviceProvider.GetService<IDistributedCache>();
         if (distributedCache is not null)
         {
             caches.Add("Distributed", new NonceDistributedCache(distributedCache, new NonceCacheOptions
-                { MaxAge = TimeSpan.FromMinutes(1) }));
+            {
+                CacheName = "Distributed", 
+                MaxAge = TimeSpan.FromMinutes(1) 
+            }));
         }
 
         builder.Services.AddScoped<IComponentCollection<INonceCache>, NonceCacheCollection>(_ => caches);

@@ -6,4 +6,11 @@ public static class INonceCacheExtensions
         this INonceCache cache, 
         Guid nonce
     ) => !(await cache.ContainsAsync(nonce));
+
+    public static string GetNamespace<TNonceCache>(
+        this INonceCache cache,
+        string cacheName,
+        Guid nonce
+    ) where TNonceCache : INonceCache
+        => $"HmacManagement:{typeof(TNonceCache).Name}:{cacheName}:{nonce.ToString()}";
 }
