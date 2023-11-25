@@ -2,6 +2,10 @@ using HmacManagement.Headers;
 
 namespace HmacManagement.Components;
 
+/// <summary>
+/// A class representing a HmacProvider, which
+/// handles the computation of hashes and signatures.
+/// </summary>
 public interface IHmacProvider
 {
     string ComputeContentHash(string content);
