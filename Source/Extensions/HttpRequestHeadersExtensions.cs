@@ -103,32 +103,39 @@ internal static class HttpRequestHeadersExtensions
     )
     {
         var hasAuthorizationHeader  = headers.TryGetAuthorizationHeader(out var signature);
-        var hasDateRequestedHeader  = headers.TryGetDateRequestedHeader(out var dateRequested) && dateRequested.HasValidDateRequested(maxAge);
+        var hasDateRequestedHeader  = headers.TryGetDateRequestedHeader(out var dateRequested);
         var hasNonceHeader          = headers.TryGetNonceHeader(out var nonce);
         
-        if (headerScheme is null)
+        if (dateRequested.HasValidDateRequested(maxAge))
         {
-            value = new Hmac
+            if (headerScheme is null)
             {
-                Signature = signature ?? string.Empty,
-                DateRequested = dateRequested,
-                Nonce = nonce,
-                HeaderValues = new HeaderValue[] { }
-            };
-        }
-        else if (TryParseHeaders(headers, headerScheme, out var headerValues))
-        {
-            value = new Hmac
+                value = new Hmac
+                {
+                    Signature = signature ?? string.Empty,
+                    DateRequested = dateRequested,
+                    Nonce = nonce,
+                    HeaderValues = new HeaderValue[] { }
+                };
+            }
+            else if (TryParseHeaders(headers, headerScheme, out var headerValues))
             {
-                Signature = signature ?? string.Empty,
-                DateRequested = dateRequested,
-                Nonce = nonce,
-                HeaderValues = headerValues.ToArray()
-            };
+                value = new Hmac
+                {
+                    Signature = signature ?? string.Empty,
+                    DateRequested = dateRequested,
+                    Nonce = nonce,
+                    HeaderValues = headerValues.ToArray()
+                };
+            }
+            else
+            {
+                value = default!;
+            }
         }
         else
         {
-            value = new Hmac() { DateRequested = DateTime.MinValue };
+            value = default!;
         }
 
         return 
