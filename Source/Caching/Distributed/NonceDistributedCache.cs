@@ -1,5 +1,5 @@
-using HmacManagement.Caching.Extensions;
 using Microsoft.Extensions.Caching.Distributed;
+using HmacManagement.Caching.Extensions;
 
 namespace HmacManagement.Caching.Distributed;
 

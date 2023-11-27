@@ -1,8 +1,10 @@
+using HmacManagement.Common;
 using HmacManagement.Policies;
 
 namespace HmacManagement.Headers;
 
-public class HeaderCollection : ComponentCollection<Header>, IConfigurator<Header>
+public class HeaderCollection 
+    : ComponentCollection<Header>, IConfigurator<Header>
 {
     protected IValidator<Header> Validator = new HeaderValidator();
     

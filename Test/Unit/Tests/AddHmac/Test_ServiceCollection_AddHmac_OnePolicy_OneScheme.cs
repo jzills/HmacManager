@@ -1,5 +1,3 @@
-using System.Net.Http.Headers;
-using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using HmacManagement.Mvc.Extensions;
 using HmacManagement.Components;
@@ -9,7 +7,7 @@ namespace Unit.Tests;
 public class Test_ServiceCollection_AddHmac_OnePolicy_OneScheme : TestBase
 {
     [Test]
-    [TestCaseSource(nameof(TestCaseData))]
+    [TestCaseSource(typeof(TestCaseSource), nameof(TestCaseSource.GetHttpRequestMessages))]
     public async Task Test(HttpRequestMessage request)
     {
         var services = new ServiceCollection()
@@ -55,24 +53,4 @@ public class Test_ServiceCollection_AddHmac_OnePolicy_OneScheme : TestBase
         Assert.IsTrue(verificationResult.Hmac?.HeaderValues?.Count() == 0);
         Assert.IsNull(verificationResult.HeaderScheme);
     }
-
-    public static IEnumerable<HttpRequestMessage> TestCaseData() =>
-        new[]
-        {
-            new HttpRequestMessage(HttpMethod.Get,    "api/artists"),
-            new HttpRequestMessage(HttpMethod.Get,   "/api/artists"),
-            new HttpRequestMessage(HttpMethod.Get,  $"/api/artists/{Guid.NewGuid()}"),
-            new HttpRequestMessage(HttpMethod.Post, $"/api/artists/")
-            {
-                Content = new StringContent(
-                    JsonSerializer.Serialize(new
-                    {
-                        Id = Guid.NewGuid(),
-                        Artist = "John Coltrane",
-                        Genre = "Jazz"
-                    }), 
-                    new MediaTypeHeaderValue("application/json")
-                )
-            }
-        };
 }

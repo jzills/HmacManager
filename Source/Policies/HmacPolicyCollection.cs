@@ -1,3 +1,5 @@
+using HmacManagement.Common;
+
 namespace HmacManagement.Policies;
 
 public class HmacPolicyCollection
