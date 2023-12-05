@@ -1,36 +1,27 @@
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using HmacManagement.Caching;
-using HmacManagement.Components;
-using HmacManagement.Policies;
 using HmacManagement.Caching.Distributed;
 using HmacManagement.Caching.Memory;
 using HmacManagement.Common;
+using HmacManagement.Components;
+using HmacManagement.Policies;
 
 namespace HmacManagement.Mvc.Extensions;
 
-public static class AuthenticationBuilderExtensions
+public static class ServiceCollectionExtensions
 {
-    public static AuthenticationBuilder AddHmac(
-        this AuthenticationBuilder builder,
-        Action<HmacAuthenticationOptions> configureOptions
+    public static IServiceCollection AddHmacManagement(
+        this IServiceCollection services, 
+        Action<HmacManagementOptions> configureOptions
     )
     {
-        builder.AddScheme<HmacAuthenticationOptions, HmacAuthenticationHandler>(
-            HmacAuthenticationDefaults.AuthenticationScheme,
-            HmacAuthenticationDefaults.AuthenticationScheme,
-            configureOptions
-        );
-
-        builder.Services.AddHttpContextAccessor();
-
-        var options = new HmacAuthenticationOptions();
+        var options = new HmacManagementOptions();
         configureOptions.Invoke(options);
 
-        var serviceProvider = builder.Services.BuildServiceProvider();
-  
+        var serviceProvider = services.BuildServiceProvider();
+        
         // TODO: The caches are not configured
         // based on user configuration. Right now,
         // these values are hard coded. Max age and cache name
@@ -56,10 +47,10 @@ public static class AuthenticationBuilderExtensions
             }));
         }
 
-        builder.Services.AddScoped<IComponentCollection<INonceCache>, NonceCacheCollection>(_ => caches);
-        builder.Services.AddScoped<IComponentCollection<HmacPolicy>,  HmacPolicyCollection>(_ => options.GetPolicies());
-        builder.Services.AddScoped<IHmacManagerFactory, HmacManagerFactory>();
+        services.AddScoped<IComponentCollection<INonceCache>, NonceCacheCollection>(_ => caches);
+        services.AddScoped<IComponentCollection<HmacPolicy>,  HmacPolicyCollection>(_ => options.GetPolicies());
+        services.AddScoped<IHmacManagerFactory, HmacManagerFactory>();
         
-        return builder;
+        return services;
     }
 }

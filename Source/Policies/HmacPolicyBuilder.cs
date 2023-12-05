@@ -55,12 +55,19 @@ public class HmacPolicyBuilder
         return this;
     }
 
-    public HmacPolicy Build() =>
-        new HmacPolicy
+    public HmacPolicy Build()
+    {
+        if (string.IsNullOrWhiteSpace(Nonce.CacheName))
+        {
+            Nonce.CacheName = "InMemory";
+        }
+
+        return new HmacPolicy
         {
             Algorithms = Algorithms,
             Keys = Keys,
             Nonce = Nonce,
             HeaderSchemes = HeaderSchemes
         };
+    }
 }
