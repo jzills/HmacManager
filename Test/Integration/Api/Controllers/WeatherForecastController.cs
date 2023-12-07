@@ -1,3 +1,5 @@
+using HmacManagement.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
@@ -18,6 +20,7 @@ public class WeatherForecastController : ControllerBase
         _logger = logger;
     }
 
+    [Authorize(AuthenticationSchemes = HmacAuthenticationDefaults.AuthenticationScheme)]
     [HttpGet(Name = "GetWeatherForecast")]
     public IEnumerable<WeatherForecast> Get()
     {

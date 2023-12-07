@@ -30,7 +30,7 @@ services.AddAuthentication()
                 scheme.AddHeader("MyHeaderForScheme2.2");
             });
         });
-
+    
         options.Events = new HmacEvents
         {
             OnAuthenticationSuccess = context =>

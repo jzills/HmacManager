@@ -1,27 +1,19 @@
 using Microsoft.AspNetCore.Authentication;
 using HmacManagement.Policies;
-using HmacManagement.Mvc;
+
+namespace HmacManagement.Mvc;
 
 public class HmacAuthenticationOptions : AuthenticationSchemeOptions
 {
-    protected HmacPolicyCollection Policies = new HmacPolicyCollection();
+    protected readonly HmacManagementOptions Options = new();
 
     public new HmacEvents Events { get; set; } = new();
 
-    public void AddPolicy(string name, Action<HmacPolicyBuilder> configurePolicy)
-    {
-        var builder = new HmacPolicyBuilder();
-        configurePolicy.Invoke(builder);
+    public void AddPolicy(string name, Action<HmacPolicyBuilder> configurePolicy) => 
+        Options.AddPolicy(name, configurePolicy);
 
-        var internalPolicy = builder.Build();
-        Policies.Add(name, policy =>
-        {
-            policy.Keys = internalPolicy.Keys;
-            policy.Algorithms = internalPolicy.Algorithms;
-            policy.Nonce = internalPolicy.Nonce;
-            policy.HeaderSchemes = internalPolicy.HeaderSchemes;
-        });
-    }
+    public HmacPolicyCollection GetPolicies() => 
+        Options.GetPolicies();
 
-    public HmacPolicyCollection GetPolicies() => Policies;
+    public HmacManagementOptions GetOptions() => Options;
 }

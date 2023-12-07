@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Text;
 using HmacManagement.Mvc;
 using HmacManagement.Mvc.Extensions;
 
@@ -6,25 +7,19 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 builder.Services
+    .AddHttpClient()
     .AddAuthentication()
     .AddHmac(options =>
     {
-        // options.Policies.AddPolicy("Default", policy =>
-        // {
-        //     policy.Keys.PublicKey = Guid.Parse("4c59aec6-517c-47b0-a681-3c0251037416");
-        //     policy.Keys.PrivateKey = "CKnebrN5WUmFdIZE01O3hA==";
-        //     policy.HeaderSchemes.AddScheme("Scheme1", scheme =>
-        //     {
-        //         scheme.AddRequiredHeader("");
-        //     });
-        // });
-
-        options.Policies.AddPolicy("MyFirstPolicy", policy =>
+        options.AddPolicy("MyPolicy_1", policy =>
         {
-            policy.HeaderSchemes.AddScheme("AccountEmailScheme", scheme =>
+            policy.UsePublicKey(Guid.Parse("eb8e9dae-08bd-4883-80fe-1d9a103b30b5"));
+            policy.UsePrivateKey(Convert.ToBase64String(Encoding.UTF8.GetBytes("thisIsMySuperCoolPrivateKey")));
+            policy.UseInMemoryCache(TimeSpan.FromSeconds(30));
+            policy.AddScheme("AccountEmailScheme", scheme =>
             {
-                scheme.AddRequiredHeader("X-Account-Id", "AccountId");
-                scheme.AddRequiredHeader("X-Email", "Email");
+                scheme.AddHeader("X-Account-Id", "AccountId");
+                scheme.AddHeader("X-Email", "Email");
             });
         });
 

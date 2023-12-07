@@ -1,17 +1,17 @@
-using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
-using HmacManagement.Caching;
-using HmacManagement.Caching.Distributed;
-using HmacManagement.Caching.Memory;
-using HmacManagement.Common;
-using HmacManagement.Components;
-using HmacManagement.Policies;
+using HmacManagement.Mvc.Extensions.Internal;
 
 namespace HmacManagement.Mvc.Extensions;
 
 public static class ServiceCollectionExtensions
 {
+    /// <summary>
+    /// Registers the necessary dependencies to use IHmacManagerFactory
+    /// in the dependency injection container with the configured HmacManagementOptions.
+    /// </summary>
+    /// <param name="services">The service collection container.</param>
+    /// <param name="configureOptions">The configuration action for HmacManagementOptions.</param>
+    /// <returns>The service collection container.</returns>
     public static IServiceCollection AddHmacManagement(
         this IServiceCollection services, 
         Action<HmacManagementOptions> configureOptions
@@ -19,38 +19,7 @@ public static class ServiceCollectionExtensions
     {
         var options = new HmacManagementOptions();
         configureOptions.Invoke(options);
-
-        var serviceProvider = services.BuildServiceProvider();
         
-        // TODO: The caches are not configured
-        // based on user configuration. Right now,
-        // these values are hard coded. Max age and cache name
-        // needs to be configurable to support diferent max ages.
-        var caches = new NonceCacheCollection();
-        var memoryCache = serviceProvider.GetService<IMemoryCache>();
-        if (memoryCache is not null)
-        {
-            caches.Add("InMemory", new NonceMemoryCache(memoryCache, new NonceCacheOptions
-            { 
-                CacheName = "InMemory",
-                MaxAge = TimeSpan.FromMinutes(1) 
-            }));
-        }
-
-        var distributedCache = serviceProvider.GetService<IDistributedCache>();
-        if (distributedCache is not null)
-        {
-            caches.Add("Distributed", new NonceDistributedCache(distributedCache, new NonceCacheOptions
-            {
-                CacheName = "Distributed", 
-                MaxAge = TimeSpan.FromMinutes(1) 
-            }));
-        }
-
-        services.AddScoped<IComponentCollection<INonceCache>, NonceCacheCollection>(_ => caches);
-        services.AddScoped<IComponentCollection<HmacPolicy>,  HmacPolicyCollection>(_ => options.GetPolicies());
-        services.AddScoped<IHmacManagerFactory, HmacManagerFactory>();
-        
-        return services;
+        return services.AddHmacManagement(options);
     }
 }

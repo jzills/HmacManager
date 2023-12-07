@@ -11,25 +11,22 @@ internal static class HttpRequestHeadersExtensions
         this HttpRequestHeaders headers, 
         string signature,
         string policy,
-        string? headerScheme = null
+        string? scheme = null
     )
     {
         ArgumentNullException.ThrowIfNullOrEmpty(signature, nameof(signature));
         ArgumentNullException.ThrowIfNullOrEmpty(policy, nameof(policy));
 
-        if (string.IsNullOrEmpty(headerScheme))
+        headers.Authorization = new AuthenticationHeaderValue(
+            HmacAuthenticationDefaults.AuthenticationScheme, 
+            signature
+        );
+
+        headers.Add(HmacAuthenticationDefaults.Headers.Policy, policy);
+
+        if (!string.IsNullOrWhiteSpace(scheme))
         {
-            headers.Authorization = new AuthenticationHeaderValue(
-                $"{HmacAuthenticationDefaults.AuthenticationScheme}-{policy}", 
-                signature
-            );
-        }
-        else
-        {
-            headers.Authorization = new AuthenticationHeaderValue(
-                $"{HmacAuthenticationDefaults.AuthenticationScheme}-{policy}-{headerScheme}", 
-                signature
-            );
+            headers.Add(HmacAuthenticationDefaults.Headers.Scheme, scheme);
         }
     }
 

@@ -1,5 +1,7 @@
 using HmacManagement.Policies;
 
+namespace HmacManagement.Mvc;
+
 public class HmacManagementOptions
 {
     protected HmacPolicyCollection Policies = new HmacPolicyCollection();
