@@ -8,8 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services
     .AddHttpClient()
-    .AddAuthentication()
-    .AddHmac(options =>
+    .AddHmacManagement(options =>
     {
         options.AddPolicy("MyPolicy_1", policy =>
         {
@@ -18,29 +17,10 @@ builder.Services
             policy.UseInMemoryCache(TimeSpan.FromSeconds(30));
             policy.AddScheme("AccountEmailScheme", scheme =>
             {
-                scheme.AddHeader("X-Account-Id", "AccountId");
+                // scheme.AddHeader("X-Account-Id", "AccountId");
                 scheme.AddHeader("X-Email", "Email");
             });
         });
-
-        options.Events = new HmacEvents
-        {
-            OnAuthenticationSuccess = context =>
-            {
-                var claims = new Claim[]
-                {
-                    new Claim(ClaimTypes.Name, "MyName"),
-                    new Claim(ClaimTypes.NameIdentifier, "MyNameId"),
-                    new Claim(ClaimTypes.Email, "MyEmail")
-                };
-
-                return claims;
-            },
-            OnAuthenticationFailure = context =>
-            {
-                return new Exception("My Test Exception");
-            }
-        };
     });
 
 var app = builder.Build();

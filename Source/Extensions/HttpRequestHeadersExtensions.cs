@@ -149,7 +149,7 @@ internal static class HttpRequestHeadersExtensions
         var hasValidAuthorizationHeader = 
             headers.Authorization is not null && 
             headers.Authorization.Scheme.StartsWith(HmacAuthenticationDefaults.AuthenticationScheme);
-        
+            
         if (hasValidAuthorizationHeader)
         {
             signature = headers.Authorization!.Parameter;

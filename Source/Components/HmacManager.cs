@@ -83,7 +83,12 @@ public class HmacManager : IHmacManager
             // Add required headers to the request
             request.Headers.AddNonce(hmac.Nonce);
             request.Headers.AddDateRequested(hmac.DateRequested);
-            request.Headers.AddSignedHeaders(hmac.HeaderValues);
+
+            // Do not add signed headers here...
+            // The new process flow requires users to
+            // add the headers prior to this signing call.
+            // request.Headers.AddSignedHeaders(hmac.HeaderValues);
+            
             request.Headers.AddSignature(
                 hmac.Signature, 
                 _options.Policy, 

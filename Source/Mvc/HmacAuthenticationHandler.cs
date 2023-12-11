@@ -27,7 +27,7 @@ public class HmacAuthenticationHandler : AuthenticationHandler<HmacAuthenticatio
 
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        if (TryGetSignature(Request.Headers, out var signature))
+        if (TryGetSignature(Request.Headers, out var hmacSignature))
         {
             if (TryGetManager(Request.Headers, out var hmacManager))
             {
@@ -99,29 +99,34 @@ public class HmacAuthenticationHandler : AuthenticationHandler<HmacAuthenticatio
 
     private bool TryGetSignature(IHeaderDictionary headers, out string signature)
     {
-        var hasValidAuthorizationHeader = 
-            Request.Headers.TryGetValue("X-Hmac", out var signatureValues) && 
-            !string.IsNullOrWhiteSpace(signatureValues) &&
-            signatureValues.Count == 1;
+        if (headers.TryGetValue("Authorization", out var hmacAuthorizationHeader))
+        {
+            if (hmacAuthorizationHeader.Count == 1)
+            {
+                var hmacAuthorizationHeaderValues = hmacAuthorizationHeader.First()?.Split(" ");
+                if (hmacAuthorizationHeaderValues?.Count() == 2)
+                {
+                    signature = hmacAuthorizationHeaderValues[1];
+                    return true;
+                }
+            }
+        }
 
-        signature = signatureValues.FirstOrDefault()!;
-
-        return hasValidAuthorizationHeader;
+        signature = default!;
+        return false;
     }
 
     private bool TryGetManager(IHeaderDictionary headers, out IHmacManager manager)
     {
-        var hasConfiguredPolicy = headers.TryGetValue("X-Hmac-Policy", out var policy) && !string.IsNullOrWhiteSpace(policy);
-        var hasConfiguredScheme = headers.TryGetValue("X-Hmac-Scheme", out var scheme) && !string.IsNullOrWhiteSpace(scheme);
+        var hasConfiguredPolicy = headers.TryGetValue(HmacAuthenticationDefaults.Headers.Policy, out var policy) && !string.IsNullOrWhiteSpace(policy);
+        var hasConfiguredScheme = headers.TryGetValue(HmacAuthenticationDefaults.Headers.Scheme, out var scheme) && !string.IsNullOrWhiteSpace(scheme);
 
-#pragma warning disable CS8604
         manager = (hasConfiguredPolicy, hasConfiguredScheme) switch
         {
-            (true, true)    => _hmacManagerFactory.Create(policy, scheme),
-            (true, false)   => _hmacManagerFactory.Create(policy),
+            (true, true)    => _hmacManagerFactory.Create(policy!, scheme!),
+            (true, false)   => _hmacManagerFactory.Create(policy!),
             _               => default!
         };
-#pragma warning restore CS8604
 
         return hasConfiguredPolicy;
     }

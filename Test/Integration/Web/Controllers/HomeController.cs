@@ -22,11 +22,9 @@ public class HomeController : Controller
     {
         var _hmacManager = _hmacFactory.Create("MyPolicy_1", "AccountEmailScheme");
         var requestMessage = new HttpRequestMessage(HttpMethod.Get, "https://localhost:7216/weatherforecast");
-        requestMessage.Headers.Add("X-Account-Id", Guid.NewGuid().ToString());
-        requestMessage.Headers.Add("X-Email", "joshzillwood@gmail.com");
+        // requestMessage.Headers.Add("X-Account-Id", Guid.NewGuid().ToString());
+        requestMessage.Headers.Add("X-Email", "someuser@email.com");
         var signingResult = await _hmacManager.SignAsync(requestMessage);
-        var verificationResult = await _hmacManager.VerifyAsync(HttpContext.GetHttpRequestMessage());
-
         var response = await _client.SendAsync(requestMessage);
         return View();
     }
