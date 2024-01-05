@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using HmacManager.Components;
 using HmacManager.Exceptions;
+using HmacManager.Headers;
 
 namespace HmacManager.Mvc;
 

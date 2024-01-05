@@ -3,6 +3,9 @@ using HmacManager.Mvc.Extensions.Internal;
 
 namespace HmacManager.Mvc.Extensions;
 
+/// <summary>
+/// A class representing extension methods on an <c>IServiceCollection</c>.
+/// </summary>
 public static class ServiceCollectionExtensions
 {
     /// <summary>
