@@ -1,11 +1,18 @@
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.Extensions.DependencyInjection;
 using HmacManager.Mvc.Extensions.Internal;
 
 namespace HmacManager.Mvc.Extensions;
 
 public static class AuthenticationBuilderExtensions
 {
+    /// <summary>
+    /// Adds HmacAuthentication to the <c>AuthenticationBuilder<c> with the
+    /// configured <c>HmacAuthenticationOptions</c>. This method also adds
+    /// the implementation for <c>IHmacManagerFactory</c> to the DI container.
+    /// </summary>
+    /// <param name="builder">The calling <c>AuthenticationBuilder</c>.</param>
+    /// <param name="configureOptions"></param>
+    /// <returns>An <c>AuthenticationBuilder</c></returns>
     public static AuthenticationBuilder AddHmac(
         this AuthenticationBuilder builder,
         Action<HmacAuthenticationOptions> configureOptions

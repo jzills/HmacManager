@@ -6,12 +6,12 @@ namespace HmacManager.Mvc.Extensions;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Registers the necessary dependencies to use IHmacManagerFactory
-    /// in the dependency injection container with the configured HmacManagerOptions.
+    /// Registers the necessary dependencies to use <c>IHmacManagerFactory</c>
+    /// in the dependency injection container with the configured <c>HmacManagerOptions</c>.
     /// </summary>
-    /// <param name="services">The service collection container.</param>
-    /// <param name="configureOptions">The configuration action for HmacManagerOptions.</param>
-    /// <returns>The service collection container.</returns>
+    /// <param name="services">The <c>IServiceCollection</c>.</param>
+    /// <param name="configureOptions">The configuration action for <c>HmacManagerOptions</c>.</param>
+    /// <returns>A <c>IServiceCollection</c>.</returns>
     public static IServiceCollection AddHmacManager(
         this IServiceCollection services, 
         Action<HmacManagerOptions> configureOptions
