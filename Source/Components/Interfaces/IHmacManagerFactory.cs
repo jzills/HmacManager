@@ -1,4 +1,4 @@
-namespace HmacManagement.Components;
+namespace HmacManager.Components;
 
 /// <summary>
 /// A class representing a HmacManagerFactory, which

@@ -5,10 +5,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
-using HmacManagement.Components;
-using HmacManagement.Exceptions;
+using HmacManager.Components;
+using HmacManager.Exceptions;
 
-namespace HmacManagement.Mvc;
+namespace HmacManager.Mvc;
 
 public class HmacAuthenticationHandler : AuthenticationHandler<HmacAuthenticationOptions>
 {

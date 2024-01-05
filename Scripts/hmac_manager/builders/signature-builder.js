@@ -1,11 +1,11 @@
 export class SignatureBuilder {
-    #clientSecret = null
+    #privateKey = null
     #signingContent = null
 
     algorithm = { name: "HMAC", hash: "SHA-256" };
 
-    withClientSecret(clientSecret) {
-        this.#clientSecret = clientSecret
+    withPrivateKey(privateKey) {
+        this.#privateKey = privateKey
         return this
     }
 
@@ -18,7 +18,7 @@ export class SignatureBuilder {
 
         const assertValidBuild = () => {
             const isMissingRequiredValues = 
-                this.#clientSecret   === null || 
+                this.#privateKey     === null || 
                 this.#signingContent === null
             
             if (isMissingRequiredValues) {
@@ -40,7 +40,7 @@ export class SignatureBuilder {
         }
 
         const getKeyBytes = async () => crypto.subtle.importKey("raw", 
-            getByteArray(atob(this.#clientSecret)), 
+            getByteArray(atob(this.#privateKey)), 
             this.algorithm, 
             false, 
             ["sign"]

@@ -1,4 +1,4 @@
-namespace HmacManagement.Exceptions;
+namespace HmacManager.Exceptions;
 
 public class HmacAuthenticationException : Exception
 {

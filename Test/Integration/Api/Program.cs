@@ -1,7 +1,7 @@
 using System.Security.Claims;
 using System.Text;
-using HmacManagement.Mvc;
-using HmacManagement.Mvc.Extensions;
+using HmacManager.Mvc;
+using HmacManager.Mvc.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 

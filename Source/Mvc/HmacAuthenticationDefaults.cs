@@ -1,4 +1,4 @@
-namespace HmacManagement.Mvc;
+namespace HmacManager.Mvc;
 
 public static class HmacAuthenticationDefaults
 {

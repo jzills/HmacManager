@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Authentication;
-using HmacManagement.Policies;
+using HmacManager.Policies;
 
-namespace HmacManagement.Mvc;
+namespace HmacManager.Mvc;
 
 public class HmacAuthenticationOptions : AuthenticationSchemeOptions
 {
-    protected readonly HmacManagementOptions Options = new();
+    protected readonly HmacManagerOptions Options = new();
 
     public new HmacEvents Events { get; set; } = new();
 
@@ -15,5 +15,5 @@ public class HmacAuthenticationOptions : AuthenticationSchemeOptions
     public HmacPolicyCollection GetPolicies() => 
         Options.GetPolicies();
 
-    public HmacManagementOptions GetOptions() => Options;
+    public HmacManagerOptions GetOptions() => Options;
 }

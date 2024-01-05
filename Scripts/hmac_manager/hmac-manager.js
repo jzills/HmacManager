@@ -5,10 +5,10 @@ import { HmacProvider } from "./components/hmac-provider.js"
 export class HmacManager {
     #provider = null
 
-    constructor(clientId, clientSecret, signedHeaders) {
+    constructor(publicKey, privateKey, signedHeaders) {
         this.#provider = new HmacProvider(
-            clientId, 
-            clientSecret, 
+            publicKey, 
+            privateKey, 
             signedHeaders
         )
 
@@ -21,11 +21,11 @@ export class HmacManager {
     sign = async request => {
         try {
             const hmac = new Hmac()
-        
+  
             hmac.signedHeaders  = this.signedHeaders
             hmac.signingContent = this.#provider
                 .computeSigningContent(request,
-                    hmac.requestedOn,
+                    hmac.dateRequested,
                     hmac.nonce
                 )
 

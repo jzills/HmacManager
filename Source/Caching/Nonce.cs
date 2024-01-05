@@ -1,4 +1,4 @@
-namespace HmacManagement.Caching;
+namespace HmacManager.Caching;
 
 /// <summary>
 /// A class representing basic configurations

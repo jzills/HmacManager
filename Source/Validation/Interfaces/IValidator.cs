@@ -1,4 +1,4 @@
-namespace HmacManagement.Policies;
+namespace HmacManager.Policies;
 
 public interface IValidator<TValidatable>
 {

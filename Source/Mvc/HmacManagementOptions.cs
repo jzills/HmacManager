@@ -1,8 +1,8 @@
-using HmacManagement.Policies;
+using HmacManager.Policies;
 
-namespace HmacManagement.Mvc;
+namespace HmacManager.Mvc;
 
-public class HmacManagementOptions
+public class HmacManagerOptions
 {
     protected HmacPolicyCollection Policies = new HmacPolicyCollection();
 

@@ -1,8 +1,8 @@
 export class SigningContentBuilder {
     #builder = [];
 
-    withClient = clientId => {
-        this.#builder.push(clientId);
+    withPublicKey = publicKey => {
+        this.#builder.push(publicKey);
         return this;
     }
 

@@ -1,4 +1,4 @@
-using HmacManagement.Caching;
+using HmacManager.Caching;
 
 namespace Unit.Mocks;
 

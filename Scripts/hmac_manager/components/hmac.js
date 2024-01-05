@@ -1,7 +1,7 @@
 import { webcrypto } from "crypto";
 
 export class Hmac {
-    requestedOn = new Date();
+    dateRequested = new Date();
     nonce = crypto.randomUUID();
     signingContent = null;
     signedHeaders = null;

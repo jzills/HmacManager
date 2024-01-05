@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.DependencyInjection;
-using HmacManagement.Mvc.Extensions.Internal;
+using HmacManager.Mvc.Extensions.Internal;
 
-namespace HmacManagement.Mvc.Extensions;
+namespace HmacManager.Mvc.Extensions;
 
 public static class AuthenticationBuilderExtensions
 {
@@ -20,7 +20,7 @@ public static class AuthenticationBuilderExtensions
         var options = new HmacAuthenticationOptions();
         configureOptions.Invoke(options);
 
-        builder.Services.AddHmacManagement(options.GetOptions());
+        builder.Services.AddHmacManager(options.GetOptions());
 
         return builder;
     }

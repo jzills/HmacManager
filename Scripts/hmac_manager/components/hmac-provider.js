@@ -2,13 +2,13 @@ import { SignatureBuilder } from "../builders/signature-builder.js"
 import { SigningContentBuilder } from "../builders/signing-content-builder.js"
 
 export class HmacProvider {
-    constructor(clientId, clientSecret, signedHeaders) {
-        this.clientId = clientId
-        this.clientSecret = clientSecret
+    constructor(publicKey, privateKey, signedHeaders) {
+        this.publicKey = publicKey
+        this.privateKey = privateKey
         this.signedHeaders = signedHeaders
     }
 
-    computeSigningContent = (request, requestedOn, nonce) => {
+    computeSigningContent = (request, dateRequested, nonce) => {
 
         const { 
             headers, 
@@ -22,13 +22,13 @@ export class HmacProvider {
             search, 
             host 
         } = new URL(url)
-
+    
         const signingContent = new SigningContentBuilder()
-            .withClient(this.clientId)
+            .withPublicKey(this.publicKey)
             .withMethod(method)
             .withPathAndQuery(`${pathname}${search}`)
             .withAuthority(host)
-            .withRequested(requestedOn)
+            .withRequested(dateRequested)
             .withBody(body)
             .withNonce(nonce)
             .withSignedHeaders(this.signedHeaders, headers)
@@ -40,7 +40,7 @@ export class HmacProvider {
     computeSignature = async signingContent => {
 
         const signaturePromise = new SignatureBuilder()
-            .withClientSecret(this.clientSecret)
+            .withPrivateKey(this.privateKey)
             .withSigningContent(signingContent)
             .build()
 

@@ -1,6 +1,6 @@
-using HmacManagement.Common;
+using HmacManager.Common;
 
-namespace HmacManagement.Policies;
+namespace HmacManager.Policies;
 
 public class HmacPolicyCollection
     : ComponentCollection<HmacPolicy>, IConfigurator<HmacPolicy>

@@ -1,8 +1,8 @@
-using HmacManagement.Caching;
-using HmacManagement.Caching.Extensions;
-using HmacManagement.Extensions;
+using HmacManager.Caching;
+using HmacManager.Caching.Extensions;
+using HmacManager.Extensions;
 
-namespace HmacManagement.Components;
+namespace HmacManager.Components;
 
 public class HmacManager : IHmacManager
 {

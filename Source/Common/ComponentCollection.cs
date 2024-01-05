@@ -1,4 +1,4 @@
-namespace HmacManagement.Common;
+namespace HmacManager.Common;
 
 public abstract class ComponentCollection<TComponent>
     : IComponentCollection<TComponent> 

@@ -1,25 +1,25 @@
 using Microsoft.Extensions.DependencyInjection;
-using HmacManagement.Mvc.Extensions.Internal;
+using HmacManager.Mvc.Extensions.Internal;
 
-namespace HmacManagement.Mvc.Extensions;
+namespace HmacManager.Mvc.Extensions;
 
 public static class ServiceCollectionExtensions
 {
     /// <summary>
     /// Registers the necessary dependencies to use IHmacManagerFactory
-    /// in the dependency injection container with the configured HmacManagementOptions.
+    /// in the dependency injection container with the configured HmacManagerOptions.
     /// </summary>
     /// <param name="services">The service collection container.</param>
-    /// <param name="configureOptions">The configuration action for HmacManagementOptions.</param>
+    /// <param name="configureOptions">The configuration action for HmacManagerOptions.</param>
     /// <returns>The service collection container.</returns>
-    public static IServiceCollection AddHmacManagement(
+    public static IServiceCollection AddHmacManager(
         this IServiceCollection services, 
-        Action<HmacManagementOptions> configureOptions
+        Action<HmacManagerOptions> configureOptions
     )
     {
-        var options = new HmacManagementOptions();
+        var options = new HmacManagerOptions();
         configureOptions.Invoke(options);
         
-        return services.AddHmacManagement(options);
+        return services.AddHmacManager(options);
     }
 }

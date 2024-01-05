@@ -1,7 +1,7 @@
-using HmacManagement.Caching;
-using HmacManagement.Headers;
+using HmacManager.Caching;
+using HmacManager.Headers;
 
-namespace HmacManagement.Policies;
+namespace HmacManager.Policies;
 
 public class HmacPolicy
 {

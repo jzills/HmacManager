@@ -4,15 +4,14 @@ import { webcrypto } from "crypto";
 
 global.crypto = webcrypto;
 
-const clientId = "b9926638-6b5c-4a79-a6ca-014d8b848172";
-const clientSecret = "11Nv/n22OqU59f9376E//I2rA2+Yg6yRaI0W6YRK/G0=";
+const publicKey = "b9926638-6b5c-4a79-a6ca-014d8b848172";
+const privateKey = "11Nv/n22OqU59f9376E//I2rA2+Yg6yRaI0W6YRK/G0=";
 
 const request = new Request("https://localhost:7197/home/protected");
-//request.headers.append("X-AccountId", "myAccountId");
-// request.headers.append("X-Email", "myemail@domain.com");
+request.headers.append("X-AccountId", "myAccountId");
+request.headers.append("X-Email", "myemail@domain.com");
 
-const hmacManager = new HmacManager(clientId, clientSecret);
+const hmacManager = new HmacManager(publicKey, privateKey);
 const hmacResult = await hmacManager.sign(request);
 
-var debug = hmacResult;
-console.dir(debug);
+console.dir(hmacResult);

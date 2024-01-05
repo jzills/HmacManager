@@ -1,4 +1,4 @@
-namespace HmacManagement.Components;
+namespace HmacManager.Components;
 
 public enum ContentHashAlgorithm
 {

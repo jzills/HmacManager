@@ -1,7 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 
-namespace HmacManagement.Mvc;
+namespace HmacManager.Mvc;
 
 public class HmacEvents
 {

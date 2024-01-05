@@ -1,4 +1,4 @@
-namespace HmacManagement.Caching.Extensions;
+namespace HmacManager.Caching.Extensions;
 
 public static class INonceCacheExtensions
 {
@@ -12,5 +12,5 @@ public static class INonceCacheExtensions
         string cacheName,
         Guid nonce
     ) where TNonceCache : INonceCache
-        => $"HmacManagement:{typeof(TNonceCache).Name}:{cacheName}:{nonce.ToString()}";
+        => $"HmacManager:{cacheName}:{nonce.ToString()}";
 }

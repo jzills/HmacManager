@@ -1,10 +1,10 @@
-using HmacManagement.Components;
-using HmacManagement.Mvc.Extensions;
+using HmacManager.Components;
+using HmacManager.Mvc.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Unit.Tests;
 
-public class Test_ServiceCollection_AddHmacManagement : TestBase
+public class Test_ServiceCollection_AddHmacManager : TestBase
 {
     [Test]
     [TestCaseSource(typeof(TestCaseSource), nameof(TestCaseSource.GetHttpRequestMessages))]
@@ -13,8 +13,8 @@ public class Test_ServiceCollection_AddHmacManagement : TestBase
         var services = new ServiceCollection()
             .AddMemoryCache() 
             // TODO: Handle error when AddMemoryCache isn't called
-            // and HmacManagement attempts to use IMemoryCache through UseInMemoryCache call.
-            .AddHmacManagement(options =>
+            // and HmacManager attempts to use IMemoryCache through UseInMemoryCache call.
+            .AddHmacManager(options =>
             {
                 options.AddPolicy("MyPolicy_1", policy =>
                 {

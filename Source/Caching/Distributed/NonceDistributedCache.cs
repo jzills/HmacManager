@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Caching.Distributed;
-using HmacManagement.Caching.Extensions;
+using HmacManager.Caching.Extensions;
 
-namespace HmacManagement.Caching.Distributed;
+namespace HmacManager.Caching.Distributed;
 
 public class NonceDistributedCache : INonceCache
 {

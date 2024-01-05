@@ -1,4 +1,4 @@
-namespace HmacManagement.Common;
+namespace HmacManager.Common;
 
 public interface IComponentCollection<TComponent>
 {

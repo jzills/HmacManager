@@ -1,4 +1,4 @@
-namespace HmacManagement.Extensions;
+namespace HmacManager.Extensions;
 
 public static class DateTimeOffsetExtensions
 {

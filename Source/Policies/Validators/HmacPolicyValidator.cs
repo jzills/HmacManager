@@ -1,4 +1,4 @@
-namespace HmacManagement.Policies;
+namespace HmacManager.Policies;
 
 public class HmacPolicyValidator : IValidator<HmacPolicy>
 {

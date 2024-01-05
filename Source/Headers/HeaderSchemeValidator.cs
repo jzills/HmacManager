@@ -1,6 +1,6 @@
-using HmacManagement.Policies;
+using HmacManager.Policies;
 
-namespace HmacManagement.Headers;
+namespace HmacManager.Headers;
 
 public class HeaderSchemeValidator : IValidator<HeaderScheme>
 {

@@ -1,8 +1,8 @@
-using HmacManagement.Caching;
-using HmacManagement.Components;
-using HmacManagement.Headers;
+using HmacManager.Caching;
+using HmacManager.Components;
+using HmacManager.Headers;
 
-namespace HmacManagement.Policies;
+namespace HmacManager.Policies;
 
 /// <summary>
 /// A class representing a builder for a HmacPolicy.

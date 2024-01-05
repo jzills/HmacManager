@@ -1,20 +1,20 @@
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
-using HmacManagement.Caching;
-using HmacManagement.Caching.Distributed;
-using HmacManagement.Caching.Memory;
-using HmacManagement.Common;
-using HmacManagement.Components;
-using HmacManagement.Policies;
+using HmacManager.Caching;
+using HmacManager.Caching.Distributed;
+using HmacManager.Caching.Memory;
+using HmacManager.Common;
+using HmacManager.Components;
+using HmacManager.Policies;
 
-namespace HmacManagement.Mvc.Extensions.Internal;
+namespace HmacManager.Mvc.Extensions.Internal;
 
 internal static class ServiceCollectionExtensions
 {
-    internal static IServiceCollection AddHmacManagement(
+    internal static IServiceCollection AddHmacManager(
         this IServiceCollection services,
-        HmacManagementOptions options
+        HmacManagerOptions options
     ) =>
         services
             .AddHttpContextAccessor()

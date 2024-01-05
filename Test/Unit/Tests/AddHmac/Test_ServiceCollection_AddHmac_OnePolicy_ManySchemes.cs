@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
-using HmacManagement.Mvc.Extensions;
-using HmacManagement.Components;
+using HmacManager.Mvc.Extensions;
+using HmacManager.Components;
 
 namespace Unit.Tests;
 
@@ -24,6 +24,20 @@ public class Test_ServiceCollection_AddHmac_OnePolicy_ManySchemes : TestBase
                     policy.UseContentHashAlgorithm(ContentHashAlgorithm.SHA256);
                     policy.UseSigningHashAlgorithm(SigningHashAlgorithm.HMACSHA256);
                     policy.UseDistributedCache(TimeSpan.FromMinutes(5));
+                
+                    policy.AddScheme("MyScheme_1", scheme =>
+                    {
+                        scheme.AddHeader("MyHeader1_1");
+                        scheme.AddHeader("MyHeader2_1");
+                        scheme.AddHeader("MyHeader3_1");
+                    });
+
+                    policy.AddScheme("MyScheme_2", scheme =>
+                    {
+                        scheme.AddHeader("MyHeader1_2");
+                        scheme.AddHeader("MyHeader2_2");
+                        scheme.AddHeader("MyHeader3_2");
+                    });
                 });
             });
 

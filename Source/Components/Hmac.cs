@@ -1,6 +1,6 @@
-using HmacManagement.Headers;
+using HmacManager.Headers;
 
-namespace HmacManagement.Components;
+namespace HmacManager.Components;
 
 /// <summary>
 /// A class representing a single, generated Hmac.

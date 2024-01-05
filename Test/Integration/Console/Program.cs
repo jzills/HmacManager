@@ -1,9 +1,9 @@
 ﻿using System.Text;
 using System.Security.Claims;
 using Microsoft.Extensions.DependencyInjection;
-using HmacManagement.Components;
-using HmacManagement.Mvc;
-using HmacManagement.Mvc.Extensions;
+using HmacManager.Components;
+using HmacManager.Mvc;
+using HmacManager.Mvc.Extensions;
 
 var services = new ServiceCollection();
 services.AddMemoryCache();

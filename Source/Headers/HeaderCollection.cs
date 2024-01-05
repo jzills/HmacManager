@@ -1,7 +1,7 @@
-using HmacManagement.Common;
-using HmacManagement.Policies;
+using HmacManager.Common;
+using HmacManager.Policies;
 
-namespace HmacManagement.Headers;
+namespace HmacManager.Headers;
 
 public class HeaderCollection 
     : ComponentCollection<Header>, IConfigurator<Header>

@@ -1,9 +1,9 @@
-using HmacManagement.Caching;
-using HmacManagement.Common;
-using HmacManagement.Mvc;
-using HmacManagement.Policies;
+using HmacManager.Caching;
+using HmacManager.Common;
+using HmacManager.Mvc;
+using HmacManager.Policies;
 
-namespace HmacManagement.Components;
+namespace HmacManager.Components;
 
 public class HmacManagerFactory : IHmacManagerFactory
 {

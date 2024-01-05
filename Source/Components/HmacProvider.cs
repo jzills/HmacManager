@@ -1,8 +1,8 @@
 using System.Security.Cryptography;
 using System.Text;
-using HmacManagement.Headers;
+using HmacManager.Headers;
 
-namespace HmacManagement.Components;
+namespace HmacManager.Components;
 
 public class HmacProvider : IHmacProvider
 {

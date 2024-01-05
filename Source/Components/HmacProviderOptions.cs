@@ -1,6 +1,6 @@
-using HmacManagement.Policies;
+using HmacManager.Policies;
 
-namespace HmacManagement.Components;
+namespace HmacManager.Components;
 
 public class HmacProviderOptions
 {

@@ -1,6 +1,6 @@
-using HmacManagement.Common;
+using HmacManager.Common;
 
-namespace HmacManagement.Caching;
+namespace HmacManager.Caching;
 
 public class NonceCacheCollection : ComponentCollection<INonceCache>
 {

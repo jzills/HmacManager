@@ -1,6 +1,6 @@
-using HmacManagement.Policies;
+using HmacManager.Policies;
 
-namespace HmacManagement.Common;
+namespace HmacManager.Common;
 
 public class ComponentCollectionValidated<TComponent, TValidator> 
     : ComponentCollection<TComponent> 
