@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using HmacManager.Components;
 using HmacManager.Exceptions;
-using HmacManager.Headers;
 
 namespace HmacManager.Mvc;
 
@@ -62,7 +61,11 @@ public class HmacAuthenticationHandler : AuthenticationHandler<HmacAuthenticatio
                             new ClaimsPrincipal(
                                 new ClaimsIdentity(claims, 
                                     HmacAuthenticationDefaults.AuthenticationScheme)), 
-                            new AuthenticationProperties(), 
+                            new AuthenticationProperties(new Dictionary<string, string> 
+                            { 
+                                { "Policy", hmacResult.Policy }, 
+                                { "Scheme", hmacResult.HeaderScheme }
+                            }), 
                             HmacAuthenticationDefaults.AuthenticationScheme
                         ));
                 }

@@ -5,7 +5,7 @@ using HmacManager.Mvc;
 
 namespace HmacManager.Extensions;
 
-internal static class HttpRequestHeadersExtensions
+public static class HttpRequestHeadersExtensions
 {
     public static void AddSignature(
         this HttpRequestHeaders headers, 
@@ -138,7 +138,8 @@ internal static class HttpRequestHeadersExtensions
         return 
             hasAuthorizationHeader && 
             hasDateRequestedHeader && 
-            hasNonceHeader;
+            hasNonceHeader &&
+            value is not null;
     }
 
     public static bool TryGetAuthorizationHeader(

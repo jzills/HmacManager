@@ -17,7 +17,7 @@ builder.Services
             policy.UseInMemoryCache(TimeSpan.FromSeconds(30));
             policy.AddScheme("AccountEmailScheme", scheme =>
             {
-                // scheme.AddHeader("X-Account-Id", "AccountId");
+                scheme.AddHeader("X-Account-Id", "AccountId");
                 scheme.AddHeader("X-Email", "Email");
             });
         });

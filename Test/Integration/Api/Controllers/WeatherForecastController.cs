@@ -4,7 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
-[Authorize(AuthenticationSchemes = HmacAuthenticationDefaults.AuthenticationScheme)]
+// [Authorize(AuthenticationSchemes = HmacAuthenticationDefaults.AuthenticationScheme)]
+[HmacAuthorize(Policy = "MyPolicy_1", Scheme = "AccountEmailScheme")]
 [ApiController]
 [Route("[controller]")]
 public class WeatherForecastController : ControllerBase

@@ -26,7 +26,7 @@ public static class AuthenticationBuilderExtensions
             HmacAuthenticationDefaults.AuthenticationScheme,
             configureOptions
         );
-
+        
         var options = new HmacAuthenticationOptions();
         configureOptions.Invoke(options);
 
