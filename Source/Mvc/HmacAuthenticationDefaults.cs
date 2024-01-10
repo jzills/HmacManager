@@ -46,4 +46,10 @@ public static class HmacAuthenticationDefaults
         /// </summary>
         public const string DateRequested = "X-DateRequested";
     }
+
+    internal class Properties
+    {
+        internal const string PolicyProperty = "HmacManager.Policy";
+        internal const string SchemeProperty = "HmacManager.Scheme";
+    }
 }

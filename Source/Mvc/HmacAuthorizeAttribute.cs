@@ -19,14 +19,10 @@ public class HmacAuthorizeAttribute : Attribute, IAsyncAuthorizationFilter
             {
                 if (authenticateResult.Succeeded)
                 {
-                    if (authenticateResult.Properties.Items.TryGetValue("Policy", out var policy) &&
-                        authenticateResult.Properties.Items.TryGetValue("Scheme", out var scheme))
+                    if (authenticateResult.Properties.Items.TryGetValue(HmacAuthenticationDefaults.Properties.PolicyProperty, out var policy) &&
+                        authenticateResult.Properties.Items.TryGetValue(HmacAuthenticationDefaults.Properties.SchemeProperty, out var scheme))
                     {
-                        var hasMatchingPolicyScheme = 
-                            Policy == policy && 
-                            Scheme == scheme;
-
-                        if (!hasMatchingPolicyScheme)
+                        if (!IsMatch(policy, scheme))
                         {
                             context.Result = new UnauthorizedResult();
                             return;
@@ -41,4 +37,7 @@ public class HmacAuthorizeAttribute : Attribute, IAsyncAuthorizationFilter
             }
         }
     }
+
+    private bool IsMatch(string policy, string scheme) =>
+        Policy == policy && Scheme == scheme;
 }

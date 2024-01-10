@@ -63,8 +63,8 @@ public class HmacAuthenticationHandler : AuthenticationHandler<HmacAuthenticatio
                                     HmacAuthenticationDefaults.AuthenticationScheme)), 
                             new AuthenticationProperties(new Dictionary<string, string> 
                             { 
-                                { "Policy", hmacResult.Policy }, 
-                                { "Scheme", hmacResult.HeaderScheme }
+                                { HmacAuthenticationDefaults.Properties.PolicyProperty, hmacResult.Policy }, 
+                                { HmacAuthenticationDefaults.Properties.SchemeProperty, hmacResult.HeaderScheme }
                             }), 
                             HmacAuthenticationDefaults.AuthenticationScheme
                         ));

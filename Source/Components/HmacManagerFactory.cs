@@ -23,6 +23,8 @@ public class HmacManagerFactory : IHmacManagerFactory
 
     public IHmacManager Create(string policy)
     {
+        ArgumentNullException.ThrowIfNullOrEmpty(policy, nameof(policy));
+        
         var policyOptions = Policies.Get(policy);
         if (policyOptions is null)
         {

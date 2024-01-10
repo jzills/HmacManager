@@ -26,14 +26,14 @@ public class HmacProvider : IHmacProvider
 
     public string ComputeSignature(string signingContent)
     {
-        var secretBytes = Convert.FromBase64String(_options.Keys.PrivateKey);
+        var keyBytes = Convert.FromBase64String(_options.Keys.PrivateKey);
         var signingContentBytes = Encoding.UTF8.GetBytes(signingContent);
         var hashBytes = _options.Algorithms.SigningHashAlgorithm switch
         {
-            SigningHashAlgorithm.HMACSHA1   => new HMACSHA1  (secretBytes).ComputeHash(signingContentBytes),
-            SigningHashAlgorithm.HMACSHA256 => new HMACSHA256(secretBytes).ComputeHash(signingContentBytes),
-            SigningHashAlgorithm.HMACSHA512 => new HMACSHA512(secretBytes).ComputeHash(signingContentBytes),
-            _                               => new HMACSHA256(secretBytes).ComputeHash(signingContentBytes)
+            SigningHashAlgorithm.HMACSHA1   => new HMACSHA1  (keyBytes).ComputeHash(signingContentBytes),
+            SigningHashAlgorithm.HMACSHA256 => new HMACSHA256(keyBytes).ComputeHash(signingContentBytes),
+            SigningHashAlgorithm.HMACSHA512 => new HMACSHA512(keyBytes).ComputeHash(signingContentBytes),
+            _                               => new HMACSHA256(keyBytes).ComputeHash(signingContentBytes)
         };
         
         return Convert.ToBase64String(hashBytes);
