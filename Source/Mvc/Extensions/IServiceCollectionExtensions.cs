@@ -1,12 +1,13 @@
 using Microsoft.Extensions.DependencyInjection;
 using HmacManager.Mvc.Extensions.Internal;
+using HmacManager.Extensions;
 
 namespace HmacManager.Mvc.Extensions;
 
 /// <summary>
 /// A class representing extension methods on an <c>IServiceCollection</c>.
 /// </summary>
-public static class ServiceCollectionExtensions
+public static class IServiceCollectionExtensions
 {
     /// <summary>
     /// Registers the necessary dependencies to use <c>IHmacManagerFactory</c>
@@ -24,5 +25,30 @@ public static class ServiceCollectionExtensions
         configureOptions.Invoke(options);
         
         return services.AddHmacManager(options);
+    }
+
+    public static IHttpClientBuilder AddHmacHttpClient(
+        this IServiceCollection services,
+        string name,
+        string policy,
+        Action<HttpClient> configureClient
+    )
+    {
+
+        return services.AddHttpClient(name, configureClient)
+            .AddHmacHttpMessageHandler(policy);
+    }
+
+    public static IHttpClientBuilder AddHmacHttpClient(
+        this IServiceCollection services,
+        string name,
+        string policy,
+        string scheme,
+        Action<HttpClient> configureClient
+    )
+    {
+
+        return services.AddHttpClient(name, configureClient)
+            .AddHmacHttpMessageHandler(policy, scheme);
     }
 }
