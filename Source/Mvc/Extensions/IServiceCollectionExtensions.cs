@@ -27,28 +27,23 @@ public static class IServiceCollectionExtensions
         return services.AddHmacManager(options);
     }
 
-    public static IHttpClientBuilder AddHmacHttpClient(
-        this IServiceCollection services,
-        string name,
-        string policy,
-        Action<HttpClient> configureClient
-    )
-    {
+    // Is this necessary or useful?
+    // The extension for AddHmacHttpMessageHandler
+    // is most likely sufficient...
+    // public static IHttpClientBuilder AddHmacHttpClient(
+    //     this IServiceCollection services,
+    //     string name,
+    //     string policy,
+    //     Action<HttpClient> configureClient
+    // ) => services.AddHttpClient(name, configureClient)
+    //         .AddHmacHttpMessageHandler(policy);
 
-        return services.AddHttpClient(name, configureClient)
-            .AddHmacHttpMessageHandler(policy);
-    }
-
-    public static IHttpClientBuilder AddHmacHttpClient(
-        this IServiceCollection services,
-        string name,
-        string policy,
-        string scheme,
-        Action<HttpClient> configureClient
-    )
-    {
-
-        return services.AddHttpClient(name, configureClient)
-            .AddHmacHttpMessageHandler(policy, scheme);
-    }
+    // public static IHttpClientBuilder AddHmacHttpClient(
+    //     this IServiceCollection services,
+    //     string name,
+    //     string policy,
+    //     string scheme,
+    //     Action<HttpClient> configureClient
+    // ) => services.AddHttpClient(name, configureClient)
+    //         .AddHmacHttpMessageHandler(policy, scheme);
 }
