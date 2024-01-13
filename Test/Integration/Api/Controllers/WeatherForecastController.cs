@@ -1,10 +1,8 @@
 using HmacManager.Mvc;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
-// [Authorize(AuthenticationSchemes = HmacAuthenticationDefaults.AuthenticationScheme)]
 [HmacAuthorize(Policy = "MyPolicy_1", Scheme = "AccountEmailScheme")]
 [ApiController]
 [Route("[controller]")]

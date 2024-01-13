@@ -7,7 +7,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 builder.Services
-    .AddHttpClient()
+    .AddHttpClient("Hmac", client =>
+    {
+        client.BaseAddress = new Uri("https://localhost:7216");
+    }).AddHmacHttpMessageHandler("MyPolicy_1", "AccountEmailScheme");
+
+builder.Services
     .AddHmacManager(options =>
     {
         options.AddPolicy("MyPolicy_1", policy =>

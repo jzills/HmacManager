@@ -1,4 +1,5 @@
 using HmacManager.Components;
+using HmacManager.Exceptions;
 
 namespace HmacManager.Mvc;
 
@@ -14,9 +15,17 @@ public class HmacDelegatingHandler : DelegatingHandler
         CancellationToken cancellationToken
     )
     {
-        _hmacManager.SignAsync(request).RunSynchronously();
+        cancellationToken.ThrowIfCancellationRequested();
 
-        return base.Send(request, cancellationToken);
+        var signingResult = _hmacManager.SignAsync(request).Result;
+        if (signingResult.IsSuccess)
+        {
+            return base.Send(request, cancellationToken);
+        }
+        else
+        {
+            throw new HmacSigningException(signingResult, request);  
+        }
     }
 
     protected override async Task<HttpResponseMessage> SendAsync(
@@ -24,8 +33,16 @@ public class HmacDelegatingHandler : DelegatingHandler
         CancellationToken cancellationToken
     )
     {
-        await _hmacManager.SignAsync(request);
-        
-        return await base.SendAsync(request, cancellationToken);
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var signingResult = await _hmacManager.SignAsync(request);
+        if (signingResult.IsSuccess)
+        {
+            return await base.SendAsync(request, cancellationToken);
+        }
+        else
+        {
+            throw new HmacSigningException(signingResult, request);  
+        }
     }
 }

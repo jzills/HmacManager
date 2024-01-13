@@ -2,7 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using HmacManager.Components;
 using HmacManager.Mvc;
 
-namespace HmacManager.Extensions;
+namespace HmacManager.Mvc.Extensions;
 
 public static class IHttpClientBuilderExtensions
 {

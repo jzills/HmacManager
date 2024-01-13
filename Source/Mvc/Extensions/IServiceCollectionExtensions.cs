@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using HmacManager.Mvc.Extensions.Internal;
-using HmacManager.Extensions;
 
 namespace HmacManager.Mvc.Extensions;
 
@@ -26,24 +25,4 @@ public static class IServiceCollectionExtensions
         
         return services.AddHmacManager(options);
     }
-
-    // Is this necessary or useful?
-    // The extension for AddHmacHttpMessageHandler
-    // is most likely sufficient...
-    // public static IHttpClientBuilder AddHmacHttpClient(
-    //     this IServiceCollection services,
-    //     string name,
-    //     string policy,
-    //     Action<HttpClient> configureClient
-    // ) => services.AddHttpClient(name, configureClient)
-    //         .AddHmacHttpMessageHandler(policy);
-
-    // public static IHttpClientBuilder AddHmacHttpClient(
-    //     this IServiceCollection services,
-    //     string name,
-    //     string policy,
-    //     string scheme,
-    //     Action<HttpClient> configureClient
-    // ) => services.AddHttpClient(name, configureClient)
-    //         .AddHmacHttpMessageHandler(policy, scheme);
 }
