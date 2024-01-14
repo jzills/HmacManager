@@ -13,6 +13,10 @@
     <Authors>Joshua Zillwood</Authors>
     <Description>A tool to manage hmacs including signing and verifying configurable content.</Description>
     <Company></Company>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <PropertyGroup>
   </PropertyGroup>
 
   <ItemGroup>
