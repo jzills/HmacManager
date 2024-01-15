@@ -25,6 +25,7 @@ A policy can be extended with schemes. These schemes represent the required head
 
     builder.Services
         .AddHmacManager(options =>
+        {
             options.AddPolicy("SomePolicy", policy =>
             {
                 policy.UsePublicKey(...);
@@ -35,7 +36,8 @@ A policy can be extended with schemes. These schemes represent the required head
                     scheme.AddHeader("X-UserId");
                     scheme.AddHeader("X-Email");
                 });
-            }));
+            });
+        });
 
 ### Register with built-in authentication flow
 
