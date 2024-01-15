@@ -25,19 +25,17 @@ A policy can be extended with schemes. These schemes represent the required head
 
     builder.Services
         .AddHmacManager(options =>
-        {
             options.AddPolicy("SomePolicy", policy =>
             {
                 policy.UsePublicKey(...);
                 policy.UsePrivateKey(...);
                 policy.UseInMemoryCache(...);
                 policy.AddScheme("SomeScheme", scheme =>
-            {
-                scheme.AddHeader("X-UserId");
-                scheme.AddHeader("X-Email");
-            });
-            });
-        });
+                {
+                    scheme.AddHeader("X-UserId");
+                    scheme.AddHeader("X-Email");
+                });
+            }));
 
 ### Register with built-in authentication flow
 
@@ -45,10 +43,7 @@ The AddHmacManager extension method can be bypassed in favor of the IAuthenticat
 
     builder.Services
         .AddAuthentication()
-        .AddHmac(options =>
-        {
-            options.AddPolicy("SomePolicy", policy => ...);
-        });
+        .AddHmac(options => options.AddPolicy("SomePolicy", policy => ...));
 
 - The HmacAuthenticationHandler is handles parsing incoming requests and authenticating the correct scheme.
     - By default, the authentication handler considers a success to any route if there exists a policy that matches the one defined in the incoming request headers and can be successfully verified.
