@@ -48,6 +48,5 @@ The AddHmacManager extension method can be bypassed in favor of the IAuthenticat
         .AddHmac(options => options.AddPolicy("SomePolicy", policy => ...));
 
 - The HmacAuthenticationHandler is handles parsing incoming requests and authenticating the correct scheme.
-    - By default, the authentication handler considers a success to any route if there exists a policy that matches the one defined in the incoming request headers and can be successfully verified.
-        - Use the HmacAuthorize attribute to restrict routes to specific policies and schemes.
+    - By default, if there is a policy that matches the one defined in the request headers that can be successfully verified, then the handler returns a success. If more granular authentication is required, such as protected specific routes with different policies, then use the HmacAuthorize attribute to enable stricter authentication requirements.
 - Any scheme headers are mapped to their specified claim types. If no claim type is specified, the name of the header is used.
