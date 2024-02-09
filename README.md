@@ -11,7 +11,7 @@ Integrate HMAC (Hash-based Message Authentication Code) authentication seamlessl
 
 - Supports fully configurable policies, i.e. an application can accept a signed HMAC from one of many policies
 - Each policy can define header schemes that determine required headers values that must be present in both the request and signed HMAC
-- Automatic nonce handling to ensure replay attacks do not occur
+- Automatic nonce handling to protect against replay attacks
 - (In Progress) A client library to easily integrate signatures from client to server
 
 ## Installation
@@ -21,4 +21,4 @@ Integrate HMAC (Hash-based Message Authentication Code) authentication seamlessl
 
 ## Docs
 
-[HmacManager](Source/README.md)
+[HmacManager](src/HmacManager/README.md)
