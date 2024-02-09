@@ -56,7 +56,7 @@ The `AddHmacManager` extension method can be bypassed in favor of the `IAuthenti
 The `AddHmacHttpMessageHandler` extension method registers an instance of `HmacDelegatingHandler` to the specified `HttpClient` with the configured policy and the optional scheme. This handler will automatically sign outgoing requests for that client. If the request cannot be signed, then an `HmacSigningException` exception is thrown.
 
     builder.Services
-        .AddHttpClient("Hmac", client =>
-        {
-            client.BaseAddress = new Uri("https://localhost:7216");
-        }).AddHmacHttpMessageHandler("MyPolicy_1", "AccountEmailScheme");
+        .AddHttpClient("Hmac", client => ...)
+        .AddHmacHttpMessageHandler("MyPolicy", "MyScheme");
+
+- If a scheme is specified, then all headers in that scheme must be added to the request prior to calling `Send` or `SendAsync` on the `HttpClient`. The corresponding header values will be part of the signing content used to create the hmac.
