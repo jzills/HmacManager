@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Source\HmacManager.csproj" />
+    <ProjectReference Include="..\..\..\src\HmacManager\HmacManager.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

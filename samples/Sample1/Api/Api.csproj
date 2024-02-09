@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Source\HmacManager.csproj" />
+    <ProjectReference Include="..\..\..\src\HmacManager\HmacManager.csproj" />
   </ItemGroup>
 
 </Project>
