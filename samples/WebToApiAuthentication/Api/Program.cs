@@ -5,10 +5,7 @@ using HmacManager.Mvc.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -17,15 +14,15 @@ builder.Services
     .AddAuthentication()
     .AddHmac(options =>
     {
-        options.AddPolicy("MyPolicy_1", policy =>
+        options.AddPolicy("MyPolicy", policy =>
         {
             policy.UsePublicKey(Guid.Parse("eb8e9dae-08bd-4883-80fe-1d9a103b30b5"));
             policy.UsePrivateKey(Convert.ToBase64String(Encoding.UTF8.GetBytes("thisIsMySuperCoolPrivateKey")));
             policy.UseInMemoryCache(TimeSpan.FromSeconds(30));
-            policy.AddScheme("AccountEmailScheme", scheme =>
+            policy.AddScheme("RequireAccountAndEmail", scheme =>
             {
-                scheme.AddHeader("X-Account-Id", "AccountId");
-                scheme.AddHeader("X-Email", "Email");
+                scheme.AddHeader("X-Account");
+                scheme.AddHeader("X-Email");
             });
         });
 
@@ -42,10 +39,7 @@ builder.Services
 
                 return claims;
             },
-            OnAuthenticationFailure = context =>
-            {
-                return new Exception("My Test Exception");
-            }
+            OnAuthenticationFailure = context => new Exception("An error occurred authenticating request.")
         };
     });
 

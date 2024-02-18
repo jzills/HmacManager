@@ -16,7 +16,7 @@ public class HeaderCollection
         var validationResult = Validator.Validate(header);
         if (validationResult.IsValid)
         {
-            base.Add(name, header); 
+            Add(name, header); 
         }
         else
         {

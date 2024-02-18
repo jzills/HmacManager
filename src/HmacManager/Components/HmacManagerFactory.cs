@@ -23,7 +23,7 @@ public class HmacManagerFactory : IHmacManagerFactory
 
     public IHmacManager Create(string policy)
     {
-        ArgumentNullException.ThrowIfNullOrEmpty(policy, nameof(policy));
+        ArgumentException.ThrowIfNullOrEmpty(policy, nameof(policy));
         
         var policyOptions = Policies.Get(policy);
         if (policyOptions is null)
@@ -52,8 +52,8 @@ public class HmacManagerFactory : IHmacManagerFactory
 
     public IHmacManager Create(string policy, string scheme)
     {
-        ArgumentNullException.ThrowIfNullOrEmpty(policy, nameof(policy));
-        ArgumentNullException.ThrowIfNullOrEmpty(scheme, nameof(scheme));
+        ArgumentException.ThrowIfNullOrEmpty(policy, nameof(policy));
+        ArgumentException.ThrowIfNullOrEmpty(scheme, nameof(scheme));
 
         var policyOptions = Policies.Get(policy);
         if (policyOptions is null)

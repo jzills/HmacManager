@@ -5,7 +5,7 @@ using HmacManager.Mvc;
 
 namespace HmacManager.Extensions;
 
-public static class HttpRequestHeadersExtensions
+internal static class HttpRequestHeadersExtensions
 {
     public static void AddSignature(
         this HttpRequestHeaders headers, 
@@ -14,8 +14,8 @@ public static class HttpRequestHeadersExtensions
         string? scheme = null
     )
     {
-        ArgumentNullException.ThrowIfNullOrEmpty(signature, nameof(signature));
-        ArgumentNullException.ThrowIfNullOrEmpty(policy, nameof(policy));
+        ArgumentException.ThrowIfNullOrEmpty(signature, nameof(signature));
+        ArgumentException.ThrowIfNullOrEmpty(policy, nameof(policy));
 
         headers.Authorization = new AuthenticationHeaderValue(
             HmacAuthenticationDefaults.AuthenticationScheme, 
@@ -112,7 +112,7 @@ public static class HttpRequestHeadersExtensions
                     Signature = signature ?? string.Empty,
                     DateRequested = dateRequested,
                     Nonce = nonce,
-                    HeaderValues = new HeaderValue[] { }
+                    HeaderValues = []
                 };
             }
             else if (TryParseHeaders(headers, headerScheme, out var headerValues))

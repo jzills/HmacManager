@@ -23,7 +23,7 @@ public class ComponentCollectionValidated<TComponent, TValidator>
             var validationResult = Validator.Validate(component);
             if (validationResult.IsValid)
             {
-                base.Add(name, component); 
+                Add(name, component); 
             }
             else
             {

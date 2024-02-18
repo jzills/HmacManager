@@ -31,8 +31,8 @@ public class HmacAuthenticationHandler : AuthenticationHandler<HmacAuthenticatio
         {
             if (TryGetManager(Request.Headers, out var hmacManager))
             {
-                var hmacResult = await hmacManager
-                    .VerifyAsync(Request.HttpContext.GetHttpRequestMessage());
+                var request = Request.HttpContext.GetHttpRequestMessage();
+                var hmacResult = await hmacManager.VerifyAsync(request);
                 
                 RewindBody(Request.Body);
 

@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using HmacManager.Components;
-using HmacManager.Mvc;
 
 namespace HmacManager.Mvc.Extensions;
 
@@ -25,7 +24,7 @@ public static class IHttpClientBuilderExtensions
         string? scheme = null
     )
     {
-        ArgumentNullException.ThrowIfNullOrWhiteSpace(policy, nameof(policy));
+        ArgumentException.ThrowIfNullOrWhiteSpace(policy, nameof(policy));
 
         var hmacManagerFactory = serviceProvider.GetRequiredService<IHmacManagerFactory>();
         var hmacManager = (policy, scheme) switch

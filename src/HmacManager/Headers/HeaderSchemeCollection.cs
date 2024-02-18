@@ -16,7 +16,7 @@ public class HeaderSchemeCollection
         var validationResult = Validator.Validate(scheme);
         if (validationResult.IsValid)
         {
-            base.Add(name, scheme); 
+            Add(name, scheme); 
         }
         else
         {

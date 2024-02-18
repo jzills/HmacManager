@@ -1,29 +1,27 @@
-using System.Security.Claims;
 using System.Text;
-using HmacManager.Mvc;
 using HmacManager.Mvc.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 builder.Services
-    .AddHttpClient("Hmac", client =>
+    .AddHttpClient("Hmac_MyPolicy_RequiredAccountAndEmail", client =>
     {
         client.BaseAddress = new Uri("https://localhost:7216");
-    }).AddHmacHttpMessageHandler("MyPolicy_1", "AccountEmailScheme");
+    }).AddHmacHttpMessageHandler("MyPolicy", "RequiredAccountAndEmail");
 
 builder.Services
     .AddHmacManager(options =>
     {
-        options.AddPolicy("MyPolicy_1", policy =>
+        options.AddPolicy("MyPolicy", policy =>
         {
             policy.UsePublicKey(Guid.Parse("eb8e9dae-08bd-4883-80fe-1d9a103b30b5"));
             policy.UsePrivateKey(Convert.ToBase64String(Encoding.UTF8.GetBytes("thisIsMySuperCoolPrivateKey")));
             policy.UseInMemoryCache(TimeSpan.FromSeconds(30));
-            policy.AddScheme("AccountEmailScheme", scheme =>
+            policy.AddScheme("RequireAccountAndEmail", scheme =>
             {
-                scheme.AddHeader("X-Account-Id", "AccountId");
-                scheme.AddHeader("X-Email", "Email");
+                scheme.AddHeader("X-Account");
+                scheme.AddHeader("X-Email");
             });
         });
     });
