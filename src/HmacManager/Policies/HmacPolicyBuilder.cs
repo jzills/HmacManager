@@ -63,9 +63,9 @@ public class HmacPolicyBuilder
     /// </summary>
     /// <param name="maxAge"></param>
     /// <returns>An instance of HmacPolicyBuilder.</returns>
-    public HmacPolicyBuilder UseInMemoryCache(TimeSpan maxAge)
+    public HmacPolicyBuilder UseMemoryCache(TimeSpan maxAge)
     {
-        Nonce.CacheName = "InMemory";
+        Nonce.CacheName = "Memory";
         Nonce.MaxAge = maxAge;
         return this;
     }
@@ -102,7 +102,7 @@ public class HmacPolicyBuilder
     {
         if (string.IsNullOrWhiteSpace(Nonce.CacheName))
         {
-            Nonce.CacheName = "InMemory";
+            Nonce.CacheName = "Memory";
         }
 
         return new HmacPolicy

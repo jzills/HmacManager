@@ -19,26 +19,26 @@ public class TestServiceCollection : TestBase
             .AddAuthentication()
             .AddHmac(options =>
             {
-                options.AddPolicy(PolicySchemeType.Policy_InMemory.Policy, policy =>
+                options.AddPolicy(PolicySchemeType.Policy_Memory.Policy, policy =>
                 {
                     policy.UsePublicKey(PublicKey);
                     policy.UsePrivateKey(PrivateKey);
                     policy.UseContentHashAlgorithm(ContentHashAlgorithm.SHA256);
                     policy.UseSigningHashAlgorithm(SigningHashAlgorithm.HMACSHA256);
-                    policy.UseInMemoryCache(TimeSpan.FromMinutes(5));
+                    policy.UseMemoryCache(TimeSpan.FromMinutes(5));
 
-                    policy.AddScheme(PolicySchemeType.Policy_InMemory_Scheme_1.Scheme, scheme =>
+                    policy.AddScheme(PolicySchemeType.Policy_Memory_Scheme_1.Scheme, scheme =>
                     {
                         scheme.AddHeader("Scheme_Header_1");
                     });
 
-                    policy.AddScheme(PolicySchemeType.Policy_InMemory_Scheme_2.Scheme, scheme =>
+                    policy.AddScheme(PolicySchemeType.Policy_Memory_Scheme_2.Scheme, scheme =>
                     {
                         scheme.AddHeader("Scheme_Header_1", "Scheme_Header_1_ClaimType");
                         scheme.AddHeader("Scheme_Header_2", "Scheme_Header_2_ClaimType");
                     });
 
-                    policy.AddScheme(PolicySchemeType.Policy_InMemory_Scheme_3.Scheme, scheme =>
+                    policy.AddScheme(PolicySchemeType.Policy_Memory_Scheme_3.Scheme, scheme =>
                     {
                         scheme.AddHeader("Scheme_Header_1");
                         scheme.AddHeader("Scheme_Header_2", "Scheme_Header_2_ClaimType");

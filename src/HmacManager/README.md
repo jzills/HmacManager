@@ -13,7 +13,7 @@ Use the `IServiceCollection` extension method `AddHmacManager` to add `IHmacMana
             {
                 policy.UsePublicKey(...);
                 policy.UsePrivateKey(...);
-                policy.UseInMemoryCache(...);
+                policy.UseMemoryCache(...);
             });
         });
 
@@ -30,7 +30,7 @@ A policy can be extended with schemes. These schemes represent the required head
             {
                 policy.UsePublicKey(...);
                 policy.UsePrivateKey(...);
-                policy.UseInMemoryCache(...);
+                policy.UseMemoryCache(...);
                 policy.AddScheme("SomeScheme", scheme =>
                 {
                     scheme.AddHeader("X-UserId");

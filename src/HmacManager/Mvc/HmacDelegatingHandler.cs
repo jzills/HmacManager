@@ -6,27 +6,12 @@ namespace HmacManager.Mvc;
 public class HmacDelegatingHandler : DelegatingHandler
 {
     private readonly IHmacManager _hmacManager;
-
-    public HmacDelegatingHandler(IHmacManager hmacManager) => 
-        _hmacManager = hmacManager;
+    public HmacDelegatingHandler(IHmacManager hmacManager) => _hmacManager = hmacManager;
 
     protected override HttpResponseMessage Send(
         HttpRequestMessage request, 
         CancellationToken cancellationToken
-    )
-    {
-        cancellationToken.ThrowIfCancellationRequested();
-
-        var signingResult = _hmacManager.SignAsync(request).Result;
-        if (signingResult.IsSuccess)
-        {
-            return base.Send(request, cancellationToken);
-        }
-        else
-        {
-            throw new HmacSigningException(signingResult, request);  
-        }
-    }
+    ) => SendAsync(request, cancellationToken).Result;
 
     protected override async Task<HttpResponseMessage> SendAsync(
         HttpRequestMessage request, 

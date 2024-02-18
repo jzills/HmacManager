@@ -39,9 +39,9 @@ internal static class ServiceCollectionExtensions
         var memoryCache = serviceProvider.GetService<IMemoryCache>();
         if (memoryCache is not null)
         {
-            caches.Add("InMemory", new NonceMemoryCache(memoryCache, new NonceCacheOptions
+            caches.Add("Memory", new NonceMemoryCache(memoryCache, new NonceCacheOptions
             { 
-                CacheName = "InMemory",
+                CacheName = "Memory",
                 MaxAge = TimeSpan.FromMinutes(1) 
             }));
         }

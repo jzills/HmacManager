@@ -13,21 +13,21 @@ public class Test_ServiceCollection_AddHmacManager : TestBase
         var services = new ServiceCollection()
             .AddMemoryCache() 
             // TODO: Handle error when AddMemoryCache isn't called
-            // and HmacManager attempts to use IMemoryCache through UseInMemoryCache call.
+            // and HmacManager attempts to use IMemoryCache through UseMemoryCache call.
             .AddHmacManager(options =>
             {
                 options.AddPolicy("MyPolicy_1", policy =>
                 {
                     policy.UsePublicKey(PublicKey);
                     policy.UsePrivateKey(PrivateKey);
-                    policy.UseInMemoryCache(TimeSpan.FromSeconds(30));
+                    policy.UseMemoryCache(TimeSpan.FromSeconds(30));
                 });
 
                 options.AddPolicy("MyPolicy_2", policy =>
                 {
                     policy.UsePublicKey(PublicKey2);
                     policy.UsePrivateKey(PrivateKey2);
-                    policy.UseInMemoryCache(TimeSpan.FromSeconds(30));
+                    policy.UseMemoryCache(TimeSpan.FromSeconds(30));
                 });
             });
 

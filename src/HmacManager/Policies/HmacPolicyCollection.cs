@@ -15,7 +15,7 @@ public class HmacPolicyCollection
         var validationResult = Validator.Validate(policy);
         if (validationResult.IsValid)
         {
-            base.Add(name, policy); 
+            Add(name, policy); 
         }
         else
         {

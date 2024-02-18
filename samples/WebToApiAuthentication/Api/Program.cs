@@ -18,7 +18,7 @@ builder.Services
         {
             policy.UsePublicKey(Guid.Parse("eb8e9dae-08bd-4883-80fe-1d9a103b30b5"));
             policy.UsePrivateKey(Convert.ToBase64String(Encoding.UTF8.GetBytes("thisIsMySuperCoolPrivateKey")));
-            policy.UseInMemoryCache(TimeSpan.FromSeconds(30));
+            policy.UseMemoryCache(TimeSpan.FromSeconds(30));
             policy.AddScheme("RequireAccountAndEmail", scheme =>
             {
                 scheme.AddHeader("X-Account");
