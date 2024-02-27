@@ -1,6 +1,6 @@
 namespace HmacManager.Extensions;
 
-public static class DateTimeOffsetExtensions
+internal static class DateTimeOffsetExtensions
 {
     public static bool HasValidDateRequested(
         this DateTimeOffset dateRequested, 

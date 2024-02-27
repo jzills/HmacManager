@@ -1,6 +1,6 @@
 namespace HmacManager.Components;
 
-public interface IHashGenerator
+internal interface IHashGenerator
 {
     Task<string> HashAsync(string content);
 }

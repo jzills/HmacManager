@@ -2,7 +2,7 @@ using HmacManager.Policies;
 
 namespace HmacManager.Common;
 
-public class ComponentCollectionValidated<TComponent, TValidator> 
+internal class ComponentCollectionValidated<TComponent, TValidator> 
     : ComponentCollection<TComponent> 
         where TComponent : class
         where TValidator : IValidator<TComponent>, new()

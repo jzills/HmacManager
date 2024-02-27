@@ -10,7 +10,7 @@ using HmacManager.Exceptions;
 
 namespace HmacManager.Mvc;
 
-public class HmacAuthenticationHandler : AuthenticationHandler<HmacAuthenticationOptions>
+internal class HmacAuthenticationHandler : AuthenticationHandler<HmacAuthenticationOptions>
 {
     private readonly IHmacManagerFactory _hmacManagerFactory;
 
@@ -32,7 +32,7 @@ public class HmacAuthenticationHandler : AuthenticationHandler<HmacAuthenticatio
             if (TryGetManager(Request.Headers, out var hmacManager))
             {
                 var request = Request.HttpContext.GetHttpRequestMessage();
-                var hmacResult = await hmacManager.VerifyAsync(request);
+                var hmacResult = await hmacManager!.VerifyAsync(request);
                 
                 RewindBody(Request.Body);
 
@@ -120,7 +120,7 @@ public class HmacAuthenticationHandler : AuthenticationHandler<HmacAuthenticatio
         return false;
     }
 
-    private bool TryGetManager(IHeaderDictionary headers, out IHmacManager manager)
+    private bool TryGetManager(IHeaderDictionary headers, out IHmacManager? manager)
     {
         var hasConfiguredPolicy = headers.TryGetValue(HmacAuthenticationDefaults.Headers.Policy, out var policy) && !string.IsNullOrWhiteSpace(policy);
         var hasConfiguredScheme = headers.TryGetValue(HmacAuthenticationDefaults.Headers.Scheme, out var scheme) && !string.IsNullOrWhiteSpace(scheme);

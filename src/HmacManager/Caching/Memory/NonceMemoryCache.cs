@@ -3,7 +3,7 @@ using HmacManager.Caching.Extensions;
 
 namespace HmacManager.Caching.Memory;
 
-public class NonceMemoryCache : INonceCache
+internal class NonceMemoryCache : INonceCache
 {
     private readonly IMemoryCache _cache;
     private readonly NonceCacheOptions _options;

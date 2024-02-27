@@ -3,7 +3,7 @@ using System.Text;
 
 namespace HmacManager.Components;
 
-public class HashExecutor
+internal class HashExecutor
 {
     protected readonly HashAlgorithm Algorithm;
 

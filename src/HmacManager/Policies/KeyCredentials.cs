@@ -1,6 +1,6 @@
 namespace HmacManager.Policies;
 
-public class KeyCredentials
+internal class KeyCredentials
 {
     public Guid PublicKey { get; set; } = Guid.Empty;
     public string PrivateKey { get; set; } = string.Empty;

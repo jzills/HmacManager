@@ -1,6 +1,6 @@
 namespace HmacManager.Caching.Extensions;
 
-public static class INonceCacheExtensions
+internal static class INonceCacheExtensions
 {
     public static async Task<bool> HasValidNonceAsync(
         this INonceCache cache, 

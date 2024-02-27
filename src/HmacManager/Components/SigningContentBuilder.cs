@@ -3,7 +3,7 @@ using HmacManager.Headers;
 
 namespace HmacManager.Components;
 
-public class SigningContentBuilder
+internal class SigningContentBuilder
 {
     protected readonly HttpRequestMessage Request;
     protected readonly StringBuilder Builder;

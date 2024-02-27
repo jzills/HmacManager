@@ -1,6 +1,6 @@
 namespace HmacManager.Policies;
 
-public class NameValidator : IValidator<string>
+internal class NameValidator : IValidator<string>
 {
     public ValidationResult Validate(string validatable)
     {

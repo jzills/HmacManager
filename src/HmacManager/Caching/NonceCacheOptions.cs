@@ -1,6 +1,6 @@
 namespace HmacManager.Caching;
 
-public class NonceCacheOptions
+internal class NonceCacheOptions
 {
     public TimeSpan MaxAge { get; set; } = TimeSpan.FromMinutes(5);
     public string CacheName { get; set; } = Enum.GetName(NonceCacheType.Memory)!;

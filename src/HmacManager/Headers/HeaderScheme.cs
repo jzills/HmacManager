@@ -6,7 +6,7 @@ public class HeaderScheme
 
     public HeaderScheme(string name)
     {
-        ArgumentNullException.ThrowIfNullOrEmpty(name, nameof(name));
+        ArgumentException.ThrowIfNullOrEmpty(name, nameof(name));
         Name = name;
     }
 

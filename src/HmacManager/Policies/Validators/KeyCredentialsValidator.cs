@@ -1,6 +1,6 @@
 namespace HmacManager.Policies;
 
-public class KeyCredentialsValidator : IValidator<KeyCredentials>
+internal class KeyCredentialsValidator : IValidator<KeyCredentials>
 {
     public ValidationResult Validate(KeyCredentials keys)
     {

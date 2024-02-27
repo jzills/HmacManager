@@ -33,6 +33,8 @@ public static class IHttpClientBuilderExtensions
             (_, _)    => hmacManagerFactory.Create(policy, scheme)
         };
 
+        ArgumentNullException.ThrowIfNull(hmacManager, nameof(hmacManager));
+
         return new HmacDelegatingHandler(hmacManager);
     }
 }

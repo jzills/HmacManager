@@ -3,7 +3,7 @@ using HmacManager.Exceptions;
 
 namespace HmacManager.Mvc;
 
-public class HmacDelegatingHandler : DelegatingHandler
+internal class HmacDelegatingHandler : DelegatingHandler
 {
     private readonly IHmacManager _hmacManager;
     public HmacDelegatingHandler(IHmacManager hmacManager) => _hmacManager = hmacManager;

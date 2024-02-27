@@ -1,6 +1,6 @@
 namespace HmacManager.Extensions;
 
-public static class HttpRequestMessageExtensions
+internal static class HttpRequestMessageExtensions
 {
     public static bool TryGetContent(this HttpRequestMessage request, out HttpContent content)
     {

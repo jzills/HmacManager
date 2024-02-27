@@ -2,7 +2,7 @@ using HmacManager.Headers;
 
 namespace HmacManager.Exceptions;
 
-public class MissingHeaderException : Exception
+internal class MissingHeaderException : Exception
 {
     public MissingHeaderException() 
         : base("One or more headers defined in HmacManagerOptions is missing.")

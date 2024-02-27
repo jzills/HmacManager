@@ -1,6 +1,6 @@
 namespace HmacManager.Common;
 
-public interface IConfigurator<TComponent>
+internal interface IConfigurator<TComponent>
 {
     void Add(string name, Action<TComponent> configureComponent);
 }

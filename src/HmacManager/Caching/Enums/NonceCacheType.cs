@@ -1,6 +1,6 @@
 namespace HmacManager.Caching;
 
-public enum NonceCacheType
+internal enum NonceCacheType
 {
     Memory,
     Distributed

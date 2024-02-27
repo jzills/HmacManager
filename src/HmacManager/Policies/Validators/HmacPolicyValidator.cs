@@ -1,6 +1,6 @@
 namespace HmacManager.Policies;
 
-public class HmacPolicyValidator : IValidator<HmacPolicy>
+internal class HmacPolicyValidator : IValidator<HmacPolicy>
 {
     private readonly NameValidator _nameValidator = new();
     private readonly KeyCredentialsValidator _keysValidator = new();
