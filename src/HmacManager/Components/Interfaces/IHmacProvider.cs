@@ -8,8 +8,7 @@ namespace HmacManager.Components;
 /// </summary>
 public interface IHmacProvider
 {
-    string ComputeContentHash(string content);
-    string ComputeSignature(string signingContent);
+    Task<string> ComputeSignatureAsync(string signingContent);
     Task<string> ComputeSigningContentAsync(
         HttpRequestMessage request, 
         DateTimeOffset dateRequested, 

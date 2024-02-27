@@ -1,88 +1,47 @@
-using System.Security.Cryptography;
-using System.Text;
+using HmacManager.Extensions;
 using HmacManager.Headers;
 
 namespace HmacManager.Components;
 
 public class HmacProvider : IHmacProvider
 {
-    private readonly HmacProviderOptions _options;
+    private readonly ContentHashGenerator _contentHashGenerator;
+    private readonly SignatureHashGenerator _signatureHashGenerator;
 
-    public HmacProvider(HmacProviderOptions options) => _options = options;
-
-    public string ComputeContentHash(string content)
+    public HmacProvider(
+        ContentHashGenerator contentHashGenerator,
+        SignatureHashGenerator signatureHashGenerator
+    )
     {
-        using HashAlgorithm hashAlgorithm = _options.Algorithms.ContentHashAlgorithm switch
-        {
-            ContentHashAlgorithm.SHA1   => SHA1  .Create(),
-            ContentHashAlgorithm.SHA256 => SHA256.Create(),
-            ContentHashAlgorithm.SHA512 => SHA512.Create(),
-            _                           => SHA256.Create()
-        };
-
-        var contentBytes = Encoding.UTF8.GetBytes(content);
-        var hashBytes = hashAlgorithm.ComputeHash(contentBytes);
-        return Convert.ToBase64String(hashBytes);
+        _contentHashGenerator = contentHashGenerator;
+        _signatureHashGenerator = signatureHashGenerator;
     }
 
-    public string ComputeSignature(string signingContent)
+    public Task<string> ComputeSignatureAsync(string signingContent)
     {
-        var keyBytes = Convert.FromBase64String(_options.Keys.PrivateKey);
-        using HashAlgorithm hashAlgorithm = _options.Algorithms.SigningHashAlgorithm switch
-        {
-            SigningHashAlgorithm.HMACSHA1   => new HMACSHA1  (keyBytes),
-            SigningHashAlgorithm.HMACSHA256 => new HMACSHA256(keyBytes),
-            SigningHashAlgorithm.HMACSHA512 => new HMACSHA512(keyBytes),
-            _                               => new HMACSHA256(keyBytes)
-        };
+        ArgumentException.ThrowIfNullOrWhiteSpace(signingContent);
 
-        var signingContentBytes = Encoding.UTF8.GetBytes(signingContent);
-        var hashBytes = hashAlgorithm.ComputeHash(signingContentBytes);
-        return Convert.ToBase64String(hashBytes);
+        return _signatureHashGenerator.HashAsync(signingContent);
     }
 
     public async Task<string> ComputeSigningContentAsync(
         HttpRequestMessage request, 
         DateTimeOffset dateRequested, 
         Guid nonce,
-        HeaderValue[]? headerValues = null
-    )
+        HeaderValue[]? headerValues = null)
     {
-        var macBuilder = new StringBuilder($"{request.Method}");
+        var builder = new SigningContentBuilder(request)
+            .WithDateRequested(dateRequested)
+            .WithNonce(nonce)
+            .WithHeaderValues(headerValues);
 
-        if (request.RequestUri is not null)
+        if (request.TryGetContent(out var content))
         {
-            if (request.RequestUri.IsAbsoluteUri)
-            {
-                macBuilder.Append($":{request.RequestUri.PathAndQuery}");
-                macBuilder.Append($":{request.RequestUri.Authority}");
-            }
-            else
-            {
-                // Handle the case when a relative uri is used, for instance,
-                // when using an HttpClient with a predefined BaseAddress. For
-                // cases like this, only append the path and any potential query
-                // but disregard the authority.
-                macBuilder.Append($":{request.RequestUri.OriginalString}");
-            }
+            var contentString = await content.ReadAsStringAsync();
+            var contentHash = await _contentHashGenerator.HashAsync(contentString);
+            builder.WithContentHash(contentHash);
         }
 
-        macBuilder.Append($":{dateRequested}");
-        macBuilder.Append($":{_options.Keys.PublicKey}");
-
-        if (request.Content is not null && request.Content.Headers.ContentLength > 0)
-        {
-            var contentHash = ComputeContentHash(await request.Content.ReadAsStringAsync());
-            macBuilder.Append($":{contentHash}");
-        }
-
-        if (headerValues?.Any() ?? false)
-        {
-            macBuilder.Append(":");
-            macBuilder.AppendJoin(":", headerValues.Select(element => element.Value));
-        }
-
-        macBuilder.Append($":{nonce}");
-        return macBuilder.ToString();
+        return builder.Build();
     }
 }

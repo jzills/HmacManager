@@ -7,18 +7,18 @@ namespace HmacManager.Components;
 public class HmacManager : IHmacManager
 {
     private readonly HmacManagerOptions _options;
-    private readonly INonceCache _cache;
     private readonly IHmacProvider _provider;
+    private readonly INonceCache _cache;
 
     public HmacManager(
         HmacManagerOptions options,
-        INonceCache cache,
-        IHmacProvider provider
+        IHmacProvider provider,
+        INonceCache cache
     )
     {
         _options = options;
-        _cache = cache;
         _provider = provider;
+        _cache = cache;
     }
 
     public async Task<HmacResult> VerifyAsync(HttpRequestMessage request)
@@ -39,7 +39,7 @@ public class HmacManager : IHmacManager
                     hmac.HeaderValues
                 );
 
-                var signature = _provider.ComputeSignature(hmac.SigningContent);
+                var signature = await _provider.ComputeSignatureAsync(hmac.SigningContent);
 
                 return new HmacResult
                 {
@@ -76,7 +76,7 @@ public class HmacManager : IHmacManager
             );
 
             // Compute the signature against the signing content
-            hmac.Signature = _provider.ComputeSignature(
+            hmac.Signature = await _provider.ComputeSignatureAsync(
                 hmac.SigningContent
             );
 
