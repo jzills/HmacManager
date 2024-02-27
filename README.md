@@ -5,7 +5,7 @@
 
 ## Summary
 
-Integrate HMAC (Hash-based Message Authentication Code) authentication seamlessly into your .NET Core applications.
+Integrate HMAC (Hash-based Message Authentication Code) authentication seamlessly into your .NET applications.
 
 ## Features
 
