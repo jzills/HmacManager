@@ -28,7 +28,7 @@ builder.Services
 
         options.Events = new HmacEvents
         {
-            OnAuthenticationSuccess = context =>
+            OnAuthenticationSuccess = (context, hmacResult) =>
             {
                 var claims = new Claim[]
                 {
@@ -53,6 +53,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();

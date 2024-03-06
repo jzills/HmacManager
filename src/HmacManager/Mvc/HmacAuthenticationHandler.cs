@@ -49,7 +49,7 @@ internal class HmacAuthenticationHandler : AuthenticationHandler<HmacAuthenticat
 
                     if (Options.Events?.OnAuthenticationSuccess is not null)
                     {
-                        var successHandlerClaims = Options.Events.OnAuthenticationSuccess(Request.HttpContext);
+                        var successHandlerClaims = Options.Events.OnAuthenticationSuccess(Request.HttpContext, hmacResult);
                         foreach (var claim in successHandlerClaims)
                         {
                             claims.Add(claim);

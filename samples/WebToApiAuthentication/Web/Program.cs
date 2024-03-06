@@ -5,10 +5,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 builder.Services
-    .AddHttpClient("Hmac_MyPolicy_RequiredAccountAndEmail", client =>
+    .AddHttpClient("Hmac_MyPolicy_RequireAccountAndEmail", client =>
     {
         client.BaseAddress = new Uri("https://localhost:7216");
-    }).AddHmacHttpMessageHandler("MyPolicy", "RequiredAccountAndEmail");
+    }).AddHmacHttpMessageHandler("MyPolicy", "RequireAccountAndEmail");
 
 builder.Services
     .AddHmacManager(options =>

@@ -1,5 +1,5 @@
-﻿using Api;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Web.Models;
 
 namespace Web.Controllers;
 
@@ -8,7 +8,7 @@ public class HomeController : Controller
     private readonly HttpClient _client;
 
     public HomeController(IHttpClientFactory clientFactory) => 
-        _client = clientFactory.CreateClient("Hmac_MyPolicy_RequiredAccountAndEmail");
+        _client = clientFactory.CreateClient("Hmac_MyPolicy_RequireAccountAndEmail");
 
     public IActionResult Index() => View();
 

@@ -33,7 +33,10 @@ internal static class HttpRequestHeadersExtensions
     public static void AddDateRequested(
         this HttpRequestHeaders headers, 
         DateTimeOffset dateRequested
-    ) => headers.Add(HmacAuthenticationDefaults.Headers.DateRequested, dateRequested.ToString());
+    )
+    {
+        headers.Add(HmacAuthenticationDefaults.Headers.DateRequested, dateRequested.UtcDateTime.Ticks.ToString());
+    }
 
     public static void AddNonce(
         this HttpRequestHeaders headers, 
@@ -168,12 +171,11 @@ internal static class HttpRequestHeadersExtensions
         out DateTimeOffset dateRequested
     )
     {
-        if (headers.TryGetValues(HmacAuthenticationDefaults.Headers.DateRequested, out var value))
+        if (headers.TryGetValues(HmacAuthenticationDefaults.Headers.DateRequested, out var value) &&
+            long.TryParse(value?.FirstOrDefault(), out var ticks))
         {
-            return DateTimeOffset.TryParse(
-                value.FirstOrDefault(), 
-                out dateRequested
-            );
+            dateRequested = new DateTimeOffset(ticks, TimeSpan.Zero);
+            return true;
         }
 
         dateRequested = default;

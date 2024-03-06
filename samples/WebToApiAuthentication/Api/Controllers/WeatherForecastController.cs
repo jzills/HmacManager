@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using HmacManager.Mvc;
+using System.Web.Http;
 
 namespace Api.Controllers;
 
 [ApiController]
-[Route("[controller]")]
-[HmacAuthorize(Policy = "MyPolicy", Scheme = "RequireAccountAndEmail")]
+[Route("api/[controller]")]
+[HmacAuthenticate(Policy = "MyPolicy", Scheme = "RequireAccountAndEmail")]
 public class WeatherForecastController : ControllerBase
 {
     private static readonly string[] Summaries = [
@@ -21,7 +22,8 @@ public class WeatherForecastController : ControllerBase
         "Scorching"
     ];
 
-    [HttpGet(Name = "GetWeatherForecast")]
+    [HttpGet]
+    [Route("")]
     public IEnumerable<WeatherForecast> Get() =>
         Enumerable.Range(1, 5).Select(index => new WeatherForecast
         {
