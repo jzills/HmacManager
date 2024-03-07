@@ -7,17 +7,19 @@ public class Test_Memory_ReplayAttack : TestServiceCollection
     public async Task Test(HttpRequestMessage request)
     {
         var hmacManager = HmacManagerFactory.Create("Policy_Memory");
+        Assert.IsNotNull(hmacManager);
+
         var signingResult = await hmacManager.SignAsync(request);
         Assert.IsTrue(signingResult.IsSuccess);
         Assert.IsTrue(signingResult.Policy == "Policy_Memory");
-        Assert.IsTrue(signingResult.Hmac?.HeaderValues?.Count() == 0);
+        Assert.IsTrue(signingResult.Hmac!.HeaderValues!.Count() == 0);
         Assert.IsNull(signingResult.HeaderScheme);
 
         var verificationResult = await hmacManager.VerifyAsync(request);
-        Assert.IsTrue(signingResult.IsSuccess);
-        Assert.IsTrue(signingResult.Policy == "Policy_Memory");
-        Assert.IsTrue(signingResult.Hmac?.HeaderValues?.Count() == 0);
-        Assert.IsNull(signingResult.HeaderScheme);
+        Assert.IsTrue(verificationResult.IsSuccess);
+        Assert.IsTrue(verificationResult.Policy == "Policy_Memory");
+        Assert.IsTrue(verificationResult.Hmac!.HeaderValues!.Count() == 0);
+        Assert.IsNull(verificationResult.HeaderScheme);
 
         var replayVerificationResult = await hmacManager.VerifyAsync(request);
         Assert.IsFalse(replayVerificationResult.IsSuccess);

@@ -12,8 +12,6 @@ public class Test_ServiceCollection_AddHmacManager : TestBase
     {
         var services = new ServiceCollection()
             .AddMemoryCache() 
-            // TODO: Handle error when AddMemoryCache isn't called
-            // and HmacManager attempts to use IMemoryCache through UseMemoryCache call.
             .AddHmacManager(options =>
             {
                 options.AddPolicy("MyPolicy_1", policy =>
