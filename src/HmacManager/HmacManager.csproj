@@ -11,7 +11,7 @@
     <PackageId>HmacManager</PackageId>
     <Version>2.0.2</Version>
     <Authors>Joshua Zillwood</Authors>
-    <Description>A tool to manage hmacs including signing and verifying configurable content.</Description>
+    <Description>A tool to manage hmac authentication.</Description>
     <Company></Company>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
