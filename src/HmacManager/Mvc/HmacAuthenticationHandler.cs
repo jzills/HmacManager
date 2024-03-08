@@ -56,6 +56,11 @@ internal class HmacAuthenticationHandler : AuthenticationHandler<HmacAuthenticat
                         }
                     }
 
+                    // Add policy and header claim to support IAuthorizationRequirement
+                    // for dynamic authorization policies.
+                    claims.Add(new Claim(HmacAuthenticationDefaults.Properties.PolicyProperty, hmacResult.Policy));
+                    claims.Add(new Claim(HmacAuthenticationDefaults.Properties.SchemeProperty, hmacResult.HeaderScheme));
+
                     return AuthenticateResult.Success(
                         new AuthenticationTicket(
                             new ClaimsPrincipal(

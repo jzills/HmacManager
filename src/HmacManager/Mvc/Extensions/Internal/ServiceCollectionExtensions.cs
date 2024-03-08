@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,7 +21,8 @@ internal static class ServiceCollectionExtensions
             .AddHttpContextAccessor()
             .AddCacheCollection()
             .AddPolicyCollection(options.GetPolicies())
-            .AddFactory();
+            .AddFactory()
+            .AddSingleton<IAuthorizationHandler, HmacAuthorizationHandler>(); // Add AuthorizationHandler for dynamic policies
 
     internal static IServiceCollection AddPolicyCollection(
         this IServiceCollection services, 

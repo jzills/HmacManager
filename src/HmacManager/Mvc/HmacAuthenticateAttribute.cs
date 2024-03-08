@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace HmacManager.Mvc;
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
-public class HmacAuthenticateAttribute : Attribute, IAsyncAuthorizationFilter
+public class HmacAuthenticateAttribute : Attribute, IAuthorizationRequirement, IAsyncAuthorizationFilter
 {
     public required string Policy { get; init; }
     public string? Scheme { get; init; } 
@@ -38,5 +39,11 @@ public class HmacAuthenticateAttribute : Attribute, IAsyncAuthorizationFilter
         }
     }
 
-    private bool IsMatch(string policy, string scheme) => Policy == policy && Scheme == scheme;
+    public bool IsMatch(string? policy, string? scheme) =>
+        (policy, scheme) switch
+        {
+            (null, null)    => false,
+            (_, null)       => Policy == policy,
+            (_, _)          => Policy == policy && Scheme == scheme
+        };
 }
