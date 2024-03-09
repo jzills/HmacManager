@@ -57,6 +57,7 @@ builder.Services
 
 builder.Services.AddAuthorization(options => 
 {
+    options.AddPolicy("", p => p.AddRequirements(new HmacAuthenticateAttribute { Policy = "", Scheme = ""}));
     options.AddPolicy("Require_Hmac_PolicyScheme_2", policy =>
     {
         policy.RequireHmacPolicy("HmacPolicy_2");
