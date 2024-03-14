@@ -50,8 +50,42 @@ The `AddHmacManager` extension method can be bypassed in favor of the `IAuthenti
 - The `HmacAuthenticationHandler` handles parsing incoming requests and authenticating the correct scheme.
     - By default, if there is a policy that matches the one defined in the request headers that can be successfully verified, then the handler returns a success. If more granular authentication is required, such as protecting routes with specific policies or schemes, then there are a couple options available.
         - Use `HmacAuthenticateAttribute` to specify exact policies and schemes required to authenticate a given endpoint.
+
+                [HmacAuthenticate(Policy = "HmacPolicy", Scheme = "HmacScheme")]
+                public class HomeController : Controller
+
         - Use `HmacAuthenticateAttribute` as an `IAuthorizationRequirement` to an authorization policy and register the `HmacAuthorizationHandler` to handle the requirement automatically.
+
+                builder.Services.AddAuthorization(options => 
+                {
+                    options.AddPolicy("RequireHmac", policy => 
+                        policy.AddRequirements(new HmacAuthenticateAttribute 
+                        { 
+                            Policy = "HmacPolicy", 
+                            Scheme = "HmacScheme"
+                        }));
+                });
+
         - Use the `AuthorizationPolicyBuilder` extensions `RequireHmacPolicy` and `RequireHmacScheme` to add hmac policy and scheme requirements to an authorization policy.
+
+                builder.Services.AddAuthorization(options => 
+                {
+                    options.AddPolicy("RequireHmac", policy =>
+                    {
+                        policy.RequireHmacPolicy("HmacPolicy");
+                        policy.RequireHmacScheme("HmacScheme");
+                    });
+                });
+
+        - Use the `AuthorizationPolicyBuilder` extension `RequireHmacAuthentication` to add hmac policy and scheme requirements to an authorization policy.
+
+                builder.Services.AddAuthorization(options => 
+                {
+                    options.AddPolicy("RequireHmac", policy =>
+                    {
+                        policy.RequireHmacAuthentication("HmacPolicy", "HmacScheme");
+                    });
+                });
 
 - Any scheme headers are mapped to their specified claim types. If no claim type is specified, the name of the header is used.
 

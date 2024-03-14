@@ -5,10 +5,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 builder.Services
-    .AddHttpClient("HmacPolicy_1_HmacScheme_1", client =>
+    .AddHttpClient("HmacPolicy_2_HmacScheme_2", client =>
     {
         client.BaseAddress = new Uri("https://localhost:7075");
-    }).AddHmacHttpMessageHandler("HmacPolicy_1", "HmacScheme_1");
+    }).AddHmacHttpMessageHandler("HmacPolicy_2", "HmacScheme_2");
 
 builder.Services
     .AddHmacManager(options =>

@@ -57,11 +57,22 @@ builder.Services
 
 builder.Services.AddAuthorization(options => 
 {
-    options.AddPolicy("", p => p.AddRequirements(new HmacAuthenticateAttribute { Policy = "", Scheme = ""}));
+    // options.AddPolicy("Require_Hmac_PolicyScheme_2", policy => 
+    //     policy.AddRequirements(new HmacAuthenticateAttribute 
+    //     { 
+    //         Policy = "HmacPolicy_2", 
+    //         Scheme = "HmacScheme_2"
+    //     }));
+
+    // options.AddPolicy("Require_Hmac_PolicyScheme_2", policy =>
+    // {
+    //     policy.RequireHmacPolicy(`"HmacPolicy_2");
+    //     policy.RequireHmacScheme("HmacScheme_2");
+    // });
+
     options.AddPolicy("Require_Hmac_PolicyScheme_2", policy =>
     {
-        policy.RequireHmacPolicy("HmacPolicy_2");
-        policy.RequireHmacScheme("HmacScheme_2");
+        policy.RequireHmacAuthentication("HmacPolicy_2", "HmacScheme_2");
     });
 });
 

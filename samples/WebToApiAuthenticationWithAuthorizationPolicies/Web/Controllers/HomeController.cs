@@ -8,7 +8,7 @@ public class HomeController : Controller
     private readonly HttpClient _client;
 
     public HomeController(IHttpClientFactory clientFactory) => 
-        _client = clientFactory.CreateClient("HmacPolicy_1_HmacScheme_1");
+        _client = clientFactory.CreateClient("HmacPolicy_2_HmacScheme_2");
 
     public IActionResult Index() => View();
 
