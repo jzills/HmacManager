@@ -39,7 +39,7 @@ builder.Services
 
                 return claims;
             },
-            OnAuthenticationFailure = context => new Exception("An error occurred authenticating request.")
+            OnAuthenticationFailure = (context, hmacResult) => new Exception("An error occurred authenticating request.")
         };
     });
 
