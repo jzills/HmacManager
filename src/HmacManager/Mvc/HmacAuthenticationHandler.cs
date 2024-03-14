@@ -78,7 +78,7 @@ internal class HmacAuthenticationHandler : AuthenticationHandler<HmacAuthenticat
                 {
                     if (Options.Events?.OnAuthenticationFailure is not null)
                     {
-                        var exception = Options.Events.OnAuthenticationFailure(Request.HttpContext);
+                        var exception = Options.Events.OnAuthenticationFailure(Request.HttpContext, hmacResult);
                         return AuthenticateResult.Fail(exception);
                     }
                     else
