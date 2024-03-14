@@ -5,7 +5,7 @@
 
 ## Summary
 
-Integrate Hmac (Hash-based Message Authentication Code) authentication seamlessly into your .NET applications.
+Integrate Hmac (Hash-based Message Authentication Code) authentication seamlessly into your .NET applications, fortifying security measures and ensuring robust authentication protocols.
 
 ## Features
 
@@ -13,6 +13,7 @@ Integrate Hmac (Hash-based Message Authentication Code) authentication seamlessl
 - Each policy has the capability to specify header schemes, dictating the mandatory header values in both the request and the signed Hmac.
 - Implements automatic nonce handling to safeguard against replay attacks.
 - Seamlessly integrates with authorization policies, providing precise control over authorized Hmac authentication configurations.
+- Integration with built-in .NET authorization.
 - (Currently in progress) JavaScript library to facilitate the effortless integration of signatures from the client to the server.
 
 ## Installation
