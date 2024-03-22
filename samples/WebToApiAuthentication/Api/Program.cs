@@ -10,10 +10,12 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services
+    // HmacManager does not manage adding cache services to the DI container
     .AddMemoryCache()
     .AddAuthentication()
     .AddHmac(options =>
     {
+        // The same setup as in the Web project for this demo
         options.AddPolicy("MyPolicy", policy =>
         {
             policy.UsePublicKey(Guid.Parse("eb8e9dae-08bd-4883-80fe-1d9a103b30b5"));
@@ -26,6 +28,8 @@ builder.Services
             });
         });
 
+        // Subscribe to HmacEvents to handle
+        // successes and failures
         options.Events = new HmacEvents
         {
             OnAuthenticationSuccess = (context, hmacResult) =>
