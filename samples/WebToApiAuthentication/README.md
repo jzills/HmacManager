@@ -25,7 +25,7 @@ Register [HmacManager](../../README.md) through the [AddHmac](/src/HmacManager/M
             });
         });
 
-Decorate controller or action with [HmacAuthenticateAttribute](/src/HmacManager/Mvc/HmacAuthenticateAttribute.cs)
+Decorate controller or action with [HmacAuthenticateAttribute](/src/HmacManager/Mvc/HmacAuthenticateAttribute.cs).
 
     [ApiController]
     [Route("api/[controller]")]
