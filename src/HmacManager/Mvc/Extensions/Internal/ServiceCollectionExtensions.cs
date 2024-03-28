@@ -47,6 +47,10 @@ internal static class ServiceCollectionExtensions
                 MaxAge = TimeSpan.FromMinutes(1) 
             }));
         }
+        else
+        {
+            services.AddMemoryCache();
+        }
 
         var distributedCache = serviceProvider.GetService<IDistributedCache>();
         if (distributedCache is not null)
@@ -56,6 +60,10 @@ internal static class ServiceCollectionExtensions
                 CacheName = "Distributed", 
                 MaxAge = TimeSpan.FromMinutes(1) 
             }));
+        }
+        else
+        {
+            services.AddDistributedMemoryCache();
         }
 
         return services.AddScoped<IComponentCollection<INonceCache>, NonceCacheCollection>(_ => caches);

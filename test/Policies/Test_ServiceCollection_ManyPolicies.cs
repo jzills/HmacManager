@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
-using HmacManager.Mvc.Extensions;
 using HmacManager.Components;
+using HmacManager.Mvc.Extensions;
 
 namespace Unit.Tests;
 

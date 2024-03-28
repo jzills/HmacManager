@@ -6,8 +6,7 @@ namespace Unit.Tests;
 public class TestCaseSource
 {
     public static IEnumerable<HttpRequestMessage> GetHttpRequestMessages() =>
-        new[]
-        {
+        [
             new HttpRequestMessage(HttpMethod.Get,    "api/artists"),
             new HttpRequestMessage(HttpMethod.Get,   "/api/artists"),
             new HttpRequestMessage(HttpMethod.Get,  $"/api/artists/{Guid.NewGuid()}"),
@@ -23,5 +22,5 @@ public class TestCaseSource
                     new MediaTypeHeaderValue("application/json")
                 )
             }
-        };
+        ];
 }
