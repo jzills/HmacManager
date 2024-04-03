@@ -1,10 +1,10 @@
 using System.Security.Claims;
 using System.Text.Encodings.Web;
-using Microsoft.AspNetCore.Mvc.WebApiCompatShim;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.WebApiCompatShim;
 using HmacManager.Components;
 using HmacManager.Exceptions;
 
@@ -18,9 +18,8 @@ internal class HmacAuthenticationHandler : AuthenticationHandler<HmacAuthenticat
         IHmacManagerFactory hmacManagerFactory,
         IOptionsMonitor<HmacAuthenticationOptions> options, 
         ILoggerFactory logger, 
-        ISystemClock clock,
         UrlEncoder encoder
-    ) : base(options, logger, encoder, clock)
+    ) : base(options, logger, encoder)
     {
         _hmacManagerFactory = hmacManagerFactory;
     }
@@ -66,7 +65,7 @@ internal class HmacAuthenticationHandler : AuthenticationHandler<HmacAuthenticat
                             new ClaimsPrincipal(
                                 new ClaimsIdentity(claims, 
                                     HmacAuthenticationDefaults.AuthenticationScheme)), 
-                            new AuthenticationProperties(new Dictionary<string, string> 
+                            new AuthenticationProperties(new Dictionary<string, string?> 
                             { 
                                 { HmacAuthenticationDefaults.Properties.PolicyProperty, hmacResult.Policy }, 
                                 { HmacAuthenticationDefaults.Properties.SchemeProperty, hmacResult.HeaderScheme }

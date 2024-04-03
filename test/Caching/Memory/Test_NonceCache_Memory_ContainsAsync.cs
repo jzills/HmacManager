@@ -1,49 +1,45 @@
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using HmacManager.Caching;
 using HmacManager.Caching.Memory;
 
 namespace Unit.Tests.Caching.Memory;
 
-[TestFixture]
+[TestFixture(1)]
+[TestFixture(5)]
+[TestFixture(10)]
+[TestFixture(20)]
+[TestFixture(300)]
+[TestFixture(int.MaxValue)]
 public class Test_NonceCache_Memory_ContainsAsync : TestServiceCollection
 {
     public INonceCache Cache;
+    public readonly int MaxAgeInSeconds;
+
+    public Test_NonceCache_Memory_ContainsAsync(int maxAgeInSeconds) => MaxAgeInSeconds = maxAgeInSeconds;
 
     [SetUp]
     public void Init()
     {
-        // TODO: Clear memory cache
-        // because tests are reusing the DI registration of IMemoryCache
-        // and existing entries are interfering with one another.
         Cache = new NonceMemoryCache(
-            ServiceProvider.GetRequiredService<IMemoryCache>(),
-            new NonceCacheOptions()
+            new MemoryCache(Options.Create(new MemoryCacheOptions())),
+            new NonceCacheOptions { MaxAge = TimeSpan.FromSeconds(MaxAgeInSeconds) }
         );
     }    
 
     [Test]
-    public async Task Test_SetRandomNonce_ShouldContain()
+    [TestCaseSource(typeof(TestCaseData), nameof(TestCaseData.GetNonces))]
+    public async Task Test_ContainsAsync_Exists(Guid nonce)
     {
-        var nonce = Guid.NewGuid();
-        await Cache.SetAsync(nonce, DateTimeOffset.Now);
-
+        await Cache.SetAsync(nonce, DateTimeOffset.Now.AddSeconds(MaxAgeInSeconds));
+        
         Assert.IsTrue(await Cache.ContainsAsync(nonce));
     }
 
     [Test]
-    public async Task Test_SetEmptyNonce_ShouldContain()
+    [TestCaseSource(typeof(TestCaseData), nameof(TestCaseData.GetNonces))]
+    public async Task Test_ContainsAsync_DoesNotExist(Guid nonce)
     {
-        await Cache.SetAsync(default, DateTimeOffset.Now);
-
-        Assert.IsTrue(await Cache.ContainsAsync(default));
-    }
-
-    [Test]
-    public async Task Test_SetEmptyNonce_ShouldNotContain()
-    {
-        await Cache.SetAsync(Guid.NewGuid(), DateTimeOffset.Now);
-
-        Assert.IsFalse(await Cache.ContainsAsync(default));
+        Assert.IsFalse(await Cache.ContainsAsync(nonce));
     }
 }
