@@ -1,56 +1,33 @@
-using Microsoft.Extensions.DependencyInjection;
-using HmacManager.Components;
 using HmacManager.Extensions;
 using HmacManager.Headers;
-using HmacManager.Mvc.Extensions;
 
 namespace Unit.Tests;
 
-public class Test_HttpRequestHeaderExtensions_TryParseHmac : TestBase
+public class Test_HttpRequestHeaderExtensions_TryParseHmac : TestServiceCollection
 {
     [Test]
     public async Task Test()
     {
-        var services = new ServiceCollection()
-            .AddHmacManager(options =>
-            {
-                options.AddPolicy("MyPolicy_1", policy =>
-                {
-                    policy.UsePublicKey(PublicKey);
-                    policy.UsePrivateKey(PrivateKey);
-                    policy.UseMemoryCache(TimeSpan.FromSeconds(30));
-                    policy.AddScheme("MyScheme_1", scheme =>
-                    {
-                        scheme.AddHeader("X-Account-Id");
-                        scheme.AddHeader("X-Email");
-                    });
-                });
+        var headerScheme = new HeaderScheme(PolicySchemeType.Policy_Memory_Scheme_1.Scheme);
+        headerScheme.AddHeader("Scheme_Header_1");
 
-                options.AddPolicy("MyPolicy_2", policy =>
-                {
-                    policy.UsePublicKey(PublicKey);
-                    policy.UsePrivateKey(PrivateKey);
-                    policy.UseMemoryCache(TimeSpan.FromSeconds(30));
-                    policy.AddScheme("MyScheme_2", scheme =>
-                    {
-                        scheme.AddHeader("X-Email");
-                    });
-                });
-            });
+        var request = new HttpRequestMessage(HttpMethod.Get, "/api/something");
+        request.Headers.Add("Scheme_Header_1", "Value");
 
-        var serviceProvider = services.BuildServiceProvider();
-        var hmacManagerFactory = serviceProvider.GetRequiredService<IHmacManagerFactory>();
-        var hmacManager = hmacManagerFactory.Create("MyPolicy_2");
+        var signingResult = await HmacManagerFactory
+            .Create(PolicySchemeType.Policy_Memory_Scheme_1.Policy, PolicySchemeType.Policy_Memory_Scheme_1.Scheme)!
+            .SignAsync(request);
 
-        var headerScheme = new HeaderScheme("MyScheme_1");
-        headerScheme.AddHeader("X-Account-Id");
-        headerScheme.AddHeader("X-Email");
+        var hasHeaderValues = request.Headers.TryParseHmac(headerScheme, TimeSpan.FromSeconds(30), out var hmac);
+        Assert.IsTrue(hasHeaderValues);
+        Assert.That(signingResult.Hmac!.HeaderValues.Length, Is.EqualTo(hmac.HeaderValues.Length));
 
-        var request = new HttpRequestMessage(HttpMethod.Get, "api/endpoint");
-        request.Headers.Add("X-Account-Id", Guid.NewGuid().ToString());
-        var signingResult = await hmacManager.SignAsync(request);
-
-        var hasHeaderValues = request.Headers.TryParseHmac(headerScheme, TimeSpan.FromSeconds(30), out var headerValues);
-        Assert.IsFalse(hasHeaderValues);
+        foreach (var (signingHeaderValue, headerValue) in 
+            signingResult.Hmac!.HeaderValues.Zip(hmac.HeaderValues))
+        {
+            Assert.That(signingHeaderValue.Name, Is.EqualTo(headerValue.Name));
+            Assert.That(signingHeaderValue.ClaimType, Is.EqualTo(headerValue.ClaimType));
+            Assert.That(signingHeaderValue.Value, Is.EqualTo(headerValue.Value));
+        }
     }
 }

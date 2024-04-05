@@ -80,7 +80,9 @@ public class Test_HmacManager_SignAsync
         foreach (var (signingHeaderValue, verificationHeaderValue) in 
             signingResult.Hmac.HeaderValues.Zip(verificationResult.Hmac.HeaderValues))
         {
-            Assert.That(signingHeaderValue, Is.EqualTo(verificationHeaderValue));
+            Assert.That(signingHeaderValue.Name, Is.EqualTo(verificationHeaderValue.Name));
+            Assert.That(signingHeaderValue.ClaimType, Is.EqualTo(verificationHeaderValue.ClaimType));
+            Assert.That(signingHeaderValue.Value, Is.EqualTo(verificationHeaderValue.Value));
         }
 
         Assert.That(signingResult.Hmac!.Nonce, Is.EqualTo(verificationResult.Hmac!.Nonce));
