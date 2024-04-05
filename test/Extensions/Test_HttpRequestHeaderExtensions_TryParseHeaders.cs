@@ -1,5 +1,4 @@
 using HmacManager.Components;
-using HmacManager.Extensions;
 using HmacManager.Headers;
 using HmacManager.Mvc.Extensions;
 using Microsoft.Extensions.DependencyInjection;

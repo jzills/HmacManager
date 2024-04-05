@@ -63,5 +63,5 @@ public class Hmac
     /// Represents custom header values configured on a per scheme basis. If defined, these become part of the signature.
     /// </summary>
     /// <value>An array of header values, empty if there is no scheme defined.</value>
-    public HeaderValue[] HeaderValues { get; set; } = new HeaderValue[0];
+    public HeaderValue[] HeaderValues { get; set; } = [];
 }
