@@ -31,45 +31,59 @@ internal static class ServiceCollectionExtensions
 
     internal static IServiceCollection AddCacheCollection(this IServiceCollection services)
     {
-        var serviceProvider = services.BuildServiceProvider();
-
-        // TODO: The caches are not configured
-        // based on user configuration. Right now,
-        // these values are hard coded. Max age and cache name
-        // needs to be configurable to support diferent max ages.
         var caches = new NonceCacheCollection();
-        var memoryCache = serviceProvider.GetService<IMemoryCache>();
-        if (memoryCache is not null)
-        {
-            caches.Add("Memory", new NonceMemoryCache(memoryCache, new NonceCacheOptions
-            { 
-                CacheName = "Memory",
-                MaxAge = TimeSpan.FromMinutes(1) 
-            }));
-        }
-        else
-        {
-            services.AddMemoryCache();
-        }
 
-        var distributedCache = serviceProvider.GetService<IDistributedCache>();
-        if (distributedCache is not null)
-        {
-            caches.Add("Distributed", new NonceDistributedCache(distributedCache, new NonceCacheOptions
-            {
-                CacheName = "Distributed", 
-                MaxAge = TimeSpan.FromMinutes(1) 
-            }));
-        }
-        else
-        {
-            services.AddDistributedMemoryCache();
-        }
-
-        return services.AddScoped<IComponentCollection<INonceCache>, NonceCacheCollection>(_ => caches);
+        return services
+            .AddMemoryCacheIfNotExists(caches)
+            .AddDistributedCacheIfNotExists(caches)
+            .AddScoped<IComponentCollection<INonceCache>, NonceCacheCollection>(_ => caches);
     }
 
     internal static IServiceCollection AddFactory(
         this IServiceCollection services
     ) => services.AddScoped<IHmacManagerFactory, HmacManagerFactory>();
+
+    internal static IServiceCollection AddMemoryCacheIfNotExists(this IServiceCollection services, NonceCacheCollection caches)
+    {
+        var serviceProvider = services.BuildServiceProvider();
+
+        // Add memory cache if it isn't registered
+        var memoryCache = serviceProvider.GetService<IMemoryCache>();
+        if (memoryCache is null)
+        {
+            services.AddMemoryCache();
+            serviceProvider = services.BuildServiceProvider();
+            memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
+        }
+
+        caches.Add("Memory", new NonceMemoryCache(memoryCache, new NonceCacheOptions
+        { 
+            CacheName = "Memory",
+            MaxAge = TimeSpan.FromMinutes(1) 
+        }));
+
+        return services;
+    }
+
+    internal static IServiceCollection AddDistributedCacheIfNotExists(this IServiceCollection services, NonceCacheCollection caches)
+    {
+        var serviceProvider = services.BuildServiceProvider();
+
+        // Add distributed cache if it isn't registered
+        var distributedCache = serviceProvider.GetService<IDistributedCache>();
+        if (distributedCache is null)
+        {
+            services.AddDistributedMemoryCache();
+            serviceProvider = services.BuildServiceProvider();
+            distributedCache = serviceProvider.GetRequiredService<IDistributedCache>();
+        }
+
+        caches.Add("Distributed", new NonceDistributedCache(distributedCache, new NonceCacheOptions
+        {
+            CacheName = "Distributed", 
+            MaxAge = TimeSpan.FromMinutes(1) 
+        }));
+
+        return services;
+    }
 }
