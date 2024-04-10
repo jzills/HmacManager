@@ -3,7 +3,7 @@ using HmacManager.Headers;
 namespace HmacManager.Components;
 
 /// <summary>
-/// A class representing a HmacProvider, which
+/// An interface representing an <c>IHmacProvider</c>, which
 /// handles the computation of hashes and signatures.
 /// </summary>
 public interface IHmacProvider

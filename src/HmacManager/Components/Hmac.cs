@@ -3,7 +3,7 @@ using HmacManager.Headers;
 namespace HmacManager.Components;
 
 /// <summary>
-/// A class representing a single, generated Hmac.
+/// A class representing a single, generated <c>Hmac</c>.
 /// </summary>
 public class Hmac
 {

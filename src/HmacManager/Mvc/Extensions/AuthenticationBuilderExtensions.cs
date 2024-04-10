@@ -14,7 +14,7 @@ public static class AuthenticationBuilderExtensions
     /// the implementation for <c>IHmacManagerFactory</c> to the DI container.
     /// </summary>
     /// <param name="builder">The calling <c>AuthenticationBuilder</c>.</param>
-    /// <param name="configureOptions"></param>
+    /// <param name="configureOptions">The configuration action for <c>HmacAuthenticationOptions</c>.</param>
     /// <returns>An <c>AuthenticationBuilder</c></returns>
     public static AuthenticationBuilder AddHmac(
         this AuthenticationBuilder builder,

@@ -1,7 +1,7 @@
 namespace HmacManager.Components;
 
 /// <summary>
-/// A class representing a single, generated Hmac.
+/// A class representing a <c>HmacResult</c>.
 /// </summary>
 public class HmacResult
 {

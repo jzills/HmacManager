@@ -1,9 +1,8 @@
 namespace HmacManager.Components;
 
 /// <summary>
-/// A class representing a HmacManager, which
-/// handles signing outgoing requests and verifying
-/// incoming requests.
+/// An interface representing an <c>IHmacManager</c>. This contract
+/// handles signing outgoing requests and verifying incoming requests.
 /// </summary>
 public interface IHmacManager
 {

@@ -1,8 +1,8 @@
 namespace HmacManager.Components;
 
 /// <summary>
-/// A class representing a <c>HmacManagerFactory</c>, which
-/// handles the creation of any configured <c>HmacManager</c>.
+/// An interface representing an <c>IHmacManagerFactory</c>, which
+/// handles the creation of a configured <c>HmacManager</c>.
 /// </summary>
 public interface IHmacManagerFactory
 {

@@ -3,7 +3,7 @@ using HmacManager.Components;
 namespace HmacManager.Policies;
 
 /// <summary>
-/// A class representing the algorithms used for Hmac generation.
+/// A class representing the <c>Algorithms</c> used for <c>Hmac</c> generation.
 /// </summary>
 public class Algorithms
 {

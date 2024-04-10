@@ -14,7 +14,7 @@ public static class IServiceCollectionExtensions
     /// </summary>
     /// <param name="services">The <c>IServiceCollection</c>.</param>
     /// <param name="configureOptions">The configuration action for <c>HmacManagerOptions</c>.</param>
-    /// <returns>A <c>IServiceCollection</c>.</returns>
+    /// <returns>An <c>IServiceCollection</c> that can be used to further configure services.</returns>
     public static IServiceCollection AddHmacManager(
         this IServiceCollection services, 
         Action<HmacManagerOptions> configureOptions
