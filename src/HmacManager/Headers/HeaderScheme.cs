@@ -13,7 +13,7 @@ public class HeaderScheme
         Name = name;
     }
 
-    public readonly string Name;
+    internal readonly string Name;
 
     internal IReadOnlyCollection<Header> GetHeaders() => Headers.GetAll();
 

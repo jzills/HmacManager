@@ -5,7 +5,7 @@ namespace HmacManager.Policies;
 
 public class HmacPolicy
 {
-    public readonly string Name;
+    internal readonly string Name;
     public HmacPolicy() => Name = string.Empty;
     public HmacPolicy(string name) => Name = name;
     public KeyCredentials Keys { get; set; } = new();
