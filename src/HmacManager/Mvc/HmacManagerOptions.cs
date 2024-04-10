@@ -3,14 +3,14 @@ using HmacManager.Policies;
 namespace HmacManager.Mvc;
 
 /// <summary>
-/// A class representing an instance of <c>HmacManagerOptions</c>..
+/// A class representing an instance of <c>HmacManagerOptions</c>.
 /// </summary>
 public class HmacManagerOptions
 {
     protected HmacPolicyCollection Policies = new HmacPolicyCollection();
 
     /// <summary>
-    /// Adds an <c>HmacPolicy</c> with to the <c>HmacPolicyCollection</c>
+    /// Adds an <c>HmacPolicy</c> to the <c>HmacPolicyCollection</c>
     /// with the specified name and configuration defined by the <c>HmacPolicyBuilder</c> action.
     /// </summary>
     /// <param name="name">The name of the <c>HmacPolicy</c>.</param>
