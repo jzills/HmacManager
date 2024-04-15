@@ -13,6 +13,7 @@ public class TestServiceCollection : TestBase
     {
         var services = new ServiceCollection()
             .AddMemoryCache()
+            .AddLogging()
             .AddStackExchangeRedisCache(options => options.Configuration = "127.0.0.1:6379");
 
         services
