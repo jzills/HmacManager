@@ -1,4 +1,6 @@
+using HmacManager.Components;
 using HmacManager.Mvc;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
@@ -10,7 +12,7 @@ using Unit.Tests.Common;
 namespace Unit.Tests.Mvc;
 
 [TestFixture]
-public class Test_HmacAuthenticateAttribute_OnAuthorizationAsync : TestServiceCollection
+public class Test_HmacAuthenticationHandler_HandleAuthenticateAsync : TestServiceCollection
 {
     public HttpContext HttpContext;
     public AuthorizationFilterContext FilterContext;
@@ -28,7 +30,7 @@ public class Test_HmacAuthenticateAttribute_OnAuthorizationAsync : TestServiceCo
     }
 
     [Test]
-    public async Task Test_OnAuthorizeAsync_With_ExistingPolicy()
+    public async Task Test()
     {
         var hmacAuthorizationFilter = new HmacAuthenticateAttribute 
         { 
@@ -52,22 +54,15 @@ public class Test_HmacAuthenticateAttribute_OnAuthorizationAsync : TestServiceCo
         FilterContext.HttpContext.Request.AddHmacHeaders(signingResult);
         FilterContext.HttpContext.Request.Headers.Append("Scheme_Header_1", "Scheme_Header_Value_1");
 
-        await hmacAuthorizationFilter.OnAuthorizationAsync(FilterContext);
-
-        var result = FilterContext.Result as StatusCodeResult;
-        Assert.That(result, Is.Null);
-    }
-    
-    [Test]
-    public async Task Test_OnAuthorizeAsync_With_NonExistentPolicy()
-    {
-        var hmacAuthorizationFilter = new HmacAuthenticateAttribute { Policy = "Some_Policy_That_Doesn't_Exist" };
-        FilterContext.Filters.Add(hmacAuthorizationFilter);
-
-        await hmacAuthorizationFilter.OnAuthorizationAsync(FilterContext);
-
-        var result = FilterContext.Result as UnauthorizedResult;
-        Assert.That(result, Is.Not.Null);
-        Assert.That(result.StatusCode, Is.EqualTo(401));
+        string? policy = null;
+        string? scheme = null;
+        var authenticateResult = await FilterContext.HttpContext.AuthenticateAsync(HmacAuthenticationDefaults.AuthenticationScheme);
+        var hasPolicyProperty = authenticateResult.Properties?.Items.TryGetValue(HmacAuthenticationDefaults.Properties.PolicyProperty, out policy) ?? false;
+        var hasSchemeProperty = authenticateResult.Properties?.Items.TryGetValue(HmacAuthenticationDefaults.Properties.SchemeProperty, out scheme) ?? false;
+        Assert.That(authenticateResult.Succeeded);
+        Assert.That(hasPolicyProperty);
+        Assert.That(hasSchemeProperty);
+        Assert.That(policy, Is.EqualTo(PolicySchemeType.Policy_Memory_Scheme_1.Policy));
+        Assert.That(scheme, Is.EqualTo(PolicySchemeType.Policy_Memory_Scheme_1.Scheme));
     }
 }
