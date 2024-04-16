@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./test
+        working-directory: /test
     steps:
     - uses: actions/checkout@v4
     - name: Setup .NET
