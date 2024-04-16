@@ -10,7 +10,7 @@ using Unit.Tests.Common;
 namespace Unit.Tests.Mvc;
 
 [TestFixture]
-public class Test_HmacAuthenticateAttribute_OnAuthorizationAsync : TestServiceCollection
+public class Test_HmacAuthorizationHandler_OnAuthorizationAsync : TestServiceCollection
 {
     public HttpContext HttpContext;
     public AuthorizationFilterContext FilterContext;

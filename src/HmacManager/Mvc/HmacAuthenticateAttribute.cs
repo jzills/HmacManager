@@ -40,7 +40,7 @@ public class HmacAuthenticateAttribute : Attribute, IAuthorizationRequirement, I
     }
 
     internal bool IsMatch(string? policy, string? scheme) =>
-        (policy, scheme) switch
+        (Policy, Scheme) switch
         {
             (null, null)    => false,
             (_, null)       => Policy == policy,
