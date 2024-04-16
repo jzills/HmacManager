@@ -16,15 +16,16 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-      with:
-        sparse-checkout: test
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
     - name: Restore dependencies
+      working-directory: ./test
       run: dotnet restore
     - name: Build
+      working-directory: ./test
       run: dotnet build --no-restore
     - name: Test
+      working-directory: ./test
       run: dotnet test --no-build --verbosity normal
