@@ -57,6 +57,7 @@ builder.Services
 
 builder.Services.AddAuthorization(options => 
 {
+    // This is one way to register
     // options.AddPolicy("Require_Hmac_PolicyScheme_2", policy => 
     //     policy.AddRequirements(new HmacAuthenticateAttribute 
     //     { 
@@ -64,12 +65,14 @@ builder.Services.AddAuthorization(options =>
     //         Scheme = "HmacScheme_2"
     //     }));
 
+    // This is another
     // options.AddPolicy("Require_Hmac_PolicyScheme_2", policy =>
     // {
     //     policy.RequireHmacPolicy(`"HmacPolicy_2");
     //     policy.RequireHmacScheme("HmacScheme_2");
     // });
 
+    // This is the preferred approach due to it's simplicity
     options.AddPolicy("Require_Hmac_PolicyScheme_2", policy =>
     {
         policy.RequireHmacAuthentication("HmacPolicy_2", "HmacScheme_2");

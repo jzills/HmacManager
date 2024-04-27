@@ -1,11 +1,7 @@
 
-# WebToApiAuthenticationWithAuthorizationPolicies
+# Example
 
-This demo is an example of using [HmacManager](../../README.md) for authentication between two .NET applications. One, the [Web](Web) is signing requests to interact with protected [Api](Api) endpoints.
-
-## Api
-
-See this [example](../WebToApiAuthentication/Api/README.md). Additionally, when calling `AddAuthorization`, the `AuthorizationPolicyBuilder` extension method `RequireHmacAuthentication` can be used to register policies and schemes:
+See this [example](../../WebToApiAuthentication/Api/README.md). Additionally, when calling `AddAuthorization`, the `AuthorizationPolicyBuilder` extension method `RequireHmacAuthentication` can be used to register policies and schemes:
 
     builder.Services.AddAuthorization(options => 
     {
@@ -30,7 +26,3 @@ See this [example](../WebToApiAuthentication/Api/README.md). Additionally, when 
             policy.RequireHmacAuthentication("HmacPolicy_2", "HmacScheme_2");
         });
     });
-
-## Web
-
-See this [example](../WebToApiAuthentication/Web/README.md).

@@ -22,7 +22,7 @@ public class HmacManagerFactory : IHmacManagerFactory
 
     public IHmacManager? Create(string policy)
     {
-        ArgumentException.ThrowIfNullOrEmpty(policy, nameof(policy));
+        ArgumentException.ThrowIfNullOrWhiteSpace(policy, nameof(policy));
         
         if (TryGetPolicyCache(policy, out var options, out var cache))
         {
@@ -36,8 +36,8 @@ public class HmacManagerFactory : IHmacManagerFactory
 
     public IHmacManager? Create(string policy, string scheme)
     {
-        ArgumentException.ThrowIfNullOrEmpty(policy, nameof(policy));
-        ArgumentException.ThrowIfNullOrEmpty(scheme, nameof(scheme));
+        ArgumentException.ThrowIfNullOrWhiteSpace(policy, nameof(policy));
+        ArgumentException.ThrowIfNullOrWhiteSpace(scheme, nameof(scheme));
 
         if (TryGetPolicyCache(policy, out var options, out var cache))
         {

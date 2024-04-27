@@ -33,7 +33,7 @@ public class ValidationResult
         }
         else
         {
-            return ValidationResultAggregate.First().GetError();
+            return ValidationResultAggregate.First(result => !result.IsValid).GetError();
         }
     }
 }
