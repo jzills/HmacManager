@@ -5,14 +5,17 @@ namespace HmacManager.Components;
 
 public class HmacProvider : IHmacProvider
 {
+    private readonly HmacProviderOptions _options;
     private readonly ContentHashGenerator _contentHashGenerator;
     private readonly SignatureHashGenerator _signatureHashGenerator;
 
     public HmacProvider(
+        HmacProviderOptions options,
         ContentHashGenerator contentHashGenerator,
         SignatureHashGenerator signatureHashGenerator
     )
     {
+        _options = options;
         _contentHashGenerator = contentHashGenerator;
         _signatureHashGenerator = signatureHashGenerator;
     }
@@ -31,6 +34,7 @@ public class HmacProvider : IHmacProvider
         HeaderValue[]? headerValues = null)
     {
         var builder = new SigningContentBuilder(request)
+            .WithPublicKey(_options.Keys.PublicKey)
             .WithDateRequested(dateRequested)
             .WithNonce(nonce)
             .WithHeaderValues(headerValues);

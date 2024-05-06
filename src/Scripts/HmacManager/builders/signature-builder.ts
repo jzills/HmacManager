@@ -1,16 +1,18 @@
+import type { webcrypto } from "crypto";
+
 export class SignatureBuilder {
-    #privateKey = null
-    #signingContent = null
+    privateKey: string | null = null;
+    signingContent: string | null = null;
 
     algorithm = { name: "HMAC", hash: "SHA-256" };
 
-    withPrivateKey(privateKey) {
-        this.#privateKey = privateKey
+    withPrivateKey(privateKey: string) {
+        this.privateKey = privateKey
         return this
     }
 
-    withSigningContent(signingContent) {
-        this.#signingContent = signingContent
+    withSigningContent(signingContent: string) {
+        this.signingContent = signingContent
         return this
     }
 
@@ -18,8 +20,8 @@ export class SignatureBuilder {
 
         const assertValidBuild = () => {
             const isMissingRequiredValues = 
-                this.#privateKey     === null || 
-                this.#signingContent === null
+                this.privateKey === null || 
+                this.signingContent === null
             
             if (isMissingRequiredValues) {
                 throw new Error("Required values are missing.")
@@ -28,30 +30,30 @@ export class SignatureBuilder {
 
         assertValidBuild();
 
-        const getByteArray = content => 
+        const getByteArray = (content: string) => 
             Uint8Array.from(content, 
-                element => element.charCodeAt(0))
+                element => element.toString().charCodeAt(0))
 
-        const getUnicodeForm = signatureBytes => {
+        const getUnicodeForm = (signatureBytes: ArrayBuffer) => {
             const bytes = new Uint8Array(signatureBytes)
             const bytesSplit = bytes.toString().split(",")
-            const unicodeForm = bytesSplit.map(element => String.fromCharCode(element)).join("")
+            const unicodeForm = bytesSplit.map(element => String.fromCharCode(parseInt(element))).join("")
             return unicodeForm
         }
 
         const getKeyBytes = async () => crypto.subtle.importKey("raw", 
-            getByteArray(atob(this.#privateKey)), 
+            getByteArray(atob(this.privateKey as string)), 
             this.algorithm, 
             false, 
             ["sign"]
         )
 
-        const getSignature = async (keyBytes, signingContentBytes) => 
+        const getSignature = async (keyBytes: webcrypto.CryptoKey, signingContentBytes: webcrypto.BufferSource) => 
             crypto.subtle.sign("HMAC", keyBytes, signingContentBytes)
 
         const signatureBytes = await getSignature(await 
             getKeyBytes(), 
-            getByteArray(this.#signingContent)
+            getByteArray(this.signingContent as string)
         )
 
         const unicodeForm = getUnicodeForm(signatureBytes)

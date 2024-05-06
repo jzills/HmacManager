@@ -71,6 +71,7 @@ public class HmacManagerFactory : IHmacManagerFactory
     {
         var options = new HmacProviderOptions { Keys = keys, Algorithms = algorithms};
         return new HmacProvider(
+            options,
             new ContentHashGenerator(options),
             new SignatureHashGenerator(options)
         );

@@ -46,6 +46,7 @@ public class Test_HmacManager_SignAsync
         HmacManager = new HmacManager.Components.HmacManager(
             HmacManagerOptions, 
             new HmacProvider(
+                HmacProviderOptions,
                 new ContentHashGenerator(HmacProviderOptions),
                 new SignatureHashGenerator(HmacProviderOptions)
             ), 
