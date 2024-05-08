@@ -17,6 +17,18 @@ html {
   min-height: 100%;
 }
 
+.text-center {
+  text-align: center;
+}
+
 body {
   margin-bottom: 60px;
+}
+
+h1 {
+  margin-bottom: 3rem;
+}
+
+table {
+  width: 100%;
 }
