@@ -1,18 +1,23 @@
-import { HmacManager } from "./HmacManager/hmac-manager.js";
-import { HmacResult } from "./HmacManager/components/hmac-result.js";
+import { HmacPolicyBuilder } from "./HmacManager/policies/hmac-policy-builder.js";
 
-try {
-    const pubKey = "a18f5729-32ce-43a4-ac4d-af0a699539ae";
-    const priKey = "xCy0Ucg3YEKlmiK23Zph+g==";
+var builder = new HmacPolicyBuilder("Policy_1")
+    .usePublicKey("MyPublicKey")
+    .usePrivateKey("MyPrivateKey")
+    .useContentHashAlgorithm("SHA256")
+    .useSigningHashAlgorithm("HMACSHA256")
+    .useMemoryCache(1) 
+    .addScheme("Scheme_1", scheme => {
+        scheme.addHeader("Header-1a");
+        scheme.addHeader("Header-1b");
+    })
+    .addScheme("Scheme_2", scheme => {
+        scheme.addHeader("Header-2a");
+        scheme.addHeader("Header-2b");
+    });
 
-    const hmacManager = new HmacManager(pubKey, priKey, []);
+const policy = builder.build();
+console.dir(policy);
 
-    const request = new Request("https://localhost:7197/home/protected");
-    request.headers.append("X-AccountId", "myAccountId");
-    request.headers.append("X-Email", "myemail@domain.com");
-    const siginingResult = await hmacManager.sign(request);
-    console.dir(siginingResult);
-} catch (error) {
-    console.log("Error");
-    console.log(error);
+for (const scheme of policy.schemes.getAll()) {
+    console.dir(scheme);
 }

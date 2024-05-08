@@ -31,13 +31,14 @@ public class HmacProvider : IHmacProvider
         HttpRequestMessage request, 
         DateTimeOffset dateRequested, 
         Guid nonce,
-        HeaderValue[]? headerValues = null)
+        HeaderValue[]? headerValues = null
+    )
     {
-        var builder = new SigningContentBuilder(request)
+        var builder = new SigningContentBuilderValidated(request)
             .WithPublicKey(_options.Keys.PublicKey)
             .WithDateRequested(dateRequested)
             .WithNonce(nonce)
-            .WithHeaderValues(headerValues);
+            .WithHeaderValues(headerValues ?? []);
 
         if (request.TryGetContent(out var content))
         {

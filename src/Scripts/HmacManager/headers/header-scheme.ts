@@ -2,15 +2,16 @@ import { IHeaderScheme } from "./i-header-scheme.js";
 import { Header } from "./header.js";
 
 export class HeaderScheme implements IHeaderScheme {
-    readonly name: string;
-    readonly collection: Header[];
+    public readonly name: string;
+    private readonly collection: Header[] = [];
 
     constructor(name: string) {
         this.name = name;
     }
 
-    addHeader(name: string, claimType: string | null = null): void {
-        this.collection.push(new Header(name, claimType));
+    addHeader = (name: string, claimType: string | null = null): void => {
+        this.collection.push({ name, claimType: claimType ?? name});
     }
 
+    getHeaders = () => this.collection;
 }

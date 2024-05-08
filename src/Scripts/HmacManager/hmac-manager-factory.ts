@@ -12,9 +12,10 @@ export class HmacManagerFactory {
     }
 
     create(policy: string, scheme: string | null = null): HmacManager {
-        return new HmacManager(
-            new HmacManagerOptions(), 
-            new HmacProvider()
-        );
+        return null;
+        // return new HmacManager(
+        //     new HmacManagerOptions(), 
+        //     new HmacProvider()
+        // );
     }
 }

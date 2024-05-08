@@ -10,13 +10,14 @@ internal class SigningContentBuilder
     protected Guid PublicKey;
     protected DateTimeOffset DateRequested;
     protected Guid Nonce;
-    protected HeaderValue[]? HeaderValues;
+    protected HeaderValue[] HeaderValues;
     protected string? ContentHash;
 
     public SigningContentBuilder(HttpRequestMessage request)
     {
         Request = request;
         Builder = new StringBuilder($"{Request.Method}");
+        HeaderValues = [];
     }
 
     public SigningContentBuilder WithPublicKey(Guid publicKey)
@@ -37,7 +38,7 @@ internal class SigningContentBuilder
         return this;
     }
 
-    public SigningContentBuilder WithHeaderValues(HeaderValue[]? headerValues)
+    public SigningContentBuilder WithHeaderValues(HeaderValue[] headerValues)
     {
         HeaderValues = headerValues;
         return this;
@@ -49,7 +50,7 @@ internal class SigningContentBuilder
         return this;
     }
 
-    public string Build()
+    public virtual string Build()
     {
         if (Request.RequestUri is not null)
         {

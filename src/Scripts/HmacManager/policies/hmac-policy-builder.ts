@@ -15,6 +15,7 @@ export class HmacPolicyBuilder {
     constructor(name: string) {
         this.name = name;
         this.keys = new KeyCredentials();
+        this.algorithms = new Algorithms();
         this.nonce = new Nonce();
         this.schemes = new HeaderSchemeCollection();
     }
@@ -40,19 +41,24 @@ export class HmacPolicyBuilder {
     }
 
     useMemoryCache(maxAge: number): HmacPolicyBuilder {
-        throw new Error("Not implemented");
+        this.nonce.maxAge = maxAge;
+        return this;
     }
 
     useDistributedCache(maxAge: number): HmacPolicyBuilder {
-        throw new Error("Not implemented")
+        this.nonce.maxAge = maxAge;
+        return this;
     }
 
     addScheme(name: string, configureScheme: (scheme: HeaderScheme) => void): HmacPolicyBuilder {
-        this.schemes.Add(name, configureScheme);   
+        const scheme = new HeaderScheme(name);
+        configureScheme(scheme);
+ 
+        this.schemes.add(scheme);   
         return this;
     }
 
     build(): HmacPolicy {
-        return new HmacPolicy()
+        return new HmacPolicy(this.name, this.keys, this.algorithms, this.nonce, this.schemes);
     }
 }
