@@ -14,16 +14,23 @@
     <Description>Integrate hmac authentication seamlessly into your .NET applications, fortifying security measures and ensuring robust authentication protocols.</Description>
     <Company></Company>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <ProjectUrl>https://github.com/jzills/HmacManager</ProjectUrl>
     <RepositoryUrl>https://github.com/jzills/HmacManager.git</RepositoryUrl> 
     <RepositoryType>git</RepositoryType> 
+    <PackageIcon>icon.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
-      <None Include="README.md" Pack="true" PackagePath="" />
+    <None Include="README.md" Pack="true" PackagePath="" />
   </ItemGroup>
 
   <ItemGroup>
-      <FrameworkReference Include="Microsoft.AspNetCore.App" Version="8.0.3" />
+    <None Include="../../resources/icon.png" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" Version="8.0.3" />
   </ItemGroup>
 
   <ItemGroup>

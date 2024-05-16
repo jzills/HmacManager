@@ -1,7 +1,9 @@
+import { HeaderValue } from "../headers/header-value.js";
+
 export class Hmac {
-    dateRequested = new Date();
-    nonce = crypto.randomUUID();
-    signingContent = null;
-    signedHeaders = null;
-    signature = null;
+    dateRequested: Date = new Date();
+    nonce: string = crypto.randomUUID();
+    signingContent: string = null;
+    headerValues: HeaderValue[] = [];
+    signature: string = null;
 }
