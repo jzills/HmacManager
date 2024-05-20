@@ -32,11 +32,11 @@ public class Test_NonceCacheCollection_Add : TestServiceCollection
     [Test]
     public void Test_NonceCacheCollection_Add_Exists()
     {
-        CacheCollection.Add("MemoryCache", MemoryCache);
-        CacheCollection.Add("DistributedCache", DistributedCache);
+        CacheCollection.Add(NonceCacheType.Memory, MemoryCache);
+        CacheCollection.Add(NonceCacheType.Distributed, DistributedCache);
 
-        var memoryCache = CacheCollection.Get("MemoryCache");
-        var distributedCache = CacheCollection.Get("DistributedCache");
+        var memoryCache = CacheCollection.Get(Enum.GetName(NonceCacheType.Memory));
+        var distributedCache = CacheCollection.Get(Enum.GetName(NonceCacheType.Distributed));
 
         Assert.IsNotNull(memoryCache);
         Assert.IsNotNull(distributedCache);
@@ -45,8 +45,8 @@ public class Test_NonceCacheCollection_Add : TestServiceCollection
     [Test]
     public void Test_NonceCacheCollection_Add_DoesNotExist()
     {
-        var memoryCache = CacheCollection.Get("MemoryCache");
-        var distributedCache = CacheCollection.Get("DistributedCache");
+        var memoryCache = CacheCollection.Get(Enum.GetName(NonceCacheType.Memory));
+        var distributedCache = CacheCollection.Get(Enum.GetName(NonceCacheType.Distributed));
 
         Assert.IsNull(memoryCache);
         Assert.IsNull(distributedCache);

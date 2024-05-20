@@ -56,9 +56,9 @@ internal static class ServiceCollectionExtensions
             memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
         }
 
-        caches.Add("Memory", new NonceMemoryCache(memoryCache, new NonceCacheOptions
+        caches.Add(NonceCacheType.Memory, new NonceMemoryCache(memoryCache, new NonceCacheOptions
         { 
-            CacheName = "Memory",
+            CacheType = NonceCacheType.Memory,
             MaxAge = TimeSpan.FromMinutes(1) 
         }));
 
@@ -78,9 +78,9 @@ internal static class ServiceCollectionExtensions
             distributedCache = serviceProvider.GetRequiredService<IDistributedCache>();
         }
 
-        caches.Add("Distributed", new NonceDistributedCache(distributedCache, new NonceCacheOptions
+        caches.Add(NonceCacheType.Distributed, new NonceDistributedCache(distributedCache, new NonceCacheOptions
         {
-            CacheName = "Distributed", 
+            CacheType = NonceCacheType.Distributed, 
             MaxAge = TimeSpan.FromMinutes(1) 
         }));
 

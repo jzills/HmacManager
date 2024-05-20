@@ -12,7 +12,7 @@ public class HmacPolicyBuilder
     protected readonly KeyCredentials Keys = new();
     protected readonly Algorithms Algorithms = new();
     protected readonly Nonce Nonce = new();
-    protected readonly HeaderSchemeCollection HeaderSchemes = new();
+    protected readonly HeaderSchemeCollection HeaderSchemes = new();  
 
     /// <summary>
     /// Uses the specified <c>Guid</c> as the public key for this <c>HmacPolicy</c>.
@@ -65,7 +65,7 @@ public class HmacPolicyBuilder
     /// <returns>An <c>HmacPolicyBuilder</c> that can be used to further configure the policy.</returns>
     public HmacPolicyBuilder UseMemoryCache(TimeSpan maxAge)
     {
-        Nonce.CacheName = "Memory";
+        Nonce.CacheType = NonceCacheType.Memory;
         Nonce.MaxAge = maxAge;
         return this;
     }
@@ -77,7 +77,7 @@ public class HmacPolicyBuilder
     /// <returns>An <c>HmacPolicyBuilder</c> that can be used to further configure the policy.</returns>
     public HmacPolicyBuilder UseDistributedCache(TimeSpan maxAge)
     {
-        Nonce.CacheName = "Distributed";
+        Nonce.CacheType = NonceCacheType.Distributed;
         Nonce.MaxAge = maxAge;
         return this;
     }
@@ -99,19 +99,12 @@ public class HmacPolicyBuilder
     /// Builds an instance of the configured <c>HmacPolicy</c>.
     /// </summary>
     /// <returns>An <c>HmacPolicyBuilder</c> that can be used to further configure the policy.</returns>
-    public HmacPolicy Build()
-    {
-        if (string.IsNullOrWhiteSpace(Nonce.CacheName))
-        {
-            Nonce.CacheName = "Memory";
-        }
-
-        return new HmacPolicy
+    public HmacPolicy Build(string? name = null) => 
+        new HmacPolicy(name)
         {
             Algorithms = Algorithms,
             Keys = Keys,
             Nonce = Nonce,
             HeaderSchemes = HeaderSchemes
         };
-    }
 }

@@ -19,7 +19,7 @@ internal class NonceDistributedCache : INonceCache
 
     public Task SetAsync(Guid nonce, DateTimeOffset dateRequested) =>
         _cache.SetStringAsync(
-            this.GetNamespace<NonceDistributedCache>(_options.CacheName, nonce), 
+            this.GetNamespace<NonceDistributedCache>(_options.CacheType, nonce), 
             nonce.ToString(), 
             new DistributedCacheEntryOptions
                 { AbsoluteExpiration = dateRequested.Add(_options.MaxAge) }
@@ -27,7 +27,7 @@ internal class NonceDistributedCache : INonceCache
 
     public async Task<bool> ContainsAsync(Guid nonce)
     {
-        var cacheNonce = await _cache.GetAsync(this.GetNamespace<NonceDistributedCache>(_options.CacheName, nonce));
+        var cacheNonce = await _cache.GetAsync(this.GetNamespace<NonceDistributedCache>(_options.CacheType, nonce));
         return cacheNonce is not null;
     }
 }

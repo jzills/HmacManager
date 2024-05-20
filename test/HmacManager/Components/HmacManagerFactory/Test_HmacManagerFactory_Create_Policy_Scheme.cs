@@ -19,11 +19,11 @@ public class Test_HmacManagerFactory_Create_Policy_Scheme
         {
             policy.Algorithms = new();
             policy.Keys = new KeyCredentials { PublicKey = Guid.NewGuid(), PrivateKey = "xCy0Ucg3YEKlmiK23Zph+g==" };
-            policy.Nonce = new Nonce { CacheName = "MemoryCache" };
+            policy.Nonce = new Nonce { CacheType = NonceCacheType.Memory };
         });
 
         var caches = new NonceCacheCollection();
-        caches.Add("MemoryCache", 
+        caches.Add(NonceCacheType.Memory, 
             new NonceMemoryCache(
                 new MemoryCache(Options.Create(new MemoryCacheOptions())), 
                 new NonceCacheOptions())

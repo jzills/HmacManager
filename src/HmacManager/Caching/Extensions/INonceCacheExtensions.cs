@@ -9,8 +9,8 @@ internal static class INonceCacheExtensions
 
     public static string GetNamespace<TNonceCache>(
         this INonceCache _,
-        string cacheName,
+        NonceCacheType cacheType,
         Guid nonce
     ) where TNonceCache : INonceCache
-        => $"HmacManager:{cacheName}:{nonce}";
+        => $"HmacManager:{Enum.GetName(cacheType)}:{nonce}";
 }

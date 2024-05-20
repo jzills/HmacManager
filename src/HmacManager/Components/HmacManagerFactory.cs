@@ -85,5 +85,5 @@ public class HmacManagerFactory : IHmacManagerFactory
 
     private bool TryGetPolicyCache(string policy, out HmacPolicy options, out INonceCache cache) => 
         Policies.TryGetValue(policy, out options) &&
-          Caches.TryGetValue(options.Nonce.CacheName, out cache) || (cache = default!) != default!;
+          Caches.TryGetValue(Enum.GetName(options.Nonce.CacheType), out cache) || (cache = default!) != default!;
 }

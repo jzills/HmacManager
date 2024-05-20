@@ -70,7 +70,7 @@ internal static class HttpRequestHeadersExtensions
         }
         else
         {
-            var schemeHeaders = headerScheme.GetHeaders();
+            var schemeHeaders = headerScheme.Headers;
             var schemeHeaderValues = new List<HeaderValue>(schemeHeaders.Count);
             foreach (var schemeHeader in schemeHeaders)
             {

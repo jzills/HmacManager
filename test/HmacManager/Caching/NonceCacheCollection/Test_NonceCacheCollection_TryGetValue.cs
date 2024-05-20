@@ -33,17 +33,17 @@ public class Test_NonceCacheCollection_TryGetValue : TestServiceCollection
     [Test]
     public void Test_NonceCacheCollection_TryGetValue_Exists()
     {
-        CacheCollection.Add("MemoryCache", MemoryCache);
-        CacheCollection.Add("DistributedCache", DistributedCache);
+        CacheCollection.Add(NonceCacheType.Memory, MemoryCache);
+        CacheCollection.Add(NonceCacheType.Distributed, DistributedCache);
 
-        Assert.IsTrue(CacheCollection.TryGetValue("MemoryCache", out var memoryCache) && memoryCache is not null);
-        Assert.IsTrue(CacheCollection.TryGetValue("DistributedCache", out var distributedCache) && distributedCache is not null);
+        Assert.IsTrue(CacheCollection.TryGetValue(Enum.GetName(NonceCacheType.Memory), out var memoryCache) && memoryCache is not null);
+        Assert.IsTrue(CacheCollection.TryGetValue(Enum.GetName(NonceCacheType.Distributed), out var distributedCache) && distributedCache is not null);
     }
 
     [Test]
     public void Test_NonceCacheCollection_TryGetValue_DoesNotExist()
     {
-        Assert.IsFalse(CacheCollection.TryGetValue("MemoryCache", out var memoryCache) && memoryCache is not null);
-        Assert.IsFalse(CacheCollection.TryGetValue("DistributedCache", out var distributedCache) && distributedCache is not null);
+        Assert.IsFalse(CacheCollection.TryGetValue(Enum.GetName(NonceCacheType.Memory), out var memoryCache) && memoryCache is not null);
+        Assert.IsFalse(CacheCollection.TryGetValue(Enum.GetName(NonceCacheType.Distributed), out var distributedCache) && distributedCache is not null);
     }
 }

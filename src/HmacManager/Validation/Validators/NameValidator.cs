@@ -2,9 +2,9 @@ using HmacManager.Policies;
 
 namespace HmacManager.Validation;
 
-internal class NameValidator : IValidator<string>
+internal class NameValidator : IValidator<string?>
 {
-    public ValidationResult Validate(string name)
+    public ValidationResult Validate(string? name)
     {
         if (string.IsNullOrWhiteSpace(name))
         {

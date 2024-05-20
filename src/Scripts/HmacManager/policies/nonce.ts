@@ -1,4 +1,4 @@
 export class Nonce {
-    cacheName: string;
+    CacheType: string;
     maxAge: number;
 }

@@ -14,8 +14,8 @@ public class Nonce
     /// <value>Defaults to 30 seconds.</value>
     public TimeSpan MaxAge { get; set; } = TimeSpan.FromSeconds(30);
     /// <summary>
-    /// Represents the name of the cache used to store nonce values.
+    /// Represents the type of the cache used to store nonce values.
     /// </summary>
-    /// <value>Defaults to an empty string.</value>
-    public string CacheName { get; set; } = string.Empty;
+    /// <value>Defaults to an enum representation of the value "Memory".</value>
+    public NonceCacheType CacheType { get; set; } = NonceCacheType.Memory;
 }
