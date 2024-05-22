@@ -23,7 +23,7 @@ internal class NonceMemoryCache : INonceCache
             this.GetNamespace<NonceMemoryCache>(_options.CacheType, nonce), 
             nonce.ToString(), 
             new MemoryCacheEntryOptions
-                { AbsoluteExpiration = dateRequested.Add(_options.MaxAge) }
+                { AbsoluteExpiration = dateRequested.Add(TimeSpan.FromSeconds(_options.MaxAgeInSeconds)) }
         );
 
         return Task.CompletedTask;

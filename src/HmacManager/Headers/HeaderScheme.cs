@@ -35,6 +35,6 @@ public class HeaderScheme
         _headers.Add(name, configureHeader =>
         {
             configureHeader.Name = name;
-            configureHeader.ClaimType = claimType;
+            configureHeader.ClaimType = claimType ?? name;
         });
 }

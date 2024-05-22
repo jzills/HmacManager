@@ -24,7 +24,7 @@ public class Test_NonceCache_Distributed_ContainsAsync : TestServiceCollection
     {
         Cache = new NonceDistributedCache(
             new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions())),
-            new NonceCacheOptions { MaxAge = TimeSpan.FromSeconds(MaxAgeInSeconds) }
+            new NonceCacheOptions { MaxAgeInSeconds = MaxAgeInSeconds }
         );
     }
 

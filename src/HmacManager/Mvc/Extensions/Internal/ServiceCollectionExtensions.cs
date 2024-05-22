@@ -59,7 +59,7 @@ internal static class ServiceCollectionExtensions
         caches.Add(NonceCacheType.Memory, new NonceMemoryCache(memoryCache, new NonceCacheOptions
         { 
             CacheType = NonceCacheType.Memory,
-            MaxAge = TimeSpan.FromMinutes(1) 
+            MaxAgeInSeconds = 30
         }));
 
         return services;
@@ -81,7 +81,7 @@ internal static class ServiceCollectionExtensions
         caches.Add(NonceCacheType.Distributed, new NonceDistributedCache(distributedCache, new NonceCacheOptions
         {
             CacheType = NonceCacheType.Distributed, 
-            MaxAge = TimeSpan.FromMinutes(1) 
+            MaxAgeInSeconds = 30 
         }));
 
         return services;

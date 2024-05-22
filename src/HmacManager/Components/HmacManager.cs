@@ -23,7 +23,7 @@ public class HmacManager : IHmacManager
 
     public async Task<HmacResult> VerifyAsync(HttpRequestMessage request)
     {
-        if (request.Headers.TryParseHmac(_options.HeaderScheme, _options.MaxAge, out var hmac))
+        if (request.Headers.TryParseHmac(_options.HeaderScheme, _options.MaxAgeInSeconds, out var hmac))
         {
             if (await _cache.HasValidNonceAsync(hmac.Nonce))
             {   

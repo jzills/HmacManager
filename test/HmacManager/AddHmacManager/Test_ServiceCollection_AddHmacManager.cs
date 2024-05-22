@@ -18,14 +18,14 @@ public class Test_ServiceCollection_AddHmacManager : TestBase
                 {
                     policy.UsePublicKey(PublicKey);
                     policy.UsePrivateKey(PrivateKey);
-                    policy.UseMemoryCache(TimeSpan.FromSeconds(30));
+                    policy.UseMemoryCache(30);
                 });
 
                 options.AddPolicy("MyPolicy_2", policy =>
                 {
                     policy.UsePublicKey(PublicKey2);
                     policy.UsePrivateKey(PrivateKey2);
-                    policy.UseMemoryCache(TimeSpan.FromSeconds(30));
+                    policy.UseMemoryCache(100);
                 });
             });
 

@@ -39,7 +39,7 @@ public class Test_HmacManager_SignAsync
 
         HmacManagerOptions = new HmacManagerOptions("Policy")
         {
-            MaxAge = TimeSpan.FromMinutes(1),
+            MaxAgeInSeconds = 60,
             HeaderScheme = new HeaderScheme("Scheme")
         };
 

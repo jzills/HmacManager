@@ -24,7 +24,7 @@ public class Test_NonceCache_Extensions_HasValidNonceAsync : TestServiceCollecti
     {
         Cache = new NonceMemoryCache(
             new MemoryCache(Options.Create(new MemoryCacheOptions())),
-            new NonceCacheOptions { MaxAge = TimeSpan.FromSeconds(MaxAgeInSeconds) }
+            new NonceCacheOptions { MaxAgeInSeconds = MaxAgeInSeconds }
         );
     }    
 

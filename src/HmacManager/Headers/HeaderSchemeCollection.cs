@@ -1,8 +1,10 @@
+using System.Text.Json.Serialization;
 using HmacManager.Common;
 using HmacManager.Policies;
 
 namespace HmacManager.Headers;
 
+[JsonConverter(typeof(HeaderSchemeCollectionJsonConverter))]
 public class HeaderSchemeCollection 
     : ComponentCollection<HeaderScheme>, IConfigurator<HeaderScheme>
 {

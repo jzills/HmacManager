@@ -23,7 +23,7 @@ public class Test_ServiceCollection_AddHmac_OnePolicy_ManySchemes : TestBase
                     policy.UsePrivateKey(PrivateKey);
                     policy.UseContentHashAlgorithm(ContentHashAlgorithm.SHA256);
                     policy.UseSigningHashAlgorithm(SigningHashAlgorithm.HMACSHA256);
-                    policy.UseDistributedCache(TimeSpan.FromMinutes(5));
+                    policy.UseDistributedCache(30);
                 
                     policy.AddScheme("MyScheme_1", scheme =>
                     {

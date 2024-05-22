@@ -18,7 +18,7 @@ public class Test_HttpRequestHeaderExtensions_TryParseHmac : TestServiceCollecti
             .Create(PolicySchemeType.Policy_Memory_Scheme_1.Policy, PolicySchemeType.Policy_Memory_Scheme_1.Scheme)!
             .SignAsync(request);
 
-        var hasHeaderValues = request.Headers.TryParseHmac(headerScheme, TimeSpan.FromSeconds(30), out var hmac);
+        var hasHeaderValues = request.Headers.TryParseHmac(headerScheme, 30, out var hmac);
         Assert.IsTrue(hasHeaderValues);
         Assert.That(signingResult.Hmac!.HeaderValues.Length, Is.EqualTo(hmac.HeaderValues.Length));
 

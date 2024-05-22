@@ -23,7 +23,7 @@ public class Test_ServiceCollection_ManyPolicies : TestBase
                     policy.UsePrivateKey(PrivateKey);
                     policy.UseContentHashAlgorithm(ContentHashAlgorithm.SHA1);
                     policy.UseSigningHashAlgorithm(SigningHashAlgorithm.HMACSHA1);
-                    policy.UseDistributedCache(TimeSpan.FromMinutes(5));
+                    policy.UseDistributedCache(100);
                 });
 
                 options.AddPolicy("MyPolicy_2", policy =>
@@ -32,7 +32,7 @@ public class Test_ServiceCollection_ManyPolicies : TestBase
                     policy.UsePrivateKey(PrivateKey);
                     policy.UseContentHashAlgorithm(ContentHashAlgorithm.SHA256);
                     policy.UseSigningHashAlgorithm(SigningHashAlgorithm.HMACSHA256);
-                    policy.UseDistributedCache(TimeSpan.FromMinutes(5));
+                    policy.UseDistributedCache(100);
                 });
 
                 options.AddPolicy("MyPolicy_3", policy =>
@@ -41,7 +41,7 @@ public class Test_ServiceCollection_ManyPolicies : TestBase
                     policy.UsePrivateKey(PrivateKey);
                     policy.UseContentHashAlgorithm(ContentHashAlgorithm.SHA512);
                     policy.UseSigningHashAlgorithm(SigningHashAlgorithm.HMACSHA512);
-                    policy.UseDistributedCache(TimeSpan.FromMinutes(5));
+                    policy.UseDistributedCache(100);
                 });
             });
 

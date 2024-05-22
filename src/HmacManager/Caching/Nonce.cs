@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace HmacManager.Caching;
 
 /// <summary>
@@ -12,10 +14,12 @@ public class Nonce
     /// that matches this value.
     /// </summary>
     /// <value>Defaults to 30 seconds.</value>
-    public TimeSpan MaxAge { get; set; } = TimeSpan.FromSeconds(30);
+    [JsonIgnore]
+    public int MaxAgeInSeconds { get; set; } = 30;
     /// <summary>
     /// Represents the type of the cache used to store nonce values.
     /// </summary>
     /// <value>Defaults to an enum representation of the value "Memory".</value>
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public NonceCacheType CacheType { get; set; } = NonceCacheType.Memory;
 }

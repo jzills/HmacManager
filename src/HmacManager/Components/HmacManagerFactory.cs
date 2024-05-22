@@ -51,7 +51,7 @@ public class HmacManagerFactory : IHmacManagerFactory
 
     private HmacManager CreateManager(HmacPolicy options, INonceCache cache) =>
         new HmacManager(
-            CreateOptions(options.Name, options.Nonce.MaxAge),
+            CreateOptions(options.Name, options.Nonce.MaxAgeInSeconds),
             CreateProvider(options.Keys, options.Algorithms),
             cache
         );
@@ -60,7 +60,7 @@ public class HmacManagerFactory : IHmacManagerFactory
         new HmacManager(
             CreateOptions(
                 options.Name, 
-                options.Nonce.MaxAge, 
+                options.Nonce.MaxAgeInSeconds, 
                 options.HeaderSchemes.Get(scheme)
             ),
             CreateProvider(options.Keys, options.Algorithms),
@@ -79,9 +79,9 @@ public class HmacManagerFactory : IHmacManagerFactory
 
     private HmacManagerOptions CreateOptions(
         string policy, 
-        TimeSpan maxAge, 
+        int maxAgeInSeconds, 
         HeaderScheme? scheme = null
-    ) => new HmacManagerOptions(policy) { MaxAge = maxAge, HeaderScheme = scheme };
+    ) => new HmacManagerOptions(policy) { MaxAgeInSeconds = maxAgeInSeconds, HeaderScheme = scheme };
 
     private bool TryGetPolicyCache(string policy, out HmacPolicy options, out INonceCache cache) => 
         Policies.TryGetValue(policy, out options) &&

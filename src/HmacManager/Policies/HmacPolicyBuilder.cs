@@ -61,24 +61,24 @@ public class HmacPolicyBuilder
     /// <summary>
     /// Sets the maximum age on an <c>HttpRequestMessage</c> and the TTL for nonce cache entries.
     /// </summary>
-    /// <param name="maxAge">The <c>TimeSpan</c> representing the max age of a request.</param>
+    /// <param name="maxAgeInSeconds">The <c>TimeSpan</c> representing the max age of a request.</param>
     /// <returns>An <c>HmacPolicyBuilder</c> that can be used to further configure the policy.</returns>
-    public HmacPolicyBuilder UseMemoryCache(TimeSpan maxAge)
+    public HmacPolicyBuilder UseMemoryCache(int maxAgeInSeconds)
     {
         Nonce.CacheType = NonceCacheType.Memory;
-        Nonce.MaxAge = maxAge;
+        Nonce.MaxAgeInSeconds = maxAgeInSeconds;
         return this;
     }
 
     /// <summary>
     /// Sets the maximum age on an <c>HttpRequestMessage</c> and the TTL for nonce cache entries.
     /// </summary>
-    /// <param name="maxAge">The <c>TimeSpan</c> representing the max age of a request.</param>
+    /// <param name="maxAgeInSeconds">The <c>TimeSpan</c> representing the max age of a request.</param>
     /// <returns>An <c>HmacPolicyBuilder</c> that can be used to further configure the policy.</returns>
-    public HmacPolicyBuilder UseDistributedCache(TimeSpan maxAge)
+    public HmacPolicyBuilder UseDistributedCache(int maxAgeInSeconds)
     {
         Nonce.CacheType = NonceCacheType.Distributed;
-        Nonce.MaxAge = maxAge;
+        Nonce.MaxAgeInSeconds = maxAgeInSeconds;
         return this;
     }
 

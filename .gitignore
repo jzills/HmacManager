@@ -4,3 +4,5 @@
 **node_modules
 **.DS_Store
 **out
+
+test/Data/hmac_policy_collection.json

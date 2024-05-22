@@ -26,7 +26,7 @@ public class TestServiceCollection : TestBase
                     policy.UsePrivateKey(PrivateKey);
                     policy.UseContentHashAlgorithm(ContentHashAlgorithm.SHA256);
                     policy.UseSigningHashAlgorithm(SigningHashAlgorithm.HMACSHA256);
-                    policy.UseMemoryCache(TimeSpan.FromMinutes(5));
+                    policy.UseMemoryCache(60);
 
                     policy.AddScheme(PolicySchemeType.Policy_Memory_Scheme_1.Scheme, scheme =>
                     {
@@ -53,7 +53,7 @@ public class TestServiceCollection : TestBase
                     policy.UsePrivateKey(PrivateKey);
                     policy.UseContentHashAlgorithm(ContentHashAlgorithm.SHA256);
                     policy.UseSigningHashAlgorithm(SigningHashAlgorithm.HMACSHA256);
-                    policy.UseDistributedCache(TimeSpan.FromMinutes(5));
+                    policy.UseDistributedCache(100);
 
                     policy.AddScheme(PolicySchemeType.Policy_Distributed_Scheme_1.Scheme, scheme =>
                     {

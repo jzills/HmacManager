@@ -22,7 +22,7 @@ internal class NonceDistributedCache : INonceCache
             this.GetNamespace<NonceDistributedCache>(_options.CacheType, nonce), 
             nonce.ToString(), 
             new DistributedCacheEntryOptions
-                { AbsoluteExpiration = dateRequested.Add(_options.MaxAge) }
+                { AbsoluteExpiration = dateRequested.Add(TimeSpan.FromSeconds(_options.MaxAgeInSeconds)) }
         );
 
     public async Task<bool> ContainsAsync(Guid nonce)
