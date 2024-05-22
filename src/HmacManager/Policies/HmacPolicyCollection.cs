@@ -3,20 +3,16 @@ using HmacManager.Validation;
 
 namespace HmacManager.Policies;
 
-public class HmacPolicyCollection
-    : ComponentCollection<HmacPolicy>, IConfigurator<HmacPolicy>
+public class HmacPolicyCollection : ComponentCollection<HmacPolicy>
 {
     protected IValidator<HmacPolicy> Validator => new HmacPolicyValidator();
 
-    public void Add(string name, Action<HmacPolicy> configurePolicy)
+    public void Add(HmacPolicy policy)
     {
-        var policy = new HmacPolicy(name);
-        configurePolicy.Invoke(policy);
-
         var validationResult = Validator.Validate(policy);
         if (validationResult.IsValid)
         {
-            Add(name, policy); 
+            Add(policy.Name, policy); 
         }
         else
         {

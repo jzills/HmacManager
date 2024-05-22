@@ -15,11 +15,11 @@ public class Test_HmacManagerFactory_Create_Policy
     public void Init(string policy)
     {
         var policies = new HmacPolicyCollection();
-        policies.Add(policy, policy => 
+        policies.Add(new HmacPolicy(policy) 
         {
-            policy.Algorithms = new();
-            policy.Keys = new KeyCredentials { PublicKey = Guid.NewGuid(), PrivateKey = "xCy0Ucg3YEKlmiK23Zph+g==" };
-            policy.Nonce = new Nonce { CacheType = NonceCacheType.Memory };
+            Algorithms = new(),
+            Keys = new KeyCredentials { PublicKey = Guid.NewGuid(), PrivateKey = "xCy0Ucg3YEKlmiK23Zph+g==" },
+            Nonce = new Nonce { CacheType = NonceCacheType.Memory }
         });
 
         var caches = new NonceCacheCollection();

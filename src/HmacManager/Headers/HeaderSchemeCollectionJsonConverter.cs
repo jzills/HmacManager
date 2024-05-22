@@ -34,14 +34,13 @@ public class HeaderSchemeCollectionJsonConverter : JsonConverter<HeaderSchemeCol
 
                 if (reader.TokenType is JsonTokenType.EndObject)
                 {
-                    headerSchemeCollection.Add(schemeName, _ => 
+                    var scheme = new HeaderScheme(schemeName);
+                    foreach (var header in headers)
                     {
-                        var scheme = new HeaderScheme(schemeName);
-                        foreach (var header in headers)
-                        {
-                            _.AddHeader(header.Name, header.ClaimType);
-                        }
-                    });
+                        scheme.AddHeader(header.Name, header.ClaimType);
+                    }
+                    
+                    headerSchemeCollection.Add(scheme);
                 }
             }
         }

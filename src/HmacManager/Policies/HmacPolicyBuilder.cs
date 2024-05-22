@@ -91,7 +91,9 @@ public class HmacPolicyBuilder
     /// <returns>An <c>HmacPolicyBuilder</c> that can be used to further configure the policy.</returns>
     public HmacPolicyBuilder AddScheme(string name, Action<HeaderScheme> configureScheme)
     {
-        HeaderSchemes.Add(name, configureScheme);   
+        var header = new HeaderScheme(name);
+        configureScheme.Invoke(header);
+        HeaderSchemes.Add(header);   
         return this;
     }
 

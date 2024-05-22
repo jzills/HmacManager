@@ -32,9 +32,5 @@ public class HeaderScheme
     /// <param name="name">The name of the header on the HTTP request.</param>
     /// <param name="claimType">The name of the claim that the header value should be converted to.</param>
     public void AddHeader(string name, string claimType) =>
-        _headers.Add(name, configureHeader =>
-        {
-            configureHeader.Name = name;
-            configureHeader.ClaimType = claimType ?? name;
-        });
+        _headers.Add(new Header { Name = name, ClaimType = claimType });
 }
