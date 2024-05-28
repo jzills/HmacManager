@@ -9,6 +9,10 @@ public class HmacManagerOptions
 {
     protected HmacPolicyCollection Policies = new HmacPolicyCollection();
 
+    public HmacManagerOptions() { }
+
+    internal HmacManagerOptions(HmacPolicyCollection policies) => Policies = policies;
+
     /// <summary>
     /// Adds an <c>HmacPolicy</c> to the <c>HmacPolicyCollection</c>
     /// with the specified name and configuration defined by the <c>HmacPolicyBuilder</c> action.

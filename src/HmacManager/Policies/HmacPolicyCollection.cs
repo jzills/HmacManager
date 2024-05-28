@@ -5,7 +5,20 @@ namespace HmacManager.Policies;
 
 public class HmacPolicyCollection : ComponentCollection<HmacPolicy>
 {
-    protected IValidator<HmacPolicy> Validator => new HmacPolicyValidator();
+    protected readonly IValidator<HmacPolicy> Validator;
+
+    public HmacPolicyCollection()
+    {
+        Validator = new HmacPolicyValidator(); 
+    }
+
+    public HmacPolicyCollection(IEnumerable<HmacPolicy> policies) : this()
+    {
+        foreach (var policy in policies)
+        {
+            Add(policy);
+        }
+    }
 
     public void Add(HmacPolicy policy)
     {
