@@ -34,7 +34,7 @@ builder.Services
             // signed into the hmac will be stored in the cache registered here,
             // in this case in memory. The entry will be stored for the max age
             // of the request and then evicted
-            policy.UseMemoryCache(TimeSpan.FromSeconds(30));
+            policy.UseMemoryCache(30);
 
             // Create a scheme with required headers
             policy.AddScheme("RequireAccountAndEmail", scheme =>

@@ -4,6 +4,9 @@ using HmacManager.Policies;
 
 namespace HmacManager.Headers;
 
+/// <summary>
+/// A class representing a <c>HeaderSchemeCollection</c>.
+/// </summary>
 [JsonConverter(typeof(HeaderSchemeCollectionJsonConverter))]
 public class HeaderSchemeCollection : ComponentCollection<HeaderScheme>
 {

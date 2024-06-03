@@ -1,19 +1,24 @@
 namespace HmacManager.Headers;
 
 /// <summary>
-/// A class representing a <c>HeaderScheme</c>..
+/// A class representing a <c>HeaderScheme</c>.
 /// </summary>
 public class HeaderScheme
 {
     private HeaderCollection _headers = new();
 
+    /// <summary>
+    /// Creates a <c>HeaderScheme</c> object.
+    /// </summary>
+    /// <param name="name"><c>string</c></param>
+    /// <returns>A <c>HeaderScheme</c> object.</returns>
     public HeaderScheme(string? name)
     {
         ArgumentException.ThrowIfNullOrEmpty(name, nameof(name));
         Name = name;
     }
 
-    internal readonly string Name;
+    internal string Name { get; init; }
 
     internal IReadOnlyCollection<Header> Headers => _headers.GetAll();
 
@@ -31,6 +36,16 @@ public class HeaderScheme
     /// </summary>
     /// <param name="name">The name of the header on the HTTP request.</param>
     /// <param name="claimType">The name of the claim that the header value should be converted to.</param>
-    public void AddHeader(string name, string claimType) =>
-        _headers.Add(new Header { Name = name, ClaimType = claimType });
+    public void AddHeader(string name, string claimType)
+    {
+        var value = new Header { Name = name, ClaimType = claimType };
+
+        // Set defaults for claimType if missing
+        if (string.IsNullOrWhiteSpace(claimType))
+        {
+            value.ClaimType = name;
+        }
+        
+        _headers.Add(value);
+    }
 }

@@ -1,8 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
+using System.Configuration;
 using HmacManager.Mvc.Extensions.Internal;
 using HmacManager.Policies;
-using HmacManager.Headers;
+using HmacManager.Mvc.Configuration;
 
 namespace HmacManager.Mvc.Extensions;
 
@@ -14,6 +15,9 @@ public static class IServiceCollectionExtensions
     /// <summary>
     /// Registers the necessary dependencies to use <c>IHmacManagerFactory</c>
     /// in the dependency injection container with the configured <c>HmacManagerOptions</c>.
+    ///     <para>
+    ///         See <see href="https://github.com/jzills/HmacManager/tree/main/samples/">here</see> for examples.
+    ///     </para>
     /// </summary>
     /// <param name="services">The <c>IServiceCollection</c>.</param>
     /// <param name="configureOptions">The configuration action for <c>HmacManagerOptions</c>.</param>
@@ -32,6 +36,9 @@ public static class IServiceCollectionExtensions
     /// <summary>
     /// Registers the necessary dependencies to use <c>IHmacManagerFactory</c>
     /// in the dependency injection container with the corresponding <c>IConfiguration</c> settings.
+    ///     <para>
+    ///         See <see href="https://github.com/jzills/HmacManager/tree/main/samples/">here</see> for examples.
+    ///     </para>
     /// </summary>
     /// <param name="services">The <c>IServiceCollection</c>.</param>
     /// <param name="configurationSection">The <c>IConfigurationSection</c> for an array of JSON objects representing an <c>HmacPolicy</c>.</param>
@@ -41,39 +48,21 @@ public static class IServiceCollectionExtensions
         IConfigurationSection configurationSection
     )
     {
-        var policiesToValidate = new List<HmacPolicyJsonConfiguration>();
-        configurationSection.Bind(policiesToValidate);
-
-        var policies = new HmacPolicyCollection();
-        foreach (var policy in policiesToValidate)
+        var policiesToBuild = configurationSection.Get<List<HmacPolicyConfigurationSection>>();
+        if (policiesToBuild?.Count > 0)
         {
-            var headerSchemes = new HeaderSchemeCollection();
-            if (policy?.HeaderSchemes?.Any() ?? false)
+            var policies = new HmacPolicyCollection();
+            foreach (var policy in policiesToBuild)
             {
-                foreach (var headerScheme in policy.HeaderSchemes)
-                {
-                    var scheme = new HeaderScheme(headerScheme.Name);
-                    if (headerScheme?.Headers?.Any() ?? false)
-                    {
-                        foreach (var header in headerScheme.Headers)
-                        {
-                            scheme.AddHeader(header.Name, header.ClaimType);
-                        }
-                    }
-
-                    headerSchemes.Add(scheme);
-                }
+                var builder = new HmacPolicyConfigurationBuilder(policy);
+                policies.Add(builder.Build(policy.Name));
             }
 
-            policies.Add(new HmacPolicy(policy.Name)
-            {
-                Algorithms = policy.Algorithms,
-                Keys = policy.Keys,
-                Nonce = policy.Nonce,
-                HeaderSchemes = headerSchemes
-            });
+            return services.AddHmacManager(new HmacManagerOptions(policies));
         }
-
-        return services.AddHmacManager(new HmacManagerOptions(policies));
+        else
+        {
+            throw new ConfigurationErrorsException($"No policies could be bound from the configuration section: \"{configurationSection.Key}\"");
+        }
     }
 }

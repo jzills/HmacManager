@@ -28,7 +28,7 @@ builder.Services
         {
             policy.UsePublicKey(Guid.Parse("eb8e9dae-08bd-4883-80fe-1d9a103b30b5"));
             policy.UsePrivateKey(Convert.ToBase64String(Encoding.UTF8.GetBytes("thisIsMySuperCoolHmacPolicy_1PrivateKey")));
-            policy.UseMemoryCache(TimeSpan.FromSeconds(30));
+            policy.UseMemoryCache(30);
             policy.AddScheme("HmacScheme_1", scheme =>
             {
                 scheme.AddHeader("X-Scheme_1");
@@ -40,7 +40,7 @@ builder.Services
         {
             policy.UsePublicKey(Guid.Parse("ac2f1dae-08bd-4883-80fe-1d9a103b30b5"));
             policy.UsePrivateKey(Convert.ToBase64String(Encoding.UTF8.GetBytes("thisIsMySuperCoolHmacPolicy_2PrivateKey")));
-            policy.UseMemoryCache(TimeSpan.FromSeconds(30));
+            policy.UseMemoryCache(30);
             policy.AddScheme("HmacScheme_2", scheme =>
             {
                 scheme.AddHeader("X-Scheme_1");

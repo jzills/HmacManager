@@ -14,7 +14,6 @@ public class Nonce
     /// that matches this value.
     /// </summary>
     /// <value>Defaults to 30 seconds.</value>
-    [JsonIgnore]
     public int MaxAgeInSeconds { get; set; } = 30;
     /// <summary>
     /// Represents the type of the cache used to store nonce values.

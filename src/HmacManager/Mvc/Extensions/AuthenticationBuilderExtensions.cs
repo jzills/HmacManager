@@ -9,7 +9,7 @@ namespace HmacManager.Mvc.Extensions;
 public static class AuthenticationBuilderExtensions
 {
     /// <summary>
-    /// Adds HmacAuthentication to the <c>AuthenticationBuilder<c> with the
+    /// Adds HmacAuthentication to the <c>AuthenticationBuilder</c> with the
     /// configured <c>HmacAuthenticationOptions</c>. This method also adds
     /// the implementation for <c>IHmacManagerFactory</c> to the DI container.
     /// </summary>

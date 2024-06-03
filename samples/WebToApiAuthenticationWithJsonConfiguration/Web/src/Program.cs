@@ -1,7 +1,20 @@
+using HmacManager.Mvc.Extensions;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Get the configuration section where the policy schema is defined.
+
+// This does not have to be on a property called "HmacManager" so any
+// section name is acceptable, i.e. "Authentication", "Hmac", etc...
+
+// The important piece is that the schema matches an array of polciies.
+var section = builder.Configuration.GetSection("HmacManager");
+
+// Pass the configuration section instead of using the 
+// builder overload.
+builder.Services.AddHmacManager(section);
 
 var app = builder.Build();
 

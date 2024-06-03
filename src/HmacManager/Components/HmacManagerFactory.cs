@@ -6,11 +6,27 @@ using HmacManager.Policies;
 
 namespace HmacManager.Components;
 
+/// <summary>
+/// A class representing a <c>HmacManagerFactory</c>.
+/// </summary>
 public class HmacManagerFactory : IHmacManagerFactory
 {
-    protected IComponentCollection<HmacPolicy> Policies;
-    protected IComponentCollection<INonceCache> Caches;
+    /// <summary>
+    /// An <c>IComponentCollection</c> of <c>HmacPolicy</c> objects.
+    /// </summary>
+    protected readonly IComponentCollection<HmacPolicy> Policies;
 
+    /// <summary>
+    /// An <c>IComponentCollection</c> of <c>INonceCache</c> objects.
+    /// </summary>
+    protected readonly IComponentCollection<INonceCache> Caches;
+
+    /// <summary>
+    /// Creates a <c>HmacManagerFactory</c> object.
+    /// </summary>
+    /// <param name="policies"><c>HmacManagerOptions</c></param>
+    /// <param name="caches"><c>IHmacProvider</c></param>
+    /// <returns>A <c>HmacManagerFactory</c> object.</returns>
     public HmacManagerFactory(
         IComponentCollection<HmacPolicy> policies,
         IComponentCollection<INonceCache> caches
@@ -20,6 +36,7 @@ public class HmacManagerFactory : IHmacManagerFactory
         Caches = caches;
     }
 
+    /// <inheritdoc/>
     public IHmacManager? Create(string policy)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(policy, nameof(policy));
@@ -34,6 +51,7 @@ public class HmacManagerFactory : IHmacManagerFactory
         }
     }
 
+    /// <inheritdoc/>
     public IHmacManager? Create(string policy, string scheme)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(policy, nameof(policy));
@@ -51,7 +69,7 @@ public class HmacManagerFactory : IHmacManagerFactory
 
     private HmacManager CreateManager(HmacPolicy options, INonceCache cache) =>
         new HmacManager(
-            CreateOptions(options.Name, options.Nonce.MaxAgeInSeconds),
+            CreateOptions(options.Name!, options.Nonce.MaxAgeInSeconds),
             CreateProvider(options.Keys, options.Algorithms),
             cache
         );
@@ -59,7 +77,7 @@ public class HmacManagerFactory : IHmacManagerFactory
     private HmacManager CreateManager(HmacPolicy options, INonceCache cache, string scheme) =>
         new HmacManager(
             CreateOptions(
-                options.Name, 
+                options.Name!, 
                 options.Nonce.MaxAgeInSeconds, 
                 options.HeaderSchemes.Get(scheme)
             ),
@@ -85,5 +103,5 @@ public class HmacManagerFactory : IHmacManagerFactory
 
     private bool TryGetPolicyCache(string policy, out HmacPolicy options, out INonceCache cache) => 
         Policies.TryGetValue(policy, out options) &&
-          Caches.TryGetValue(Enum.GetName(options.Nonce.CacheType), out cache) || (cache = default!) != default!;
+          Caches.TryGetValue(Enum.GetName(options.Nonce.CacheType)!, out cache) || (cache = default!) != default!;
 }
