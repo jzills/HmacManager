@@ -3,6 +3,7 @@ using HmacManager.Common;
 using HmacManager.Common.Extensions;
 using HmacManager.Headers;
 using HmacManager.Policies;
+using HmacManager.Policies.Extensions;
 
 namespace HmacManager.Components;
 
@@ -14,7 +15,7 @@ public class HmacManagerFactory : IHmacManagerFactory
     /// <summary>
     /// An <c>IComponentCollection</c> of <c>HmacPolicy</c> objects.
     /// </summary>
-    protected readonly IComponentCollection<HmacPolicy> Policies;
+    protected readonly IHmacPolicyCollection Policies;
 
     /// <summary>
     /// An <c>IComponentCollection</c> of <c>INonceCache</c> objects.
@@ -28,7 +29,7 @@ public class HmacManagerFactory : IHmacManagerFactory
     /// <param name="caches"><c>IHmacProvider</c></param>
     /// <returns>A <c>HmacManagerFactory</c> object.</returns>
     public HmacManagerFactory(
-        IComponentCollection<HmacPolicy> policies,
+        IHmacPolicyCollection policies,
         IComponentCollection<INonceCache> caches
     )
     {

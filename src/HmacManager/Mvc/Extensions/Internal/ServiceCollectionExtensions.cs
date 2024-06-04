@@ -26,7 +26,7 @@ internal static class ServiceCollectionExtensions
     internal static IServiceCollection AddPolicyCollection(
         this IServiceCollection services, 
         HmacPolicyCollection policies
-    ) => services.AddSingleton<IComponentCollection<HmacPolicy>,  HmacPolicyCollection>(_ => policies);
+    ) => services.AddSingleton<IHmacPolicyCollection,  HmacPolicyCollection>(_ => policies);
 
     internal static IServiceCollection AddCacheCollection(this IServiceCollection services)
     {

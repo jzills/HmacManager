@@ -1,9 +1,9 @@
 using HmacManager.Caching;
-using HmacManager.Common;
 using HmacManager.Common.Extensions;
 using HmacManager.Components;
 using HmacManager.Headers;
 using HmacManager.Policies;
+using HmacManager.Policies.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Unit.Tests.Policies;
@@ -14,7 +14,7 @@ public class Test_HmacPolicyCollection_DynamicPolicies : TestServiceCollection
     [Test]
     public void Test()
     {
-        var policies = (HmacPolicyCollection)ServiceProvider.GetRequiredService<IComponentCollection<HmacPolicy>>();
+        var policies = ServiceProvider.GetRequiredService<IHmacPolicyCollection>();
         
         var headerSchemes = new HeaderSchemeCollection();
         var headerScheme = new HeaderScheme("Cool_Dynamic_Scheme");
@@ -42,10 +42,9 @@ public class Test_HmacPolicyCollection_DynamicPolicies : TestServiceCollection
             HeaderSchemes = headerSchemes
         });
 
-        policies = (HmacPolicyCollection)ServiceProvider.GetRequiredService<IComponentCollection<HmacPolicy>>();
+        policies = ServiceProvider.GetRequiredService<IHmacPolicyCollection>();
         
         Assert.IsTrue(policies.TryGetValue("Cool_Dynamic_Policy", out var policy));
         Assert.IsTrue(policy.Name == "Cool_Dynamic_Policy");
-
     }
 }

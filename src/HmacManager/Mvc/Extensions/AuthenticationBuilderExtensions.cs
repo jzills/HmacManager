@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Authentication;
 using HmacManager.Mvc.Extensions.Internal;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace HmacManager.Mvc.Extensions;
 
