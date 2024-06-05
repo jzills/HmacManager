@@ -6,7 +6,7 @@ namespace Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[HmacAuthenticate(Policy = "aecxTyy", Scheme = "Sujmuvwh8TxH8DB")]
+[HmacAuthenticate(Policy = "Some_Policy", Scheme = "Some_Scheme")]
 public class WeatherForecastController : ControllerBase
 {
     private static readonly string[] Summaries = [

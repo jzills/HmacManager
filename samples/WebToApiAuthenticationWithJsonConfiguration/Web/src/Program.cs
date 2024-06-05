@@ -14,10 +14,10 @@ builder.Services.AddScoped<IWeatherService, WeatherService>();
 // a policy and or scheme combination which will be used
 // to sign outgoing requests
 builder.Services
-    .AddHttpClient("Hmac_MyPolicy_RequireAccountAndEmail", client =>
+    .AddHttpClient("Hmac_Some_PolicyScheme", client =>
     {
-        client.BaseAddress = new Uri("https://localhost:7216");
-    }).AddHmacHttpMessageHandler("aecxTyy", "Sujmuvwh8TxH8DB");
+        client.BaseAddress = new Uri("https://localhost:7129");
+    }).AddHmacHttpMessageHandler("Some_Policy", "Some_Scheme");
 
 // Get the configuration section where the policy schema is defined.
 

@@ -69,7 +69,7 @@ internal class SigningContentBuilder
             }
         }
 
-        Builder.Append($":{DateRequested}");
+        Builder.Append($":{DateRequested.UtcTicks}");
         Builder.Append($":{PublicKey}");
 
         if (ContentHash is not null)
