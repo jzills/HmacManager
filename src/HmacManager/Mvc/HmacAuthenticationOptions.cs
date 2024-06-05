@@ -9,6 +9,16 @@ namespace HmacManager.Mvc;
 public class HmacAuthenticationOptions : AuthenticationSchemeOptions
 {
     /// <summary>
+    /// Creates an instance of <c>HmacAuthenticationOptions</c>.
+    /// </summary>
+    public HmacAuthenticationOptions()
+    {
+    }
+
+    internal HmacAuthenticationOptions(HmacPolicyCollection policies) =>
+        Options = new HmacManagerOptions(policies);
+
+    /// <summary>
     /// The options for configuring an <c>HmacManager</c> instance.
     /// </summary>
     protected readonly HmacManagerOptions Options = new();

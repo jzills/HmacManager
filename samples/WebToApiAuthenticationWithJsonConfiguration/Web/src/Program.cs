@@ -1,8 +1,23 @@
 using HmacManager.Mvc.Extensions;
+using Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
+
+// Add the weather service which is used to demo
+// outgoing hmac requests
+builder.Services.AddScoped<IWeatherService, WeatherService>();
+
+// Register a HttpClient and attach a HttpMessageHandler with
+// the AddHmacHttpMessageHandler extension method. This accepts
+// a policy and or scheme combination which will be used
+// to sign outgoing requests
+builder.Services
+    .AddHttpClient("Hmac_MyPolicy_RequireAccountAndEmail", client =>
+    {
+        client.BaseAddress = new Uri("https://localhost:7216");
+    }).AddHmacHttpMessageHandler("aecxTyy", "Sujmuvwh8TxH8DB");
 
 // Get the configuration section where the policy schema is defined.
 

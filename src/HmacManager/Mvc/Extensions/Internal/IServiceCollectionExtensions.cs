@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace HmacManager.Mvc.Extensions.Internal;
 
-internal static class ServiceCollectionExtensions
+internal static class IServiceCollectionExtensions
 {
     internal static IServiceCollection AddHmacManager(
         this IServiceCollection services,

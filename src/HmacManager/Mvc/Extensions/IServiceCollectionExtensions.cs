@@ -1,9 +1,6 @@
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
-using System.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using HmacManager.Mvc.Extensions.Internal;
-using HmacManager.Policies;
-using HmacManager.Mvc.Configuration;
 
 namespace HmacManager.Mvc.Extensions;
 
@@ -48,21 +45,7 @@ public static class IServiceCollectionExtensions
         IConfigurationSection configurationSection
     )
     {
-        var policiesToBuild = configurationSection.Get<List<HmacPolicyConfigurationSection>>();
-        if (policiesToBuild?.Count > 0)
-        {
-            var policies = new HmacPolicyCollection();
-            foreach (var policy in policiesToBuild)
-            {
-                var builder = new HmacPolicyConfigurationBuilder(policy);
-                policies.Add(builder.Build(policy.Name));
-            }
-
-            return services.AddHmacManager(new HmacManagerOptions(policies));
-        }
-        else
-        {
-            throw new ConfigurationErrorsException($"No policies could be bound from the configuration section: \"{configurationSection.Key}\"");
-        }
+        var policies = configurationSection.GetPolicySection();
+        return services.AddHmacManager(new HmacManagerOptions(policies));
     }
 }
