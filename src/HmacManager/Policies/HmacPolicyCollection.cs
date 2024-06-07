@@ -9,6 +9,13 @@ namespace HmacManager.Policies;
 public class HmacPolicyCollection : ComponentCollection<HmacPolicy>, IHmacPolicyCollection
 {
     /// <summary>
+    /// A simple <c>object</c> lock to restrict collection mutation
+    /// since the <c>HmacPolicyCollection</c> is registered as
+    /// a singleton with the DI container.
+    /// </summary>
+    private readonly object _locker = new();
+
+    /// <summary>
     /// Validates an <c>HmacPolicy</c> before it is added to the collection.
     /// </summary>
     protected readonly IValidator<HmacPolicy> Validator;
@@ -42,7 +49,10 @@ public class HmacPolicyCollection : ComponentCollection<HmacPolicy>, IHmacPolicy
         var validationResult = Validator.Validate(policy);
         if (validationResult.IsValid)
         {
-            Add(policy.Name!, policy); 
+            lock (_locker)
+            {
+                Add(policy.Name!, policy); 
+            }
         }
         else
         {
@@ -51,5 +61,11 @@ public class HmacPolicyCollection : ComponentCollection<HmacPolicy>, IHmacPolicy
     }
 
     /// <inheritdoc/>
-    public new void Remove(string policy) => base.Remove(policy);
+    public new void Remove(string policy)
+    {
+        lock (_locker)
+        {
+            base.Remove(policy);
+        }
+    }
 }
