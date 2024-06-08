@@ -1,8 +1,27 @@
 
 # HmacManager
 
+[![NuGet Version](https://img.shields.io/nuget/v/HmacManager.svg)](https://www.nuget.org/packages/HmacManager/) [![NuGet Downloads](https://img.shields.io/nuget/dt/HmacManager.svg)](https://www.nuget.org/packages/HmacManager/) [![.NET](https://github.com/jzills/HmacManager/actions/workflows/dotnet.yml/badge.svg)](https://github.com/jzills/HmacManager/actions/workflows/dotnet.yml)
 
-### Register without built-in authentication flow
+- [Quickstart](#quickstart)
+    * [Register without built-in authentication flow](#register-without-built-in-authentication-flow)
+    * [Register with built-in authentication flow](#register-with-built-in-authentication-flow)
+    * [Register HttpClient with HmacHttpMessageHandler](#register-httpclient-with-hmachttpmessagehandler)
+- [In-Depth Tutorial](#in-depth-tutorial)
+    * [The HmacManager Object](#the-hmacmanager-object)
+    * [The HmacManagerFactory Object](#the-hmacmanagerfactory-object)
+    * [The HmacPolicyCollection Object](#the-hmacpolicycollection-object)
+
+# Quickstart
+
+A short and sweet overview of how to register `HmacManager` to help you get up and running. There are two methods of dependency injection registration. You should choose the one appropriate for your situation and how much flexibility you might require.
+
+- [Register without built-in authentication flow](#register-without-built-in-authentication-flow)
+    - Only registers the `HmacManager` object through an `IHmacManagerFactory` service where you will be required to handle signatures and verification manually.
+- [Register with built-in authentication flow](#register-with-built-in-authentication-flow)
+    - Automatically registers an authentication handler and maps any authenticated request headers defined by a scheme to claims. This method handles verifying incoming requests without any additional setup. 
+
+## Register without built-in authentication flow
 
 Use the `IServiceCollection` extension method `AddHmacManager` to add `IHmacManagerFactory` to the dependency injection container. 
 
@@ -39,7 +58,7 @@ A policy can be extended with schemes. These schemes represent the required head
             });
         });
 
-### Register with built-in authentication flow
+## Register with built-in authentication flow
 
 The `AddHmacManager` extension method can be bypassed in favor of the `IAuthenticationBuilder` extension method `AddHmac`. 
 
@@ -89,7 +108,7 @@ The `AddHmacManager` extension method can be bypassed in favor of the `IAuthenti
 
 - Any scheme headers are mapped to their specified claim types. If no claim type is specified, the name of the header is used.
 
-### Register HttpClient with HmacHttpMessageHandler
+## Register HttpClient with HmacHttpMessageHandler
 
 The `AddHmacHttpMessageHandler` extension method registers an instance of `HmacDelegatingHandler` to the specified `HttpClient` with the configured policy and the optional scheme. This handler will automatically sign outgoing requests for that client. If the request cannot be signed, then an `HmacSigningException` exception is thrown.
 
@@ -98,3 +117,19 @@ The `AddHmacHttpMessageHandler` extension method registers an instance of `HmacD
         .AddHmacHttpMessageHandler("MyPolicy", "MyScheme");
 
 - If a scheme is specified, then all headers in that scheme must be added to the request prior to calling `Send` or `SendAsync` on the `HttpClient`. The corresponding header values will be part of the signing content used to create the hmac.
+
+# In-Depth Tutorial
+
+This is where you can find a comprehensive guide on all of the functionality available to your disposal.
+
+## The HmacManager Object
+
+Coming Soon
+
+## The HmacManagerFactory Object
+
+Coming Soon
+
+## The HmacPolicyCollection Object
+
+Coming Soon
