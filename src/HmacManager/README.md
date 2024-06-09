@@ -6,11 +6,12 @@
 - [Quickstart](#quickstart)
     * [Register without built-in authentication flow](#register-without-built-in-authentication-flow)
     * [Register with built-in authentication flow](#register-with-built-in-authentication-flow)
+    * [Register with an IConfigurationSection](#register-with-an-iconfigurationsection)
     * [Register HttpClient with HmacHttpMessageHandler](#register-httpclient-with-hmachttpmessagehandler)
 - [In-Depth Tutorial](#in-depth-tutorial)
-    * [The HmacManager Object](#the-hmacmanager-object)
-    * [The HmacManagerFactory Object](#the-hmacmanagerfactory-object)
-    * [The HmacPolicyCollection Object](#the-hmacpolicycollection-object)
+    * The HmacManager Object
+    * The HmacManagerFactory Object
+    * The HmacPolicyCollection Object
 
 # Quickstart
 
@@ -108,7 +109,42 @@ The `AddHmacManager` extension method can be bypassed in favor of the `IAuthenti
 
 - Any scheme headers are mapped to their specified claim types. If no claim type is specified, the name of the header is used.
 
-## Register HttpClient with HmacHttpMessageHandler
+## Register with an `IConfigurationSection`
+
+- Both `AddHmacManager` and `AddHmac` have an overload which accepts an `IConfigurationSection` that corresponds to the json schema below. Additionally, an example project can be found [here](../../samples/WebToApiAuthenticationWithJsonConfiguration/README.md).
+
+    ```
+    [
+        {
+            "Name": "Some_Policy",
+            "Keys": {
+                "PublicKey": "37e3e675-370a-4ba9-af74-68f99b539f03",
+                "PrivateKey": "zvg29s2cQ4idOqbUJWETOw=="
+            },
+            "Algorithms": {
+                "ContentHashAlgorithm": "SHA256",
+                "SigningHashAlgorithm": "HMACSHA256"
+            },
+            "Nonce": {
+                "CacheType": "Memory",
+                "MaxAgeInSeconds": 100
+            },
+            "HeaderSchemes": [
+                {
+                    "Name": "Some_Scheme",
+                    "Headers": [
+                        {
+                            "Name": "Some_Header_1",
+                            "ClaimType": "Header_1_ClaimType"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+    ```
+
+## Register `HttpClient` with `HmacHttpMessageHandler`
 
 The `AddHmacHttpMessageHandler` extension method registers an instance of `HmacDelegatingHandler` to the specified `HttpClient` with the configured policy and the optional scheme. This handler will automatically sign outgoing requests for that client. If the request cannot be signed, then an `HmacSigningException` exception is thrown.
 
@@ -120,16 +156,4 @@ The `AddHmacHttpMessageHandler` extension method registers an instance of `HmacD
 
 # In-Depth Tutorial
 
-This is where you can find a comprehensive guide on all of the functionality available to your disposal.
-
-## The HmacManager Object
-
-Coming Soon
-
-## The HmacManagerFactory Object
-
-Coming Soon
-
-## The HmacPolicyCollection Object
-
-Coming Soon
+This is where you can find a comprehensive guide on all of the functionality available to your disposal. This is currently a work in progress.

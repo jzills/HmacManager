@@ -5,32 +5,24 @@ This demo is an example of using [HmacManager](../../README.md) for authenticati
 
 ## Api
 
-See this [example](../WebToApiAuthentication/Api/README.md). Additionally, when calling `AddAuthorization`, the `AuthorizationPolicyBuilder` extension method `RequireHmacAuthentication` can be used to register policies and schemes:
+The call to `AddHmac` uses the overload accepting an `IConfigurationSection`. The name of the section, i.e. "Authentication" can be any name but the json structure must match.
 
-    builder.Services.AddAuthorization(options => 
-    {
-        // This is one way to register
-        // options.AddPolicy("Require_Hmac_PolicyScheme_2", policy => 
-        //     policy.AddRequirements(new HmacAuthenticateAttribute 
-        //     { 
-        //         Policy = "HmacPolicy_2", 
-        //         Scheme = "HmacScheme_2"
-        //     }));
+    var options = builder.Configuration.GetSection("Authentication");
+    builder.Services
+        .AddAuthentication()
+        .AddHmac(options);
 
-        // This is another
-        // options.AddPolicy("Require_Hmac_PolicyScheme_2", policy =>
-        // {
-        //     policy.RequireHmacPolicy(`"HmacPolicy_2");
-        //     policy.RequireHmacScheme("HmacScheme_2");
-        // });
-
-        // This is the preferred approach due to it's simplicity
-        options.AddPolicy("Require_Hmac_PolicyScheme_2", policy =>
-        {
-            policy.RequireHmacAuthentication("HmacPolicy_2", "HmacScheme_2");
-        });
-    });
+See [WebToApiAuthentication/Api](../WebToApiAuthentication/Api/README.md) for more details.
 
 ## Web
 
-See this [example](../WebToApiAuthentication/Web/README.md).
+The call to `AddHmacManager` uses the overload accepting an `IConfigurationSection`. Again, the name of the section can be anything.
+
+    // The important piece is that the schema matches an array of policies.
+    var section = builder.Configuration.GetSection("HmacManager");
+
+    // Pass the configuration section instead of using the 
+    // builder overload.
+    builder.Services.AddHmacManager(section);
+
+See [WebToApiAuthentication/Web](../WebToApiAuthentication/Web/README.md) for more details.
