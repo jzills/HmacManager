@@ -6,19 +6,19 @@
 - [Quickstart](#quickstart)
     * [Register without built-in authentication flow](#register-without-built-in-authentication-flow)
     * [Register with built-in authentication flow](#register-with-built-in-authentication-flow)
-    * [Register with an IConfigurationSection](#register-with-an-iconfigurationsection)
-    * [Register HttpClient with HmacHttpMessageHandler](#register-httpclient-with-hmachttpmessagehandler)
+    * [Register with an `IConfigurationSection`](#register-with-an-iconfigurationsection)
+    * [Register HttpClient with `HmacHttpMessageHandler`](#register-httpclient-with-hmachttpmessagehandler)
 - [In-Depth Tutorial](#in-depth-tutorial)
-    * The HmacManager Object
-    * The HmacManagerFactory Object
-    * The HmacPolicyCollection Object
+    * The `HmacManager` Object
+    * The `HmacManagerFactory` Object
+    * [Dynamic Policies with `IHmacPolicyCollection`](#dynamic-policies-with-ihmacpolicycollection)
 
 # Quickstart
 
 A short and sweet overview of how to register `HmacManager` to help you get up and running. There are two methods of dependency injection registration. You should choose the one appropriate for your situation and how much flexibility you might require.
 
 - [Register without built-in authentication flow](#register-without-built-in-authentication-flow)
-    - Only registers the `HmacManager` object through an `IHmacManagerFactory` service where you will be required to handle signatures and verification manually.
+    - Only registers the `HmacManager` object through an `IHmacManagerFactory` service where you will be required to handle signatures and verification manually. An implementation of `IHmacManagerFactory` is registered with the DI container automatically. This is how you will instantiate `HmacManager` objects.
 - [Register with built-in authentication flow](#register-with-built-in-authentication-flow)
     - Automatically registers an authentication handler and maps any authenticated request headers defined by a scheme to claims. This method handles verifying incoming requests without any additional setup. 
 
@@ -37,9 +37,18 @@ Use the `IServiceCollection` extension method `AddHmacManager` to add `IHmacMana
             });
         });
 
-Access configured policies from `IHmacManagerFactory`
+Access configured policies from an `IHmacManagerFactory`.
 
     IHmacManager hmacManager = hmacManagerFactory.Create("SomePolicy")
+
+The `IHmacManagerFactory` is automatically registered with the DI container so it can be accessed anywhere services are injected.
+
+    private readonly IHmacManager _hmacManager;
+
+    public SomeContructor(IHmacManagerFactory hmacManagerFactory)
+    {
+        _hmacManager = hmacManagerFactory.Create("Some Policy");
+    }
 
 A policy can be extended with schemes. These schemes represent the required headers that must be present in the request. These become a part of the content hash.
 
@@ -157,3 +166,22 @@ The `AddHmacHttpMessageHandler` extension method registers an instance of `HmacD
 # In-Depth Tutorial
 
 This is where you can find a comprehensive guide on all of the functionality available to your disposal. This is currently a work in progress.
+
+## Dynamic Policies with `IHmacPolicyCollection`
+
+An implementation of `IHmacPolicyCollection` is registered as a singleton automatically when using `AddHmacManager` or `AddHmac` extension methods. This can be requested through the DI container and manipulated at runtime.
+
+    private readonly IHmacPolicyCollection _policies;
+
+    public SomeContructor(IHmacPolicyCollection policies)
+    {
+        _policies = policies;
+    }    
+
+Policies can be added by constructing a new `HmacPolicy`.
+
+    _policies.Add(new HmacPolicy { ... });
+
+Policies can be removed by specifying the name of the policy to remove.
+
+    _policies.Remove("Some Policy");

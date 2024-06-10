@@ -6,7 +6,8 @@
 - [Summary](#summary)
 - [Features](#features)
 - [Installation](#installation)
-- [Docs](#docs)
+- [Documentation](./src/HmacManager/README.md)
+- [Resources](#resources)
 
 ## Summary
 
@@ -27,6 +28,7 @@ Integrate hmac authentication seamlessly into your .NET applications, fortifying
 
     dotnet add package HmacManager
 
-## Docs
+## Resources
 
-[HmacManager](src/HmacManager/README.md)
+- [Documentation](src/HmacManager/README.md)
+- [Samples](samples/README.md)
