@@ -10,7 +10,7 @@
 
   <PropertyGroup>
     <PackageId>HmacManager</PackageId>
-    <Version>2.1.1</Version>
+    <Version>2.2.0</Version>
     <Authors>Joshua Zillwood</Authors>
     <Description>Integrate hmac authentication seamlessly into your .NET applications, fortifying security measures and ensuring robust authentication protocols.</Description>
     <Company></Company>
