@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.Extensions.Configuration;
 using HmacManager.Mvc.Extensions.Internal;
 
 namespace HmacManager.Mvc.Extensions;
@@ -9,7 +10,7 @@ namespace HmacManager.Mvc.Extensions;
 public static class AuthenticationBuilderExtensions
 {
     /// <summary>
-    /// Adds HmacAuthentication to the <c>AuthenticationBuilder<c> with the
+    /// Adds HmacAuthentication to the <c>AuthenticationBuilder</c> with the
     /// configured <c>HmacAuthenticationOptions</c>. This method also adds
     /// the implementation for <c>IHmacManagerFactory</c> to the DI container.
     /// </summary>
@@ -32,6 +33,32 @@ public static class AuthenticationBuilderExtensions
 
         builder.Services.AddHmacManager(options.GetOptions());
 
+        return builder;
+    }
+
+    /// <summary>
+    /// Adds HmacAuthentication to the <c>AuthenticationBuilder</c> with the
+    /// configured <c>IConfigurationSection</c>. This method also adds
+    /// the implementation for <c>IHmacManagerFactory</c> to the DI container.
+    /// </summary>
+    /// <param name="builder">The calling <c>AuthenticationBuilder</c>.</param>
+    /// <param name="configurationSection">The <c>IConfigurationSection</c> representing <c>HmacPolicy</c> objects for <c>HmacManagerOptions</c>.</param>
+    /// <returns>An <c>AuthenticationBuilder</c></returns>
+    public static AuthenticationBuilder AddHmac(
+        this AuthenticationBuilder builder,
+        IConfigurationSection configurationSection
+    )
+    {
+        var policies = configurationSection.GetPolicySection();
+
+        builder.AddScheme<HmacAuthenticationOptions, HmacAuthenticationHandler>(
+            HmacAuthenticationDefaults.AuthenticationScheme,
+            HmacAuthenticationDefaults.AuthenticationScheme,
+            _ => new HmacAuthenticationOptions(policies)
+        );
+
+        builder.Services.AddHmacManager(new HmacManagerOptions(policies));
+        
         return builder;
     }
 }

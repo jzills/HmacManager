@@ -5,23 +5,33 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup>
     <PackageId>HmacManager</PackageId>
-    <Version>2.1.0</Version>
+    <Version>2.2.0</Version>
     <Authors>Joshua Zillwood</Authors>
     <Description>Integrate hmac authentication seamlessly into your .NET applications, fortifying security measures and ensuring robust authentication protocols.</Description>
     <Company></Company>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/jzills/HmacManager</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/jzills/HmacManager.git</RepositoryUrl> 
+    <RepositoryType>git</RepositoryType> 
+    <PackageIcon>icon.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
-      <None Include="README.md" Pack="true" PackagePath="" />
+    <None Include="README.md" Pack="true" PackagePath="" />
   </ItemGroup>
 
   <ItemGroup>
-      <FrameworkReference Include="Microsoft.AspNetCore.App" Version="8.0.3" />
+    <None Include="../../resources/icon.png" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" Version="8.0.3" />
   </ItemGroup>
 
   <ItemGroup>

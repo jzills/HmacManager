@@ -1,21 +1,26 @@
 namespace HmacManager.Headers;
 
 /// <summary>
-/// A class representing a <c>HeaderScheme</c>..
+/// A class representing a <c>HeaderScheme</c>.
 /// </summary>
 public class HeaderScheme
 {
-    protected HeaderCollection Headers = new();
+    private HeaderCollection _headers = new();
 
-    public HeaderScheme(string name)
+    /// <summary>
+    /// Creates a <c>HeaderScheme</c> object.
+    /// </summary>
+    /// <param name="name"><c>string</c></param>
+    /// <returns>A <c>HeaderScheme</c> object.</returns>
+    public HeaderScheme(string? name)
     {
         ArgumentException.ThrowIfNullOrEmpty(name, nameof(name));
         Name = name;
     }
 
-    internal readonly string Name;
+    internal string Name { get; init; }
 
-    internal IReadOnlyCollection<Header> GetHeaders() => Headers.GetAll();
+    internal IReadOnlyCollection<Header> Headers => _headers.GetAll();
 
     /// <summary>
     /// Adds a specified header name to the <c>HeaderScheme</c>. This header
@@ -31,10 +36,16 @@ public class HeaderScheme
     /// </summary>
     /// <param name="name">The name of the header on the HTTP request.</param>
     /// <param name="claimType">The name of the claim that the header value should be converted to.</param>
-    public void AddHeader(string name, string claimType) =>
-        Headers.Add(name, configureHeader =>
+    public void AddHeader(string name, string claimType)
+    {
+        var value = new Header { Name = name, ClaimType = claimType };
+
+        // Set defaults for claimType if missing
+        if (string.IsNullOrWhiteSpace(claimType))
         {
-            configureHeader.Name = name;
-            configureHeader.ClaimType = claimType;
-        });
+            value.ClaimType = name;
+        }
+        
+        _headers.Add(value);
+    }
 }

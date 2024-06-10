@@ -2,6 +2,13 @@
 # HmacManager
 
 [![NuGet Version](https://img.shields.io/nuget/v/HmacManager.svg)](https://www.nuget.org/packages/HmacManager/) [![NuGet Downloads](https://img.shields.io/nuget/dt/HmacManager.svg)](https://www.nuget.org/packages/HmacManager/) [![.NET](https://github.com/jzills/HmacManager/actions/workflows/dotnet.yml/badge.svg)](https://github.com/jzills/HmacManager/actions/workflows/dotnet.yml)
+
+- [Summary](#summary)
+- [Features](#features)
+- [Installation](#installation)
+- [Documentation](./src/HmacManager/README.md)
+- [Resources](#resources)
+
 ## Summary
 
 Integrate hmac authentication seamlessly into your .NET applications, fortifying security measures and ensuring robust authentication protocols.
@@ -16,10 +23,12 @@ Integrate hmac authentication seamlessly into your .NET applications, fortifying
 - (Currently in progress) JavaScript library to facilitate the effortless integration of signatures from the client to the server.
 
 ## Installation
+
 `HmacManager` is available on [NuGet](https://www.nuget.org/packages/HmacManager/). 
 
     dotnet add package HmacManager
 
-## Docs
+## Resources
 
-[HmacManager](src/HmacManager/README.md)
+- [Documentation](src/HmacManager/README.md)
+- [Samples](samples/README.md)

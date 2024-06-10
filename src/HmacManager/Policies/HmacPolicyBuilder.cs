@@ -12,7 +12,7 @@ public class HmacPolicyBuilder
     protected readonly KeyCredentials Keys = new();
     protected readonly Algorithms Algorithms = new();
     protected readonly Nonce Nonce = new();
-    protected readonly HeaderSchemeCollection HeaderSchemes = new();
+    protected readonly HeaderSchemeCollection HeaderSchemes = new();  
 
     /// <summary>
     /// Uses the specified <c>Guid</c> as the public key for this <c>HmacPolicy</c>.
@@ -61,24 +61,24 @@ public class HmacPolicyBuilder
     /// <summary>
     /// Sets the maximum age on an <c>HttpRequestMessage</c> and the TTL for nonce cache entries.
     /// </summary>
-    /// <param name="maxAge">The <c>TimeSpan</c> representing the max age of a request.</param>
+    /// <param name="maxAgeInSeconds">The <c>TimeSpan</c> representing the max age of a request.</param>
     /// <returns>An <c>HmacPolicyBuilder</c> that can be used to further configure the policy.</returns>
-    public HmacPolicyBuilder UseMemoryCache(TimeSpan maxAge)
+    public HmacPolicyBuilder UseMemoryCache(int maxAgeInSeconds)
     {
-        Nonce.CacheName = "Memory";
-        Nonce.MaxAge = maxAge;
+        Nonce.CacheType = NonceCacheType.Memory;
+        Nonce.MaxAgeInSeconds = maxAgeInSeconds;
         return this;
     }
 
     /// <summary>
     /// Sets the maximum age on an <c>HttpRequestMessage</c> and the TTL for nonce cache entries.
     /// </summary>
-    /// <param name="maxAge">The <c>TimeSpan</c> representing the max age of a request.</param>
+    /// <param name="maxAgeInSeconds">The <c>TimeSpan</c> representing the max age of a request.</param>
     /// <returns>An <c>HmacPolicyBuilder</c> that can be used to further configure the policy.</returns>
-    public HmacPolicyBuilder UseDistributedCache(TimeSpan maxAge)
+    public HmacPolicyBuilder UseDistributedCache(int maxAgeInSeconds)
     {
-        Nonce.CacheName = "Distributed";
-        Nonce.MaxAge = maxAge;
+        Nonce.CacheType = NonceCacheType.Distributed;
+        Nonce.MaxAgeInSeconds = maxAgeInSeconds;
         return this;
     }
 
@@ -91,7 +91,9 @@ public class HmacPolicyBuilder
     /// <returns>An <c>HmacPolicyBuilder</c> that can be used to further configure the policy.</returns>
     public HmacPolicyBuilder AddScheme(string name, Action<HeaderScheme> configureScheme)
     {
-        HeaderSchemes.Add(name, configureScheme);   
+        var header = new HeaderScheme(name);
+        configureScheme.Invoke(header);
+        HeaderSchemes.Add(header);   
         return this;
     }
 
@@ -99,19 +101,12 @@ public class HmacPolicyBuilder
     /// Builds an instance of the configured <c>HmacPolicy</c>.
     /// </summary>
     /// <returns>An <c>HmacPolicyBuilder</c> that can be used to further configure the policy.</returns>
-    public HmacPolicy Build()
-    {
-        if (string.IsNullOrWhiteSpace(Nonce.CacheName))
-        {
-            Nonce.CacheName = "Memory";
-        }
-
-        return new HmacPolicy
+    public HmacPolicy Build(string? name = null) => 
+        new HmacPolicy(name)
         {
             Algorithms = Algorithms,
             Keys = Keys,
             Nonce = Nonce,
             HeaderSchemes = HeaderSchemes
         };
-    }
 }

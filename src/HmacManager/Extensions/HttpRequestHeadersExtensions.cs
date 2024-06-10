@@ -70,7 +70,7 @@ internal static class HttpRequestHeadersExtensions
         }
         else
         {
-            var schemeHeaders = headerScheme.GetHeaders();
+            var schemeHeaders = headerScheme.Headers;
             var schemeHeaderValues = new List<HeaderValue>(schemeHeaders.Count);
             foreach (var schemeHeader in schemeHeaders)
             {
@@ -98,7 +98,7 @@ internal static class HttpRequestHeadersExtensions
     public static bool TryParseHmac(
         this HttpRequestHeaders headers,
         HeaderScheme? headerScheme,
-        TimeSpan maxAge,
+        int maxAgeInSeconds,
         out Hmac value
     )
     {
@@ -106,7 +106,7 @@ internal static class HttpRequestHeadersExtensions
         var hasDateRequestedHeader  = headers.TryGetDateRequestedHeader(out var dateRequested);
         var hasNonceHeader          = headers.TryGetNonceHeader(out var nonce);
         
-        if (dateRequested.HasValidDateRequested(maxAge))
+        if (dateRequested.HasValidDateRequested(maxAgeInSeconds))
         {
             if (headerScheme is null)
             {

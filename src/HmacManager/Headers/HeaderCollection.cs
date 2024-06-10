@@ -3,20 +3,16 @@ using HmacManager.Policies;
 
 namespace HmacManager.Headers;
 
-public class HeaderCollection 
-    : ComponentCollection<Header>, IConfigurator<Header>
+public class HeaderCollection : ComponentCollection<Header>
 {
     protected IValidator<Header> Validator = new HeaderValidator();
     
-    public void Add(string name, Action<Header> configureHeader)
+    public void Add(Header header)
     {
-        var header = new Header();
-        configureHeader.Invoke(header);
-
         var validationResult = Validator.Validate(header);
         if (validationResult.IsValid)
         {
-            Add(name, header); 
+            Add(header.Name, header); 
         }
         else
         {

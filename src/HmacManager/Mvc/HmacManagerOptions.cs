@@ -9,6 +9,10 @@ public class HmacManagerOptions
 {
     protected HmacPolicyCollection Policies = new HmacPolicyCollection();
 
+    public HmacManagerOptions() { }
+
+    internal HmacManagerOptions(HmacPolicyCollection policies) => Policies = policies;
+
     /// <summary>
     /// Adds an <c>HmacPolicy</c> to the <c>HmacPolicyCollection</c>
     /// with the specified name and configuration defined by the <c>HmacPolicyBuilder</c> action.
@@ -20,14 +24,8 @@ public class HmacManagerOptions
         var builder = new HmacPolicyBuilder();
         configurePolicy.Invoke(builder);
 
-        var internalPolicy = builder.Build();
-        Policies.Add(name, policy =>
-        {
-            policy.Keys = internalPolicy.Keys;
-            policy.Algorithms = internalPolicy.Algorithms;
-            policy.Nonce = internalPolicy.Nonce;
-            policy.HeaderSchemes = internalPolicy.HeaderSchemes;
-        });
+        var policy = builder.Build(name);
+        Policies.Add(policy);
     }
 
     internal HmacPolicyCollection GetPolicies() => Policies;
