@@ -153,6 +153,17 @@ The `AddHmacManager` extension method can be bypassed in favor of the `IAuthenti
     ]
     ```
 
+The following properties are restricted. Any other property not listed below can 
+be a string of any character set or length.
+
+| Property | Values | Additional Information |
+| -------- | ------ | ---------------------- |
+| `PublicKey` | Guid | [Validation Details](../HmacManager/Validation/Validators/PublicKeyValidator.cs) |
+| `PrivateKey` | Base64 | [Validation Details](../HmacManager/Validation/Validators/PrivateKeyValidator.cs) |
+| `ContentHashAlgorithm` | SHA1, SHA256, SHA512 | [Enum](../HmacManager/Components/Enums/ContentHashAlgorithm.cs) |
+| `SigningHashAlgorithm` | HMACSHA1, HMACSHA256, HMACSHA512 | [Enum](../HmacManager/Components/Enums/SignatureHashAlgorithm.cs) |
+| `CacheType` | Memory, Distributed | [Enum](../HmacManager/Caching/Enums/NonceCacheType.cs) |
+
 ## Register `HttpClient` with `HmacHttpMessageHandler`
 
 The `AddHmacHttpMessageHandler` extension method registers an instance of `HmacDelegatingHandler` to the specified `HttpClient` with the configured policy and the optional scheme. This handler will automatically sign outgoing requests for that client. If the request cannot be signed, then an `HmacSigningException` exception is thrown.

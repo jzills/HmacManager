@@ -4,7 +4,7 @@ import base64
 import json
 import string
 
-NUM_POLICIES = 1000
+NUM_POLICIES = 10
 
 def hmac_policy_generator():
     """

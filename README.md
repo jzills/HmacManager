@@ -11,16 +11,18 @@
 
 ## Summary
 
-Integrate hmac authentication seamlessly into your .NET applications, fortifying security measures and ensuring robust authentication protocols.
+Integrate Hmac authentication seamlessly into your ASP.NET Core applications, fortifying security measures and ensuring robust authentication protocols.
 
 ## Features
 
 - Enables comprehensive configuration of policies, allowing applications to accept a signed Hmac from a variety of policies.
 - Each policy has the capability to specify header schemes, dictating the mandatory header values in both the request and the signed Hmac.
+    - This includes automatic claims mapping from required header values.
+- Dynamic policy creation and deletion at runtime.
 - Implements automatic nonce handling to safeguard against replay attacks.
 - Seamlessly integrates with authorization policies, providing precise control over authorized Hmac authentication configurations.
-- Integration with built-in .NET authorization.
-- (Currently in progress) JavaScript library to facilitate the effortless integration of signatures from the client to the server.
+- Integration with built-in ASP.NET Core authorization.
+- (In-Progress) JavaScript library to facilitate the effortless integration of signatures from client to server.
 
 ## Installation
 
