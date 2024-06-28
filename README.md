@@ -22,7 +22,6 @@ Integrate Hmac authentication seamlessly into your ASP.NET Core applications, fo
 - Implements automatic nonce handling to safeguard against replay attacks.
 - Seamlessly integrates with authorization policies, providing precise control over authorized Hmac authentication configurations.
 - Integration with built-in ASP.NET Core authorization.
-- (In-Progress) JavaScript library to facilitate the effortless integration of signatures from client to server.
 
 ## Installation
 
