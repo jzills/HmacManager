@@ -5,3 +5,6 @@
 **.DS_Store
 **out
 TODO.txt
+
+/test/Scripts
+/src/Scripts
