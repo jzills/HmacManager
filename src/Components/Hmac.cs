@@ -42,4 +42,11 @@ public class Hmac : HmacPartial
     /// The complete, hashed signature added to the authorization header based on the above.
     /// </value>
     public string Signature { get; set; } = string.Empty;
+
+    internal bool IsVerified(Hmac otherHmac) =>
+        Signature == otherHmac.Signature &&
+        SigningContent == otherHmac.SigningContent &&
+        Nonce == otherHmac.Nonce &&
+        DateRequested.EqualsExact(otherHmac.DateRequested) &&
+        HeaderValues.Except(otherHmac.HeaderValues).Count() == 0;
 }

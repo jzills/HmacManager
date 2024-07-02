@@ -1,5 +1,6 @@
 using HmacManager.Caching;
 using HmacManager.Caching.Extensions;
+using HmacManager.Components.Extensions;
 using HmacManager.Extensions;
 
 namespace HmacManager.Components;
@@ -65,7 +66,7 @@ public class HmacManager : IHmacManager
             ))
             {   
                 var hmacVerification = await Factory.CreateAsync(request, incomingHmac);
-                if (hmacVerification?.Signature == incomingHmac.Signature)
+                if (hmacVerification.IsExactMatch(incomingHmac))
                 {
                     return ResultFactory.Success(incomingHmac);
                 }
