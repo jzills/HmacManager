@@ -1,29 +1,22 @@
 using Microsoft.Extensions.Caching.Memory;
-using HmacManager.Caching.Extensions;
 
 namespace HmacManager.Caching.Memory;
 
 internal class NonceMemoryCache : INonceCache
 {
-    private readonly IMemoryCache _cache;
-    private readonly NonceCacheOptions _options;
+    protected readonly IMemoryCache Cache;
+    protected readonly NonceCacheOptions Options;
 
-    public NonceMemoryCache(
-        IMemoryCache cache,
-        NonceCacheOptions options
-    ) 
-    {
-        _cache = cache;
-        _options = options;
-    }
+    public NonceMemoryCache(IMemoryCache cache, NonceCacheOptions options) =>
+        (Cache, Options) = (cache, options);
 
     public Task SetAsync(Guid nonce, DateTimeOffset dateRequested)
     {
-        _cache.Set(
-            this.GetNamespace<NonceMemoryCache>(_options.CacheType, nonce), 
-            nonce.ToString(), 
+        Cache.Set(
+            Options.CreateKey(nonce),
+            dateRequested, 
             new MemoryCacheEntryOptions
-                { AbsoluteExpiration = dateRequested.Add(TimeSpan.FromSeconds(_options.MaxAgeInSeconds)) }
+                { AbsoluteExpiration = dateRequested.AddSeconds(Options.MaxAgeInSeconds) }
         );
 
         return Task.CompletedTask;
@@ -31,7 +24,7 @@ internal class NonceMemoryCache : INonceCache
 
     public Task<bool> ContainsAsync(Guid nonce)
     {
-        var cacheNonce = _cache.Get(this.GetNamespace<NonceMemoryCache>(_options.CacheType, nonce));
-        return Task.FromResult(cacheNonce is not null);
+        var value = Cache.Get(Options.CreateKey(nonce));
+        return Task.FromResult(value is not null);
     }
 }

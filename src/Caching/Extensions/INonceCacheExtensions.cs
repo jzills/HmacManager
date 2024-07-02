@@ -16,11 +16,4 @@ internal static class INonceCacheExtensions
 
         return isValidNonce;
     }
-
-    public static string GetNamespace<TNonceCache>(
-        this INonceCache _,
-        NonceCacheType cacheType,
-        Guid nonce
-    ) where TNonceCache : INonceCache
-        => $"HmacManager:{Enum.GetName(cacheType)}:{nonce}";
 }
