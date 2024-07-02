@@ -9,9 +9,24 @@ namespace HmacManager.Components;
 /// </summary>
 public class HmacManager : IHmacManager
 {
+    /// <summary>
+    /// An instance of <c>HmacManagerOptions</c>.
+    /// </summary>
     protected readonly HmacManagerOptions Options;
+
+    /// <summary>
+    /// An implementation of <c>IHmacFactory</c> for creating <c>Hmac</c> objects. 
+    /// </summary>
     protected readonly IHmacFactory Factory;
+
+    /// <summary>
+    /// An implementation of <c>IHmacResultFactory</c> for creating <c>HmacResult</c> objects. 
+    /// </summary>
     protected readonly IHmacResultFactory ResultFactory;
+
+    /// <summary>
+    /// An implementation of <c>INonceCache</c> for storing nonce values.
+    /// </summary>
     protected readonly INonceCache Cache;
 
     /// <summary>

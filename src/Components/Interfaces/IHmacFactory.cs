@@ -5,5 +5,5 @@ namespace HmacManager.Components;
 public interface IHmacFactory
 {
     Task<Hmac?> CreateAsync(HttpRequestMessage request, HeaderScheme? headerScheme = null);
-    Task<Hmac?> CreateAsync(HttpRequestMessage request, Hmac? hmac);
+    Task<Hmac?> CreateAsync(HttpRequestMessage request, HmacPartial? hmac);
 }

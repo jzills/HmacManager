@@ -39,7 +39,7 @@ public class HmacFactory : IHmacFactory
         }
     }
 
-    public async Task<Hmac?> CreateAsync(HttpRequestMessage request, Hmac? hmac)
+    public async Task<Hmac?> CreateAsync(HttpRequestMessage request, HmacPartial? hmac)
     {
         if (hmac is not null)
         {
