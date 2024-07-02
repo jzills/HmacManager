@@ -30,12 +30,14 @@ public class Test_SignatureHashGenerator
             {
                 PublicKey = Guid.Parse(publicKey),
                 PrivateKey = privateKey
-            }
+            },
+            ContentHashGenerator = new ContentHashGenerator(ContentHashAlgorithm.SHA1),
+            SignatureHashGenerator = new SignatureHashGenerator(privateKey, signingHashAlgorithm)
         };
     }
 
     [SetUp]
-    public void Init() => Generator = new SignatureHashGenerator(Options);
+    public void Init() => Generator = new SignatureHashGenerator(Options.Keys.PrivateKey, Options.Algorithms.SigningHashAlgorithm);
 
     [Test]
     [TestCaseSource(nameof(GetContent))]

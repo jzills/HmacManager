@@ -6,25 +6,14 @@ namespace HmacManager.Components;
 public class HmacProvider : IHmacProvider
 {
     private readonly HmacProviderOptions _options;
-    private readonly ContentHashGenerator _contentHashGenerator;
-    private readonly SignatureHashGenerator _signatureHashGenerator;
 
-    public HmacProvider(
-        HmacProviderOptions options,
-        ContentHashGenerator contentHashGenerator,
-        SignatureHashGenerator signatureHashGenerator
-    )
-    {
-        _options = options;
-        _contentHashGenerator = contentHashGenerator;
-        _signatureHashGenerator = signatureHashGenerator;
-    }
+    public HmacProvider(HmacProviderOptions options) => _options = options;
 
     public Task<string> ComputeSignatureAsync(string signingContent)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(signingContent);
 
-        return _signatureHashGenerator.HashAsync(signingContent);
+        return _options.SignatureHashGenerator.HashAsync(signingContent);
     }
 
     public async Task<string> ComputeSigningContentAsync(
@@ -43,7 +32,7 @@ public class HmacProvider : IHmacProvider
         if (request.TryGetContent(out var content))
         {
             var contentString = await content.ReadAsStringAsync();
-            var contentHash = await _contentHashGenerator.HashAsync(contentString);
+            var contentHash = await _options.ContentHashGenerator.HashAsync(contentString);
             builder.WithContentHash(contentHash);
         }
 

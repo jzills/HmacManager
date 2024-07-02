@@ -7,19 +7,19 @@ namespace HmacManager.Components;
 /// </summary>
 public class ContentHashGenerator : IHashGenerator
 {
-    private readonly HmacProviderOptions _options;
+    private readonly ContentHashAlgorithm _contentHashAlgorithm;
 
     /// <summary>
     /// Creates a <c>ContentHashGenerator</c> object.
     /// </summary>
-    /// <param name="options"><c>HmacProviderOptions</c></param>
+    /// <param name="contentHashAlgorithm"><c>ContentHashAlgorithm</c></param>
     /// <returns>A <c>ContentHashGenerator</c> object.</returns>
-    public ContentHashGenerator(HmacProviderOptions options) => _options = options;
+    public ContentHashGenerator(ContentHashAlgorithm contentHashAlgorithm) => _contentHashAlgorithm = contentHashAlgorithm;
 
     /// <inheritdoc/>
     public Task<string> HashAsync(string content)
     {
-        using HashAlgorithm hashAlgorithm = _options.Algorithms.ContentHashAlgorithm switch
+        using HashAlgorithm hashAlgorithm = _contentHashAlgorithm switch
         {
             ContentHashAlgorithm.SHA1   => SHA1  .Create(),
             ContentHashAlgorithm.SHA256 => SHA256.Create(),

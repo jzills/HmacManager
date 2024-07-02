@@ -57,6 +57,23 @@ internal static class HttpRequestHeadersExtensions
         }
     }
 
+    public static void AddRequiredHeaders(
+        this HttpRequestHeaders headers, 
+        Hmac hmac,
+        string policy,
+        string? headerScheme = null
+    )
+    {
+        // Add required headers to the request
+        headers.AddNonce(hmac.Nonce);
+        headers.AddDateRequested(hmac.DateRequested);
+        headers.AddSignature(
+            hmac.Signature, 
+            policy, 
+            headerScheme
+        );
+    }
+
     public static bool TryParseHeaders(
         this HttpRequestHeaders headers,
         HeaderScheme? headerScheme,

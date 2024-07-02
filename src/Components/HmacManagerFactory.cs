@@ -71,7 +71,8 @@ public class HmacManagerFactory : IHmacManagerFactory
     private HmacManager CreateManager(HmacPolicy options, INonceCache cache) =>
         new HmacManager(
             CreateOptions(options.Name!, options.Nonce.MaxAgeInSeconds),
-            CreateProvider(options.Keys, options.Algorithms),
+            new HmacFactory(CreateProvider(options.Keys, options.Algorithms)),
+            new HmacResultFactory(options.Name!),
             cache
         );
 
@@ -82,25 +83,35 @@ public class HmacManagerFactory : IHmacManagerFactory
                 options.Nonce.MaxAgeInSeconds, 
                 options.HeaderSchemes.Get(scheme)
             ),
-            CreateProvider(options.Keys, options.Algorithms),
+            new HmacFactory(CreateProvider(options.Keys, options.Algorithms)),
+            new HmacResultFactory(options.Name!, scheme),
             cache
         );
 
-    private HmacProvider CreateProvider(KeyCredentials keys, Algorithms algorithms)
-    {
-        var options = new HmacProviderOptions { Keys = keys, Algorithms = algorithms};
-        return new HmacProvider(
-            options,
-            new ContentHashGenerator(options),
-            new SignatureHashGenerator(options)
-        );
-    }
+    private HmacProvider CreateProvider(KeyCredentials keys, Algorithms algorithms) =>
+        new HmacProvider(new HmacProviderOptions 
+        { 
+            Keys = keys, 
+            Algorithms = algorithms,
+            ContentHashGenerator = CreateContentHashGenerator(algorithms.ContentHashAlgorithm),
+            SignatureHashGenerator = CreateSignatureHashGenerator(keys.PrivateKey, algorithms.SigningHashAlgorithm)
+        });
 
     private HmacManagerOptions CreateOptions(
         string policy, 
         int maxAgeInSeconds, 
         HeaderScheme? scheme = null
     ) => new HmacManagerOptions(policy) { MaxAgeInSeconds = maxAgeInSeconds, HeaderScheme = scheme };
+
+    private ContentHashGenerator CreateContentHashGenerator(ContentHashAlgorithm contentHashAlgorithm) =>
+        new ContentHashGenerator(contentHashAlgorithm);
+
+    private SignatureHashGenerator CreateSignatureHashGenerator(string? privateKey, SigningHashAlgorithm signingHashAlgorithm)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(privateKey, nameof(privateKey));
+
+        return new SignatureHashGenerator(privateKey, signingHashAlgorithm);
+    }
 
     private bool TryGetPolicyCache(string policy, out HmacPolicy options, out INonceCache cache) => 
         Policies.TryGetValue(policy, out options) &&

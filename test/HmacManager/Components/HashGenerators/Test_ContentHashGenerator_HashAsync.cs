@@ -30,12 +30,14 @@ public class Test_ContentHashGenerator
             {
                 PublicKey = Guid.Parse(publicKey),
                 PrivateKey = privateKey
-            }
+            },
+            ContentHashGenerator = new ContentHashGenerator(ContentHashAlgorithm.SHA1),
+            SignatureHashGenerator = new SignatureHashGenerator(privateKey, SigningHashAlgorithm.HMACSHA1)
         };
     }
 
     [SetUp]
-    public void Init() => Generator = new ContentHashGenerator(Options);
+    public void Init() => Generator = new ContentHashGenerator(Options.Algorithms.ContentHashAlgorithm);
 
     [Test]
     [TestCaseSource(nameof(GetContent))]

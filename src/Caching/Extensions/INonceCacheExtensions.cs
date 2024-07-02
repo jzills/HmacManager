@@ -2,10 +2,20 @@ namespace HmacManager.Caching.Extensions;
 
 internal static class INonceCacheExtensions
 {
-    public static async Task<bool> HasValidNonceAsync(
+    public static async Task<bool> IsValidNonceAsync(
         this INonceCache cache, 
-        Guid nonce
-    ) => !await cache.ContainsAsync(nonce);
+        Guid nonce, 
+        DateTimeOffset dateRequested
+    )
+    {
+        var isValidNonce = !await cache.ContainsAsync(nonce);
+        if (isValidNonce)
+        {
+            await cache.SetAsync(nonce, dateRequested);
+        }
+
+        return isValidNonce;
+    }
 
     public static string GetNamespace<TNonceCache>(
         this INonceCache _,

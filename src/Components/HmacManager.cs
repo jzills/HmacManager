@@ -9,115 +9,73 @@ namespace HmacManager.Components;
 /// </summary>
 public class HmacManager : IHmacManager
 {
-    private readonly HmacManagerOptions _options;
-    private readonly IHmacProvider _provider;
-    private readonly INonceCache _cache;
+    protected readonly HmacManagerOptions Options;
+    protected readonly IHmacFactory Factory;
+    protected readonly IHmacResultFactory ResultFactory;
+    protected readonly INonceCache Cache;
 
     /// <summary>
     /// Creates a <c>HmacManager</c> object.
     /// </summary>
-    /// <param name="options"><c>HmacManagerOptions</c></param>
-    /// <param name="provider"><c>IHmacProvider</c></param>
+    /// <param name="options"><c>HmacManagerOptions</c></param> 
+    /// <param name="factory"><c>IHmacFactory</c></param>
+    /// <param name="resultFactory"><c>IHmacResultFactory</c></param>
     /// <param name="cache"><c>INonceCache</c></param>
     /// <returns>A <c>HmacManager</c> object.</returns>
     public HmacManager(
         HmacManagerOptions options,
-        IHmacProvider provider,
+        IHmacFactory factory,
+        IHmacResultFactory resultFactory,
         INonceCache cache
     )
     {
-        _options = options;
-        _provider = provider;
-        _cache = cache;
+        Options = options;
+        Factory = factory;
+        ResultFactory = resultFactory;
+        Cache = cache;
     }
 
-    /// <inheritdoc/>
+    /// <Optionsnheritdoc/>
     public async Task<HmacResult> VerifyAsync(HttpRequestMessage request)
     {
-        if (request.Headers.TryParseHmac(_options.HeaderScheme, _options.MaxAgeInSeconds, out var hmac))
+        if (request.Headers.TryParseHmac(
+                Options.HeaderScheme, 
+                Options.MaxAgeInSeconds, 
+                out var incomingHmac
+        ))
         {
-            if (await _cache.HasValidNonceAsync(hmac.Nonce))
+            if (await Cache.IsValidNonceAsync(
+                    incomingHmac.Nonce, 
+                    incomingHmac.DateRequested
+            ))
             {   
-                await _cache.SetAsync(
-                    hmac.Nonce, 
-                    hmac.DateRequested
-                );
-
-                hmac.SigningContent = await _provider.ComputeSigningContentAsync(
-                    request, 
-                    hmac.DateRequested, 
-                    hmac.Nonce,
-                    hmac.HeaderValues
-                );
-
-                var signature = await _provider.ComputeSignatureAsync(hmac.SigningContent);
-
-                return new HmacResult
+                var hmacVerification = await Factory.CreateAsync(request, incomingHmac);
+                if (hmacVerification?.Signature == incomingHmac.Signature)
                 {
-                    Policy = _options.Policy,
-                    HeaderScheme = _options.HeaderScheme?.Name!,
-                    Hmac = hmac,
-                    IsSuccess = signature == hmac.Signature
-                };
+                    return ResultFactory.Success(incomingHmac);
+                }
             }
         }
         
-        return new HmacResult 
-        { 
-            Policy = _options.Policy,
-            HeaderScheme = _options.HeaderScheme?.Name!,
-            Hmac = null, 
-            IsSuccess = false
-        };
+        return ResultFactory.Failure();
     }
 
     /// <inheritdoc/>
     public async Task<HmacResult> SignAsync(HttpRequestMessage request)
     {
-        if (request.Headers.TryParseHeaders(_options.HeaderScheme, out var headerValues))
-        {   
-            var hmac = new Hmac { HeaderValues = headerValues.ToArray() };
-
-            // Generate the formatted signing content based on
-            // the provided hmac values
-            hmac.SigningContent = await _provider.ComputeSigningContentAsync(
-                request, 
-                hmac.DateRequested, 
-                hmac.Nonce,
-                hmac.HeaderValues
+        var hmac = await Factory.CreateAsync(request, Options.HeaderScheme);
+        if (hmac is not null)
+        {
+            request.Headers.AddRequiredHeaders(hmac, 
+                Options.Policy, 
+                Options.HeaderScheme?.Name
             );
-
-            // Compute the signature against the signing content
-            hmac.Signature = await _provider.ComputeSignatureAsync(
-                hmac.SigningContent
-            );
-
-            // Add required headers to the request
-            request.Headers.AddNonce(hmac.Nonce);
-            request.Headers.AddDateRequested(hmac.DateRequested);
-            request.Headers.AddSignature(
-                hmac.Signature, 
-                _options.Policy, 
-                _options.HeaderScheme?.Name
-            );
-
-            return new HmacResult 
-            { 
-                Policy = _options.Policy,
-                HeaderScheme = _options.HeaderScheme?.Name!,
-                Hmac = hmac, 
-                IsSuccess = true
-            };
+            
+            return ResultFactory.Success(hmac);
         }
         else
         {
-            return new HmacResult 
-            { 
-                Policy = _options.Policy,
-                HeaderScheme = _options.HeaderScheme?.Name!,
-                Hmac = null, 
-                IsSuccess = false
-            };
+            return ResultFactory.Failure();
         }
     }
 }

@@ -34,7 +34,9 @@ public class Test_HmacManager_SignAsync
             {
                 PublicKey = Guid.Parse(publicKey),
                 PrivateKey = privateKey
-            }
+            },
+            ContentHashGenerator = new ContentHashGenerator(contentHashAlgorithm),
+            SignatureHashGenerator = new SignatureHashGenerator(privateKey, signingHashAlgorithm)
         };
 
         HmacManagerOptions = new HmacManagerOptions("Policy")
@@ -45,11 +47,8 @@ public class Test_HmacManager_SignAsync
 
         HmacManager = new HmacManager.Components.HmacManager(
             HmacManagerOptions, 
-            new HmacProvider(
-                HmacProviderOptions,
-                new ContentHashGenerator(HmacProviderOptions),
-                new SignatureHashGenerator(HmacProviderOptions)
-            ), 
+            new HmacFactory(new HmacProvider(HmacProviderOptions)), 
+            new HmacResultFactory(HmacManagerOptions.Policy, HmacManagerOptions.HeaderScheme.Name),
             new NonceMemoryCache(
                 new MemoryCache(Options.Create(new MemoryCacheOptions())), 
                 new HmacManager.Caching.NonceCacheOptions()

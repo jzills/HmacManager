@@ -7,20 +7,25 @@ namespace HmacManager.Components;
 /// </summary>
 public class SignatureHashGenerator : IHashGenerator
 {
-    private readonly HmacProviderOptions _options;
+    private readonly string? _privateKey;
+    private readonly SigningHashAlgorithm _signingHashAlgorithm;
 
     /// <summary>
     /// Creates a <c>SignatureHashGenerator</c> object.
     /// </summary>
-    /// <param name="options"><c>HmacProviderOptions</c></param>
+    /// <param name="privateKey"><c>string?</c></param>/// 
+    /// <param name="signingHashAlgorithm"><c>SigningHashAlgorithm</c></param>
     /// <returns>A <c>SignatureHashGenerator</c> object.</returns>
-    public SignatureHashGenerator(HmacProviderOptions options) => _options = options;
+    public SignatureHashGenerator(
+        string? privateKey, 
+        SigningHashAlgorithm signingHashAlgorithm
+    ) => (_privateKey, _signingHashAlgorithm) = (privateKey, signingHashAlgorithm);
 
     /// <inheritdoc/>
     public Task<string> HashAsync(string content)
     {
-        var keyBytes = Convert.FromBase64String(_options.Keys.PrivateKey);
-        using HashAlgorithm hashAlgorithm = _options.Algorithms.SigningHashAlgorithm switch
+        var keyBytes = Convert.FromBase64String(_privateKey);
+        using HashAlgorithm hashAlgorithm = _signingHashAlgorithm switch
         {
             SigningHashAlgorithm.HMACSHA1   => new HMACSHA1  (keyBytes),
             SigningHashAlgorithm.HMACSHA256 => new HMACSHA256(keyBytes),
