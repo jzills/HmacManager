@@ -1,11 +1,5 @@
 namespace HmacManager.Components;
 
-public interface IHmacResultFactory
-{
-    HmacResult Success(Hmac hmac);
-    HmacResult Failure();
-}
-
 public class HmacResultFactory : IHmacResultFactory
 {
     protected readonly string Policy;
@@ -17,21 +11,14 @@ public class HmacResultFactory : IHmacResultFactory
         HeaderScheme = headerScheme;
     }
 
-    public HmacResult Success(Hmac hmac) =>
-        new HmacResult
-        {
-            Policy = Policy,
-            HeaderScheme = HeaderScheme,
-            Hmac = hmac,
-            IsSuccess = true
-        };
+    public HmacResult Success(Hmac hmac) => Create(isSuccess: true, hmac);
 
-    public HmacResult Failure() =>
-        new HmacResult
-        {
-            Policy = Policy,
-            HeaderScheme = HeaderScheme,
-            Hmac = null,
-            IsSuccess = false
+    public HmacResult Failure() => Create(isSuccess: false);
+
+    private HmacResult Create(bool isSuccess, Hmac? hmac = null) =>
+        new HmacResult(Policy, HeaderScheme) 
+        { 
+            Hmac = hmac, 
+            IsSuccess = isSuccess 
         };
 }

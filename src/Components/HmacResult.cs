@@ -9,13 +9,13 @@ public class HmacResult
     /// Represents the policy used by HmacManager for signing and verification.
     /// </summary>
     /// <value>The name of the policy.</value>
-    public required string Policy { get; init; }
+    public readonly string Policy;
 
     /// <summary>
     /// Represents the name of the <c>HeaderScheme</c> used by <c>HmacManager</c> for signing and verification.
     /// </summary>
     /// <value>The name of the <c>HeaderScheme</c>.</value>
-    public required string HeaderScheme { get; init; }
+    public readonly string HeaderScheme;
 
     /// <summary>
     /// Represents the resulting <c>Hmac</c>.
@@ -34,4 +34,10 @@ public class HmacResult
     /// </summary>
     /// <value>A UTC date and time.</value>
     public DateTime DateGenerated { get; } = DateTime.UtcNow;
+
+    internal HmacResult(string policy, string headerScheme)
+    {
+        Policy = policy;
+        HeaderScheme = headerScheme;
+    }
 }
