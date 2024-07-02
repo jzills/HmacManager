@@ -5,15 +5,15 @@ namespace HmacManager.Components;
 
 public class HmacProvider : IHmacProvider
 {
-    private readonly HmacProviderOptions _options;
+    protected readonly HmacProviderOptions Options;
 
-    public HmacProvider(HmacProviderOptions options) => _options = options;
+    public HmacProvider(HmacProviderOptions options) => Options = options;
 
     public Task<string> ComputeSignatureAsync(string signingContent)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(signingContent);
 
-        return _options.SignatureHashGenerator.HashAsync(signingContent);
+        return Options.SignatureHashGenerator.HashAsync(signingContent);
     }
 
     public async Task<string> ComputeSigningContentAsync(
@@ -23,8 +23,9 @@ public class HmacProvider : IHmacProvider
         HeaderValue[]? headerValues = null
     )
     {
-        var builder = new SigningContentBuilderValidated(request)
-            .WithPublicKey(_options.Keys.PublicKey)
+        var builder = Options.SigningContentBuilder.CreateBuilder()
+            .WithRequest(request)
+            .WithPublicKey(Options.Keys.PublicKey)
             .WithDateRequested(dateRequested)
             .WithNonce(nonce)
             .WithHeaderValues(headerValues ?? []);
@@ -32,7 +33,7 @@ public class HmacProvider : IHmacProvider
         if (request.TryGetContent(out var content))
         {
             var contentString = await content.ReadAsStringAsync();
-            var contentHash = await _options.ContentHashGenerator.HashAsync(contentString);
+            var contentHash = await Options.ContentHashGenerator.HashAsync(contentString);
             builder.WithContentHash(contentHash);
         }
 

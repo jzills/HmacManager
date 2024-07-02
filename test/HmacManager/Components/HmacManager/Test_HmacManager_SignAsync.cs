@@ -36,7 +36,8 @@ public class Test_HmacManager_SignAsync
                 PrivateKey = privateKey
             },
             ContentHashGenerator = new ContentHashGenerator(contentHashAlgorithm),
-            SignatureHashGenerator = new SignatureHashGenerator(privateKey, signingHashAlgorithm)
+            SignatureHashGenerator = new SignatureHashGenerator(privateKey, signingHashAlgorithm),
+            SigningContentBuilder = new SigningContentBuilder()
         };
 
         HmacManagerOptions = new HmacManagerOptions("Policy")

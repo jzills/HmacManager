@@ -12,7 +12,8 @@ public class HmacPolicyBuilder
     protected readonly KeyCredentials Keys = new();
     protected readonly Algorithms Algorithms = new();
     protected readonly Nonce Nonce = new();
-    protected readonly HeaderSchemeCollection HeaderSchemes = new();  
+    protected readonly HeaderSchemeCollection HeaderSchemes = new();
+    protected SigningContentBuilder SigningContentBuilder = new();
 
     /// <summary>
     /// Uses the specified <c>Guid</c> as the public key for this <c>HmacPolicy</c>.
@@ -82,6 +83,12 @@ public class HmacPolicyBuilder
         return this;
     }
 
+    public HmacPolicyBuilder UseSigningContentBuilder(Func<SigningContentContext, string> signingContentAccessor)
+    {
+        SigningContentBuilder = new SigningContentBuilderAccessor(signingContentAccessor);
+        return this;
+    }
+
     /// <summary>
     /// Adds a specified scheme to the <c>HeaderSchemeCollection</c>. This can later be used
     /// to authenticate signatures.
@@ -107,6 +114,7 @@ public class HmacPolicyBuilder
             Algorithms = Algorithms,
             Keys = Keys,
             Nonce = Nonce,
-            HeaderSchemes = HeaderSchemes
+            HeaderSchemes = HeaderSchemes,
+            SigningContentBuilder = SigningContentBuilder
         };
 }

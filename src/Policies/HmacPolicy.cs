@@ -44,4 +44,5 @@ public class HmacPolicy
     public Algorithms Algorithms { get; set; } = new();
     public Nonce Nonce { get; set; } = new();
     public HeaderSchemeCollection HeaderSchemes { get; set; } = new();
+    public SigningContentBuilder SigningContentBuilder { get; set; } = new();
 }

@@ -8,4 +8,5 @@ public class HmacProviderOptions
     public required Algorithms Algorithms { get; set; }
     public required ContentHashGenerator ContentHashGenerator { get; set; }
     public required SignatureHashGenerator SignatureHashGenerator { get; set; }
+    public required SigningContentBuilder SigningContentBuilder { get; set; }
 }

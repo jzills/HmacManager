@@ -32,7 +32,8 @@ public class Test_ContentHashGenerator
                 PrivateKey = privateKey
             },
             ContentHashGenerator = new ContentHashGenerator(ContentHashAlgorithm.SHA1),
-            SignatureHashGenerator = new SignatureHashGenerator(privateKey, SigningHashAlgorithm.HMACSHA1)
+            SignatureHashGenerator = new SignatureHashGenerator(privateKey, SigningHashAlgorithm.HMACSHA1),
+            SigningContentBuilder = new SigningContentBuilder()
         };
     }
 

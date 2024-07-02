@@ -3,61 +3,65 @@ using HmacManager.Headers;
 
 namespace HmacManager.Components;
 
-internal class SigningContentBuilder
+public class SigningContentBuilder
 {
-    protected readonly HttpRequestMessage Request;
     protected readonly StringBuilder Builder;
-    protected Guid PublicKey;
-    protected DateTimeOffset DateRequested;
-    protected Guid Nonce;
-    protected HeaderValue[] HeaderValues;
-    protected string? ContentHash;
-
-    public SigningContentBuilder(HttpRequestMessage request)
+    protected readonly SigningContentContext Context;
+    
+    public SigningContentBuilder()
     {
-        Request = request;
-        Builder = new StringBuilder($"{Request.Method}");
-        HeaderValues = [];
+        Context = new();
+        Builder = new StringBuilder();
     }
 
-    public SigningContentBuilder WithPublicKey(Guid publicKey)
+    public virtual SigningContentBuilder CreateBuilder() => new SigningContentBuilder();
+
+    internal SigningContentBuilder WithRequest(HttpRequestMessage request)
     {
-        PublicKey = publicKey;
+        Context.Request = request;
+        return this;
+    }  
+
+    internal SigningContentBuilder WithPublicKey(Guid publicKey)
+    {
+        Context.PublicKey = publicKey;
         return this;
     }   
 
-    public SigningContentBuilder WithDateRequested(DateTimeOffset dateRequested)
+    internal SigningContentBuilder WithDateRequested(DateTimeOffset dateRequested)
     {
-        DateRequested = dateRequested;
+        Context.DateRequested = dateRequested;
         return this;
     }   
 
-    public SigningContentBuilder WithNonce(Guid nonce)
+    internal SigningContentBuilder WithNonce(Guid nonce)
     {
-        Nonce = nonce;
+        Context.Nonce = nonce;
         return this;
     }
 
-    public SigningContentBuilder WithHeaderValues(HeaderValue[] headerValues)
+    internal SigningContentBuilder WithHeaderValues(HeaderValue[] headerValues)
     {
-        HeaderValues = headerValues;
+        Context.HeaderValues = headerValues;
         return this;
     }
 
-    public SigningContentBuilder WithContentHash(string? contentHash)
+    internal SigningContentBuilder WithContentHash(string? contentHash)
     {
-        ContentHash = contentHash;
+        Context.ContentHash = contentHash;
         return this;
     }
 
     public virtual string Build()
     {
-        if (Request.RequestUri is not null)
+        Builder.Append($"{Context.Request.Method}");
+
+        if (Context.Request.RequestUri is not null)
         {
-            if (Request.RequestUri.IsAbsoluteUri)
+            if (Context.Request.RequestUri.IsAbsoluteUri)
             {
-                Builder.Append($":{Request.RequestUri.PathAndQuery}");
-                Builder.Append($":{Request.RequestUri.Authority}");
+                Builder.Append($":{Context.Request.RequestUri.PathAndQuery}");
+                Builder.Append($":{Context.Request.RequestUri.Authority}");
             }
             else
             {
@@ -65,25 +69,25 @@ internal class SigningContentBuilder
                 // when using an HttpClient with a predefined BaseAddress. For
                 // cases like this, only append the path and any potential query
                 // but disregard the authority.
-                Builder.Append($":{Request.RequestUri.OriginalString}");
+                Builder.Append($":{Context.Request.RequestUri.OriginalString}");
             }
         }
 
-        Builder.Append($":{DateRequested.UtcTicks}");
-        Builder.Append($":{PublicKey}");
+        Builder.Append($":{Context.DateRequested.UtcTicks}");
+        Builder.Append($":{Context.PublicKey}");
 
-        if (ContentHash is not null)
+        if (Context.ContentHash is not null)
         {
-            Builder.Append($":{ContentHash}");
+            Builder.Append($":{Context.ContentHash}");
         }
 
-        if (HeaderValues?.Any() ?? false)
+        if (Context.HeaderValues?.Any() ?? false)
         {
             Builder.Append(":");
-            Builder.AppendJoin(":", HeaderValues.Select(element => element.Value));
+            Builder.AppendJoin(":", Context.HeaderValues.Select(element => element.Value));
         }
 
-        Builder.Append($":{Nonce}");
+        Builder.Append($":{Context.Nonce}");
         return Builder.ToString();
     }
 }
