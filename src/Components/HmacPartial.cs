@@ -24,4 +24,10 @@ public class HmacPartial
     /// </summary>
     /// <value>An array of header values, empty if there is no scheme defined.</value>
     public HeaderValue[] HeaderValues { get; set; } = [];
+
+    internal bool IsVerified(HmacPartial otherHmac) =>
+        SigningContent == otherHmac.SigningContent &&
+        Nonce == otherHmac.Nonce &&
+        DateRequested.EqualsExact(otherHmac.DateRequested) &&
+        HeaderValues.Except(otherHmac.HeaderValues).Count() == 0;
 }

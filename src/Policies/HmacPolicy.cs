@@ -33,16 +33,21 @@ public class HmacPolicy
     /// <summary>
     /// The <c>Algorithms</c> used to compute hash values.
     /// This includes both <c>ContentHashAlgorithm</c> and <c>SignatureContentAlgorithm</c>.
-    ///     <para>
-    ///         <list>
-    ///             <item>See <see cref="Policies.Algorithms">here</see> for <c>Algorithm</c> definition.</item>
-    ///             <item>See <see cref="ContentHashAlgorithm">here</see> for <c>ContentHashAlgorithm</c> definition.</item>
-    ///             <item>See <see cref="SigningHashAlgorithm">here</see> for <c>SigningHashAlgorithm</c> definition.</item>
-    ///         </list>
-    ///     </para>
     /// </summary>
     public Algorithms Algorithms { get; set; } = new();
+    
+    /// <summary>
+    /// A <c>Nonce</c> object containing the cache type and max age.
+    /// </summary>
     public Nonce Nonce { get; set; } = new();
+
+    /// <summary>
+    /// A collection of <c>HeaderScheme</c> objects for this policy.
+    /// </summary>
     public HeaderSchemeCollection HeaderSchemes { get; set; } = new();
-    public SigningContentBuilder SigningContentBuilder { get; set; } = new();
+
+    /// <summary>
+    /// The <c>SigningContentBuilder</c> used to construct signing content.
+    /// </summary>
+    public SigningContentBuilder SigningContentBuilder { get; set; } = new SigningContentBuilderValidated();
 }

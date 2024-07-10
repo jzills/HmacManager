@@ -3,18 +3,16 @@ using HmacManager.Headers;
 
 namespace HmacManager.Components;
 
-public class SigningContentBuilder
+public class SigningContentBuilder : ISigningContentBuilder
 {
     protected readonly StringBuilder Builder;
     protected readonly SigningContentContext Context;
     
-    public SigningContentBuilder()
+    internal SigningContentBuilder()
     {
         Context = new();
         Builder = new StringBuilder();
     }
-
-    public virtual SigningContentBuilder CreateBuilder() => new SigningContentBuilder();
 
     internal SigningContentBuilder WithRequest(HttpRequestMessage request)
     {
@@ -52,8 +50,12 @@ public class SigningContentBuilder
         return this;
     }
 
+    public virtual SigningContentBuilder CreateBuilder() => new SigningContentBuilder();
+
     public virtual string Build()
     {
+        ArgumentNullException.ThrowIfNull(Context.Request, nameof(Context.Request));
+
         Builder.Append($"{Context.Request.Method}");
 
         if (Context.Request.RequestUri is not null)
@@ -73,7 +75,7 @@ public class SigningContentBuilder
             }
         }
 
-        Builder.Append($":{Context.DateRequested.UtcTicks}");
+        Builder.Append($":{Context.DateRequested?.UtcTicks}");
         Builder.Append($":{Context.PublicKey}");
 
         if (Context.ContentHash is not null)

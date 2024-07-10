@@ -2,15 +2,14 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace HmacManager.Caching.Memory;
 
-internal class NonceMemoryCache : INonceCache
+internal class NonceMemoryCache : NonceCache
 {
     protected readonly IMemoryCache Cache;
-    protected readonly NonceCacheOptions Options;
 
-    public NonceMemoryCache(IMemoryCache cache, NonceCacheOptions options) =>
-        (Cache, Options) = (cache, options);
+    public NonceMemoryCache(IMemoryCache cache, NonceCacheOptions options) 
+        : base(options) => Cache = cache;
 
-    public Task SetAsync(Guid nonce, DateTimeOffset dateRequested)
+    public override Task SetAsync(Guid nonce, DateTimeOffset dateRequested)
     {
         Cache.Set(
             Options.CreateKey(nonce),
@@ -22,7 +21,7 @@ internal class NonceMemoryCache : INonceCache
         return Task.CompletedTask;
     }
 
-    public Task<bool> ContainsAsync(Guid nonce)
+    public override Task<bool> ContainsAsync(Guid nonce)
     {
         var value = Cache.Get(Options.CreateKey(nonce));
         return Task.FromResult(value is not null);

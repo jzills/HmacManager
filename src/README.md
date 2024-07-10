@@ -12,6 +12,7 @@
     * The `HmacManager` Object
     * The `HmacManagerFactory` Object
     * [Dynamic Policies with `IHmacPolicyCollection`](#dynamic-policies-with-ihmacpolicycollection)
+    * [Custom signing content for `Hmac`](#custom-signing-content-for-an-hmac)
 
 # Quickstart
 
@@ -24,49 +25,43 @@ A short and sweet overview of how to register `HmacManager` to help you get up a
 
 ## Register without built-in authentication flow
 
-Use the `IServiceCollection` extension method `AddHmacManager` to add `IHmacManagerFactory` to the dependency injection container. 
+Use the `IServiceCollection` extension method `AddHmacManager` to add all of the necessary components for `HmacManager` to the DI container.
 
-    builder.Services
-        .AddHmacManager(options =>
-        {
-            options.AddPolicy("SomePolicy", policy =>
-            {
-                policy.UsePublicKey(...);
-                policy.UsePrivateKey(...);
-                policy.UseMemoryCache(...);
-            });
-        });
+    builder.Services.AddHmacManager(options => ...);
 
-Access configured policies from an `IHmacManagerFactory`.
+Configure one or more policies with the options builder.
 
-    IHmacManager hmacManager = hmacManagerFactory.Create("SomePolicy")
-
-The `IHmacManagerFactory` is automatically registered with the DI container so it can be accessed anywhere services are injected.
-
-    private readonly IHmacManager _hmacManager;
-
-    public SomeContructor(IHmacManagerFactory hmacManagerFactory)
+    options.AddPolicy("SomePolicy", policy =>
     {
-        _hmacManager = hmacManagerFactory.Create("Some Policy");
-    }
+        policy.UsePublicKey(...);
+        policy.UsePrivateKey(...);
+        policy.UseMemoryCache(...);
+    });
 
-A policy can be extended with schemes. These schemes represent the required headers that must be present in the request. These become a part of the content hash.
+Access an instance of a `HmacManager` responsible for a specified policy from `IHmacManagerFactory`.
 
-    builder.Services
-        .AddHmacManager(options =>
+    var hmacManager = hmacManagerFactory.Create("SomePolicy")
+
+> [!NOTE]
+> An implementation of `IHmacManagerFactory` is automatically registered with the DI container so it can be accessed anywhere services can be injected.
+
+A policy can be extended with schemes. These schemes represent the required headers that must be present in a request. These become a part of the signing content.
+
+    builder.Services.AddHmacManager(options =>
+    {
+        options.AddPolicy("SomePolicy", policy =>
         {
-            options.AddPolicy("SomePolicy", policy =>
+            policy.UsePublicKey(...);
+            policy.AddScheme("SomeScheme", scheme =>
             {
-                policy.UsePublicKey(...);
-                policy.UsePrivateKey(...);
-                policy.UseMemoryCache(...);
-                policy.AddScheme("SomeScheme", scheme =>
-                {
-                    scheme.AddHeader("X-UserId");
-                    scheme.AddHeader("X-Email");
-                });
+                scheme.AddHeader("X-UserId");
+                scheme.AddHeader("X-Email");
             });
         });
+    });
+
+> [!IMPORTANT]
+> All headers that are defined on a scheme must be added to the `HttpRequestMessage` prior to calling `SignAsync` on an `HmacManager` instance.
 
 ## Register with built-in authentication flow
 
@@ -116,13 +111,13 @@ The `AddHmacManager` extension method can be bypassed in favor of the `IAuthenti
                     });
                 });
 
-- Any scheme headers are mapped to their specified claim types. If no claim type is specified, the name of the header is used.
+> [!NOTE]
+> Any scheme headers are mapped to their specified claim types. If no claim type is specified, the name of the header is used instead.
 
 ## Register with an `IConfigurationSection`
 
-- Both `AddHmacManager` and `AddHmac` have an overload which accepts an `IConfigurationSection` that corresponds to the json schema below. Additionally, an example project can be found [here](../../samples/WebToApiAuthenticationWithJsonConfiguration/README.md).
+Both `AddHmacManager` and `AddHmac` have an overload which accepts an `IConfigurationSection` that corresponds to the json schema below. An example can be found [here](../../samples/WebToApiAuthenticationWithJsonConfiguration/README.md).
 
-    ```
     [
         {
             "Name": "Some_Policy",
@@ -151,28 +146,26 @@ The `AddHmacManager` extension method can be bypassed in favor of the `IAuthenti
             ]
         }
     ]
-    ```
 
-The following properties are restricted. Any other property not listed below can 
-be a string of any character set or length.
+The following properties are restricted to the following values.
 
 | Property | Values | Additional Information |
 | -------- | ------ | ---------------------- |
-| `PublicKey` | Guid | [Validation Details](../HmacManager/Validation/Validators/PublicKeyValidator.cs) |
-| `PrivateKey` | Base64 | [Validation Details](../HmacManager/Validation/Validators/PrivateKeyValidator.cs) |
-| `ContentHashAlgorithm` | SHA1, SHA256, SHA512 | [Enum](../HmacManager/Components/Enums/ContentHashAlgorithm.cs) |
-| `SigningHashAlgorithm` | HMACSHA1, HMACSHA256, HMACSHA512 | [Enum](../HmacManager/Components/Enums/SignatureHashAlgorithm.cs) |
-| `CacheType` | Memory, Distributed | [Enum](../HmacManager/Caching/Enums/NonceCacheType.cs) |
+| `PublicKey` | Guid String | [Validation Details](./Validation/Validators/PublicKeyValidator.cs) |
+| `PrivateKey` | Base64 Encoded String | [Validation Details](./Validation/Validators/PrivateKeyValidator.cs) |
+| `ContentHashAlgorithm` | SHA1, SHA256, SHA512 | [Enum](./Components/Enums/ContentHashAlgorithm.cs) |
+| `SigningHashAlgorithm` | HMACSHA1, HMACSHA256, HMACSHA512 | [Enum](./Components/Enums/SignatureHashAlgorithm.cs) |
+| `CacheType` | Memory, Distributed | [Enum](./Caching/Enums/NonceCacheType.cs) |
 
 ## Register `HttpClient` with `HmacHttpMessageHandler`
 
-The `AddHmacHttpMessageHandler` extension method registers an instance of `HmacDelegatingHandler` to the specified `HttpClient` with the configured policy and the optional scheme. This handler will automatically sign outgoing requests for that client. If the request cannot be signed, then an `HmacSigningException` exception is thrown.
+The `AddHmacHttpMessageHandler` extension method registers an instance of `HmacDelegatingHandler` to the specified `HttpClient` with the specified policy and the optional scheme. This handler will automatically sign outgoing requests for that client. If the request cannot be signed, then an `HmacSigningException` exception is thrown.
 
-    builder.Services
-        .AddHttpClient("Hmac", client => ...)
+    builder.Services.AddHttpClient("Hmac", client => ...)
         .AddHmacHttpMessageHandler("MyPolicy", "MyScheme");
 
-- If a scheme is specified, then all headers in that scheme must be added to the request prior to calling `Send` or `SendAsync` on the `HttpClient`. The corresponding header values will be part of the signing content used to create the hmac.
+> [!NOTE]  
+> If a scheme is specified, then all headers in that scheme must be added to the request prior to calling `Send` or `SendAsync` on the `HttpClient`. By default the corresponding header values will become part of the signing content used to create the hmac.
 
 # In-Depth Tutorial
 
@@ -180,19 +173,29 @@ This is where you can find a comprehensive guide on all of the functionality ava
 
 ## Dynamic Policies with `IHmacPolicyCollection`
 
-An implementation of `IHmacPolicyCollection` is registered as a singleton automatically when using `AddHmacManager` or `AddHmac` extension methods. This can be requested through the DI container and manipulated at runtime.
+An implementation of `IHmacPolicyCollection` can be requested through the DI container and manipulated at runtime.
 
-    private readonly IHmacPolicyCollection _policies;
+> [!NOTE]
+> An implementation of `IHmacPolicyCollection` is automatically registered as a singleton when using the extension methods `AddHmacManager` or `AddHmac`.
 
-    public SomeContructor(IHmacPolicyCollection policies)
+- A policy can be added by constructing a new `HmacPolicy`.
+
+        Policies.Add(new HmacPolicy {...});
+
+- A policy can be removed by specifying the name of the policy to remove.
+
+        Policies.Remove("Some Policy");
+
+## Custom Signing Content for an `Hmac`
+
+> [!CAUTION]
+> If this method is used, then the requirement of determining unique signing content per request falls on the user. Components like the date requested or nonce are NOT automatically added to the content for hashing and should be added by the implementation.
+
+The signing content for an `Hmac` can be configured per policy. This allows user defined structures to be used as the input to the signature hash function.
+
+    policy.UseSigningContentBuilder(context => 
     {
-        _policies = policies;
-    }    
-
-Policies can be added by constructing a new `HmacPolicy`.
-
-    _policies.Add(new HmacPolicy { ... });
-
-Policies can be removed by specifying the name of the policy to remove.
-
-    _policies.Remove("Some Policy");
+        var method = context.Request.Method;
+        var suffix = $"{context.DateRequested}:{context.Nonce}";
+        return $"{method}:{suffix}";
+    });

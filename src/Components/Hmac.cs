@@ -44,9 +44,6 @@ public class Hmac : HmacPartial
     public string Signature { get; set; } = string.Empty;
 
     internal bool IsVerified(Hmac otherHmac) =>
-        Signature == otherHmac.Signature &&
-        SigningContent == otherHmac.SigningContent &&
-        Nonce == otherHmac.Nonce &&
-        DateRequested.EqualsExact(otherHmac.DateRequested) &&
-        HeaderValues.Except(otherHmac.HeaderValues).Count() == 0;
+        Signature == otherHmac.Signature && 
+            base.IsVerified(otherHmac);
 }

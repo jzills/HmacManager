@@ -8,6 +8,7 @@
 - [Installation](#installation)
 - [Documentation](./src/HmacManager/README.md)
 - [Resources](#resources)
+- [Further Reading](#further-reading)
 
 ## Summary
 
@@ -15,13 +16,12 @@ Integrate Hmac authentication seamlessly into your ASP.NET Core applications, fo
 
 ## Features
 
-- Enables comprehensive configuration of policies, allowing applications to accept a signed Hmac from a variety of policies.
-- Each policy has the capability to specify header schemes, dictating the mandatory header values in both the request and the signed Hmac.
-    - This includes automatic claims mapping from required header values.
-- Dynamic policy creation and deletion at runtime.
-- Implements automatic nonce handling to safeguard against replay attacks.
-- Seamlessly integrates with authorization policies, providing precise control over authorized Hmac authentication configurations.
-- Integration with built-in ASP.NET Core authorization.
+- Facilitates detailed policy configuration, enabling applications to sign and verify Hmacs against multiple policy criteria.
+- Each policy can define specific schemes, outlining the required header values for a request.
+    - This includes automatic claims mapping from header values defined in a scheme.
+- Supports policy creation and deletion at runtime.
+- Incorporates automatic nonce management to protect against replay attacks.
+- Integrates with ASP.NET Core authorization mechanisms.
 
 ## Installation
 
@@ -33,3 +33,8 @@ Integrate Hmac authentication seamlessly into your ASP.NET Core applications, fo
 
 - [Documentation](src/HmacManager/README.md)
 - [Samples](samples/README.md)
+
+## Further Reading
+
+- [Hmac](https://en.wikipedia.org/wiki/Hmac)
+- [Sign an Http Request](https://learn.microsoft.com/en-us/azure/communication-services/tutorials/Hmac-header-tutorial?pivots=programming-language-csharp)
