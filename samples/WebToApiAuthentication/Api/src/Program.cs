@@ -34,7 +34,8 @@ builder.Services
         {
             OnValidateKeys = (context, keys) => 
             {
-                return false;
+                // Validate keys against database
+                return true;
             },
             OnAuthenticationSuccess = (context, hmacResult) =>
             {

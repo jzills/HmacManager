@@ -40,6 +40,11 @@ builder.Services
 
         options.Events = new HmacEvents
         {
+            OnValidateKeys = (context, keys) => 
+            {
+                // Validate keys against database
+                return true;
+            },
             OnAuthenticationSuccess = (context, hmacResult) =>
             {
                 var claims = new Claim[]
