@@ -32,6 +32,10 @@ builder.Services
         // successes and failures
         options.Events = new HmacEvents
         {
+            OnValidateKeys = (context, keys) => 
+            {
+                return false;
+            },
             OnAuthenticationSuccess = (context, hmacResult) =>
             {
                 var claims = new Claim[]

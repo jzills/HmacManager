@@ -7,7 +7,7 @@ namespace HmacManager.Mvc.Extensions.Internal;
 
 internal static class IConfigurationSectionExtensions
 {
-    public static HmacPolicyCollection GetPolicySection(this IConfigurationSection configurationSection)
+    internal static HmacPolicyCollection GetPolicySection(this IConfigurationSection configurationSection)
     {
         var policiesToBuild = configurationSection.Get<List<HmacPolicyConfigurationSection>>();
         if (policiesToBuild?.Count > 0)

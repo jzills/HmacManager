@@ -11,15 +11,15 @@ internal class NonceDistributedCache : NonceCache
 
     public override Task SetAsync(Guid nonce, DateTimeOffset dateRequested) =>
         Cache.SetStringAsync(
-            Options.CreateKey(nonce), 
+            Key(nonce), 
             dateRequested.ToString(), 
-            new DistributedCacheEntryOptions
-                { AbsoluteExpiration = dateRequested.AddSeconds(Options.MaxAgeInSeconds) }
+            new DistributedCacheEntryOptions 
+                { AbsoluteExpiration = AbsoluteExpiration(dateRequested) }
         );
 
     public override async Task<bool> ContainsAsync(Guid nonce)
     {
-        var value = await Cache.GetAsync(Options.CreateKey(nonce));
+        var value = await Cache.GetAsync(Key(nonce));
         return value is not null;
     }
 }
