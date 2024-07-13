@@ -6,7 +6,7 @@
 - [Summary](#summary)
 - [Features](#features)
 - [Installation](#installation)
-- [Documentation](./src/HmacManager/README.md)
+- [Documentation](./src/README.md)
 - [Resources](#resources)
 - [Further Reading](#further-reading)
 
@@ -31,7 +31,7 @@ Integrate Hmac authentication seamlessly into your ASP.NET Core applications, fo
 
 ## Resources
 
-- [Documentation](src/HmacManager/README.md)
+- [Documentation](src/README.md)
 - [Samples](samples/README.md)
 
 ## Further Reading

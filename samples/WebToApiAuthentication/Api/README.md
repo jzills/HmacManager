@@ -1,7 +1,7 @@
 
 # Example
 
-Register [HmacManager](../../../README.md) through the [AddHmac](/src/HmacManager/Mvc/Extensions/AuthenticationBuilderExtensions.cs) extension method.
+Register [HmacManager](../../../README.md) through the [AddHmac](/src/Mvc/Extensions/AuthenticationBuilderExtensions.cs) extension method.
 
     builder.Services
         .AddMemoryCache()
@@ -21,7 +21,7 @@ Register [HmacManager](../../../README.md) through the [AddHmac](/src/HmacManage
             });
         });
 
-Decorate controller or action with [HmacAuthenticateAttribute](/src/HmacManager/Mvc/HmacAuthenticateAttribute.cs).
+Decorate controller or action with [HmacAuthenticateAttribute](/src/Mvc/HmacAuthenticateAttribute.cs).
 
     [ApiController]
     [Route("api/[controller]")]

@@ -1,7 +1,7 @@
 
 # Example
 
-Register [HmacManager](../../../README.md) through the [AddHmacManager](/src/HmacManager/Mvc/Extensions/IServiceCollectionExtensions.cs) extension method.
+Register [HmacManager](../../../README.md) through the [AddHmacManager](/src/Mvc/Extensions/IServiceCollectionExtensions.cs) extension method.
 
     builder.Services
         .AddHmacManager(options =>
@@ -19,7 +19,7 @@ Register [HmacManager](../../../README.md) through the [AddHmacManager](/src/Hma
             });
         });
 
-Add a HttpClient and call [AddHmacHttpMessageHandler](/src/HmacManager/Mvc/HmacDelegatingHandler.cs) to register a handler to automatically sign outgoing requests.
+Add a HttpClient and call [AddHmacHttpMessageHandler](/src/Mvc/HmacDelegatingHandler.cs) to register a handler to automatically sign outgoing requests.
 
     builder.Services
         .AddHttpClient("Hmac_MyPolicy_RequireAccountAndEmail", client =>

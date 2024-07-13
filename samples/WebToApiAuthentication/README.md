@@ -5,7 +5,7 @@ This demo is an example of using [HmacManager](../../README.md) for authenticati
 
 ## Api
 
-Register [HmacManager](../../README.md) through the [AddHmac](/src/HmacManager/Mvc/Extensions/AuthenticationBuilderExtensions.cs) extension method.
+Register [HmacManager](../../README.md) through the [AddHmac](/src/Mvc/Extensions/AuthenticationBuilderExtensions.cs) extension method.
 
     builder.Services
         .AddMemoryCache()
@@ -25,7 +25,7 @@ Register [HmacManager](../../README.md) through the [AddHmac](/src/HmacManager/M
             });
         });
 
-Decorate controller or action with [HmacAuthenticateAttribute](/src/HmacManager/Mvc/HmacAuthenticateAttribute.cs).
+Decorate controller or action with [HmacAuthenticateAttribute](/src/Mvc/HmacAuthenticateAttribute.cs).
 
     [ApiController]
     [Route("api/[controller]")]
@@ -34,7 +34,7 @@ Decorate controller or action with [HmacAuthenticateAttribute](/src/HmacManager/
 
 ## Web
 
-Register [HmacManager](../../README.md) through the [AddHmacManager](/src/HmacManager/Mvc/Extensions/IServiceCollectionExtensions.cs) extension method.
+Register [HmacManager](../../README.md) through the [AddHmacManager](/src/Mvc/Extensions/IServiceCollectionExtensions.cs) extension method.
 
     builder.Services
         .AddHmacManager(options =>
@@ -52,7 +52,7 @@ Register [HmacManager](../../README.md) through the [AddHmacManager](/src/HmacMa
             });
         });
 
-Add a HttpClient and call [AddHmacHttpMessageHandler](/src/HmacManager/Mvc/HmacDelegatingHandler.cs) to register a handler to automatically sign outgoing requests.
+Add a HttpClient and call [AddHmacHttpMessageHandler](/src/Mvc/HmacDelegatingHandler.cs) to register a handler to automatically sign outgoing requests.
 
     builder.Services
         .AddHttpClient("Hmac_MyPolicy_RequireAccountAndEmail", client =>
