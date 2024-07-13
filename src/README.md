@@ -9,9 +9,10 @@
     * [Register with an `IConfigurationSection`](#register-with-an-iconfigurationsection)
     * [Register HttpClient with `HmacHttpMessageHandler`](#register-httpclient-with-hmachttpmessagehandler)
 - [In-Depth Tutorial](#in-depth-tutorial)
-    * The `HmacManager` Object
-    * The `HmacManagerFactory` Object
-    * [Dynamic Policies with `IHmacPolicyCollection`](#dynamic-policies-with-ihmacpolicycollection)
+    * The `HmacManager` object
+    * The `HmacManagerFactory` object
+    * [Event handling with the `HmacEvents` object](#event-handling-with-the-hmacevents-object)
+    * [Dynamic policies with `IHmacPolicyCollection`](#dynamic-policies-with-ihmacpolicycollection)
     * [Custom signing content for `Hmac`](#custom-signing-content-for-an-hmac)
 
 # Quickstart
@@ -170,6 +171,39 @@ The `AddHmacHttpMessageHandler` extension method registers an instance of `HmacD
 # In-Depth Tutorial
 
 This is where you can find a comprehensive guide on all of the functionality available to your disposal. This is currently a work in progress.
+
+## Event handling with the `HmacEvents` object
+
+One or more event handlers can be defined within the `AuthenticationBuilder` extension method `AddHmac`. 
+
+    options.Events = new HmacEvents
+    {
+        OnValidateKeys = (context, keys) => {...},
+        OnAuthenticationSuccess = (context, hmacResult) => {...},
+        OnAuthenticationFailure = (context, hmacResult) => {...}
+    };
+
+If using the `IConfigurationSection` overload of `AddHmac` then there is
+an optional second parameter for `HmacEvents`.
+
+    builder.Services.AddAuthentication()
+        .AddHmac(configurationSection, new HmacEvents
+        {
+            OnValidateKeys = (context, keys) => {...},
+            OnAuthenticationSuccess = (context, hmacResult) => {...},
+            OnAuthenticationFailure = (context, hmacResult) => {...}
+        });
+
+Events are executed through user defined delegates at different points within the `HmacAuthenticationHandler` flow. 
+
+| Event | Path | Return |
+| -------- | ------ | ------ |
+| OnValidateKeys | Executes after a signature has been parsed from an incoming request but before any attempts at verification | `bool`
+| OnAuthenticationSuccess | Executes upon a successful signature verification | `Claim[]`
+| OnAuthenticationFailure | Executes upon a failed signature verification | `Exception`
+
+> [!NOTE]
+> The default values for `HmacEvents` return pass through values, i.e. *OnValidateKeys* returns `true`, *OnAuthenticationSuccess* returns an empty `Claim[]` and *OnAuthenticationFailure* returns a `HmacAuthenticationException`.
 
 ## Dynamic Policies with `IHmacPolicyCollection`
 
