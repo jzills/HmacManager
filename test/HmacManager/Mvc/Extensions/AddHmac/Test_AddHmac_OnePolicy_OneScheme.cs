@@ -4,7 +4,7 @@ using HmacManager.Components;
 
 namespace Unit.Tests;
 
-public class Test_ServiceCollection_AddHmac_OnePolicy_OneScheme : TestBase
+public class Test_AddHmac_OnePolicy_OneScheme : TestBase
 {
     [Test]
     [TestCaseSource(typeof(TestCaseSource), nameof(TestCaseSource.GetHttpRequestMessages))]

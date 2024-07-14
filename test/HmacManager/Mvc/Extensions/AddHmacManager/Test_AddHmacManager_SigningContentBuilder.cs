@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Unit.Tests;
 
-public class Test_ServiceCollection_AddHmacManager_SigningContentBuilder : TestBase
+public class Test_AddHmacManager_SigningContentBuilder : TestBase
 {
     [Test]
     [TestCaseSource(typeof(TestCaseSource), nameof(TestCaseSource.GetHttpRequestMessages))]

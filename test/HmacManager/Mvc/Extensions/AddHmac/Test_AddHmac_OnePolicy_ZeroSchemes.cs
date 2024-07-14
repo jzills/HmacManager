@@ -4,7 +4,7 @@ using HmacManager.Components;
 
 namespace Unit.Tests;
 
-public class Test_ServiceCollection_AddHmac_OnePolicy_ManySchemes : TestBase
+public class Test_AddHmac_OnePolicy_ZeroSchemes : TestBase
 {
     [Test]
     [TestCaseSource(typeof(TestCaseSource), nameof(TestCaseSource.GetHttpRequestMessages))]
@@ -23,21 +23,7 @@ public class Test_ServiceCollection_AddHmac_OnePolicy_ManySchemes : TestBase
                     policy.UsePrivateKey(PrivateKey);
                     policy.UseContentHashAlgorithm(ContentHashAlgorithm.SHA256);
                     policy.UseSigningHashAlgorithm(SigningHashAlgorithm.HMACSHA256);
-                    policy.UseDistributedCache(30);
-                
-                    policy.AddScheme("MyScheme_1", scheme =>
-                    {
-                        scheme.AddHeader("MyHeader1_1");
-                        scheme.AddHeader("MyHeader2_1");
-                        scheme.AddHeader("MyHeader3_1");
-                    });
-
-                    policy.AddScheme("MyScheme_2", scheme =>
-                    {
-                        scheme.AddHeader("MyHeader1_2");
-                        scheme.AddHeader("MyHeader2_2");
-                        scheme.AddHeader("MyHeader3_2");
-                    });
+                    policy.UseDistributedCache(100);
                 });
             });
 

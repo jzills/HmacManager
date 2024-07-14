@@ -12,7 +12,7 @@
 
 ## Summary
 
-Integrate Hmac authentication seamlessly into your ASP.NET Core applications, fortifying security measures and ensuring robust authentication protocols.
+Integrate hmac authentication seamlessly into your ASP.NET Core applications, fortifying security measures and ensuring robust authentication protocols.
 
 ## Features
 
