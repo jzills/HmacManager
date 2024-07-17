@@ -4,5 +4,8 @@
 **node_modules
 **.DS_Store
 **out
+
+lib/dist
+
 TODO.txt
 HmacManager.sln

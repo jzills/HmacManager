@@ -6,12 +6,12 @@ export type HmacSignature = { signingContent: string, signature: string };
 export class HmacProvider {
     private readonly publicKey: string
     private readonly privateKey: string
-    private readonly signedHeaders: string[] | null
+    private readonly signedHeaders: string[] = []
     
     constructor(
         publicKey: string,
         privateKey: string,
-        signedHeaders: string[] | null
+        signedHeaders: string[] = []
     ) {
         this.publicKey = publicKey
         this.privateKey = privateKey

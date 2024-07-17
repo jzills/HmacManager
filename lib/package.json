@@ -1,6 +1,30 @@
 {
+    "name": "hmac-manager",
+    "version": "0.0.2",
+    "author": "Joshua Zillwood",
+    "license": "MIT",
     "type": "module",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/jzills/HmacManager.git"
+    },
+    "files": [
+        "dist"
+    ],
+    "main": "./dist/hmac-manager.umd.cjs",
+    "module": "./dist/hmac-manager.js",
+    "exports": {
+        ".": {
+            "import": "./dist/hmac-manager.js",
+            "require": "./dist/hmac-manager.umd.cjs"
+        }
+    },
+    "scripts": {
+        "test": "vitest"
+    },
     "dependencies": {
-        "node-fetch": "^3.3.1"
+        "node-fetch": "^3.3.1",
+        "vite": "^5.3.4",
+        "vitest": "^2.0.3"
     }
 }

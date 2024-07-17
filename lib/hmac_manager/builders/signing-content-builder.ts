@@ -33,7 +33,7 @@ export class SigningContentBuilder {
     }
 
     withBody = (body: ReadableStream<Uint8Array> | null) => {
-        const computeContentHash = content => {
+        const computeContentHash = (content: any) => {
             // TODO
             return content;
         }

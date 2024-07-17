@@ -1,5 +1,5 @@
-import { HmacManager } from "../../../../scripts/hmac_manager/hmac-manager.js";
-
+//import { HmacManager } from "../../../../scripts/hmac_manager/hmac-manager.js";
+import { HmacManager } from "hmac-manager"
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"
 
 const publicKey = "b9926638-6b5c-4a79-a6ca-014d8b848172";
@@ -23,5 +23,3 @@ request.headers.append("X-Hmac-Nonce", `${hmacResult.hmac.nonce}`);
 request.headers.append("Authorization", `Hmac ${hmacResult.hmac.signature}`);
 
 console.dir(hmacResult);
-const response = await fetch(request);
-console.log(response.ok);

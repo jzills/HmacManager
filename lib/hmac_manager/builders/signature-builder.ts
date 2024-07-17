@@ -33,7 +33,7 @@ export class SignatureBuilder {
             Uint8Array.from(content, 
                 element => element.charCodeAt(0))
 
-        const getUnicodeForm = signatureBytes => {
+        const getUnicodeForm = (signatureBytes: ArrayBuffer) => {
             const bytes = new Uint8Array(signatureBytes)
             const bytesSplit = bytes.toString().split(",")
             const unicodeForm = bytesSplit.map(element => String.fromCharCode(parseInt(element))).join("")
@@ -47,7 +47,7 @@ export class SignatureBuilder {
             ["sign"]
         )
 
-        const getSignature = async (keyBytes, signingContentBytes) => 
+        const getSignature = async (keyBytes: CryptoKey, signingContentBytes: BufferSource) => 
             crypto.subtle.sign("HMAC", keyBytes, signingContentBytes)
 
         const signatureBytes = await getSignature(await 

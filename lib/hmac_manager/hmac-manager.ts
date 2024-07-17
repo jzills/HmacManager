@@ -43,8 +43,11 @@ export class HmacManager {
                 },
                 isSuccess: true
             }
-        } catch ({ message }) {
-            return { isSuccess: false, message }
+        } catch (error: unknown) {
+            return {
+                isSuccess: false,
+                message: (error as Error)?.message
+            }
         }
     }
 }

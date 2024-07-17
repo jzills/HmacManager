@@ -1,0 +1,2 @@
+# This is needed in order to publish dist files 
+# while keeping them ignored from git repo
