@@ -1,5 +1,6 @@
 import { SignatureBuilder } from "../builders/signature-builder.js"
 import { SigningContentBuilder } from "../builders/signing-content-builder.js"
+import { computeContentHash } from "../utilities/hmac-utilities.js";
 
 export type HmacSignature = { signingContent: string, signature: string };
 
@@ -19,17 +20,19 @@ export class HmacProvider {
     }
 
     compute = async (request: Request, dateRequested: Date, nonce: string): Promise<HmacSignature> => {
-        const { headers, method, body, url } = request 
-        const { pathname, search, host } = new URL(url)
+        const { headers, method, body, url } = request;
+        const { pathname, search, host } = new URL(url);
+        const contentHash = await computeContentHash(body, "sha-256");
+
         const signingContent = new SigningContentBuilder()
             .withMethod(method)
             .withPathAndQuery(`${pathname}${search}`)
             .withAuthority(host)
             .withRequested(dateRequested)
             .withPublicKey(this.publicKey)
-            .withBody(body)
-            .withNonce(nonce)
+            .withContentHash(contentHash)
             .withSignedHeaders(this.signedHeaders, headers)
+            .withNonce(nonce)
             .build()
 
         const signatureBuilder = new SignatureBuilder(this.privateKey, signingContent);

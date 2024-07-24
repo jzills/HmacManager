@@ -1,65 +1,60 @@
 export class SigningContentBuilder {
-    private readonly content: any[] = [];
+    private readonly content: any[] = []
 
     withPublicKey = (publicKey: string) => {
-        this.content.push(publicKey);
-        return this;
+        this.content.push(publicKey)
+        return this
     }
 
     withMethod = (method: string) => {
-        this.content.push(method);
-        return this;
+        this.content.push(method)
+        return this
     }
 
     withPathAndQuery = (pathAndQuery: string) => {
-        this.content.push(pathAndQuery);
-        return this;
+        this.content.push(pathAndQuery)
+        return this
     }
 
     withAuthority = (authority: string) => {
-        this.content.push(authority);
-        return this;
+        this.content.push(authority)
+        return this
     }
 
     withHost = (host: string) => {
-        this.content.push(host);
-        return this;
+        this.content.push(host)
+        return this
     }
 
     withRequested = (requestedOn: Date) => {
-        const ticks = ((requestedOn.getTime() * 10000) + 621355968000000000);
-        this.content.push(ticks);
-        return this;
+        const utcTicks = ((requestedOn.getTime() * 10000) + 621355968000000000)
+        this.content.push(utcTicks)
+        return this
     }
 
-    withBody = (body: ReadableStream<Uint8Array> | null) => {
-        const computeContentHash = (content: any) => {
-            // TODO
-            return content;
-        }
-
-        this.content.push(computeContentHash(body));
+    withContentHash = (hash: string | null) => {
+        this.content.push(hash);
         return this;
     }
 
     withNonce = (nonce: string) => {
-        this.content.push(nonce);
-        return this;
+        this.content.push(nonce)
+        return this
     }
 
     withSignedHeaders = (signedHeaders: string[] = [], headers: Headers) => {
         if (signedHeaders.length) {
-            const headerValues = signedHeaders.map(key => headers.get(key));
-            const isMissingHeaderValues = headerValues.some(value => value === null);
+            const headerValues = signedHeaders.map(key => headers.get(key))
+            const isMissingHeaderValues = headerValues.some(value => value === null)
             if (isMissingHeaderValues) {
-                throw new Error("There are missing headers that are required for signing.");
+                throw new Error("There are missing headers that are required for signing.")
             } else {
-                this.content.push(...headerValues);
+                this.content.push(...headerValues)
             }
         }
 
-        return this;
+        return this
     }
 
-    build = () => this.content.filter(element => element).join(":");  
+    build = () => this.content.filter(element => element).join(":")
 }

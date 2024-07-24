@@ -1,3 +1,5 @@
+import { getByteArray, getUnicodeForm } from "../utilities/hmac-utilities.js";
+
 export type Algorithm = { name: string, hash: string };
 
 export class SignatureBuilder {
@@ -28,17 +30,6 @@ export class SignatureBuilder {
         }
 
         assertValidBuild();
-
-        const getByteArray = (content: string) => 
-            Uint8Array.from(content, 
-                element => element.charCodeAt(0))
-
-        const getUnicodeForm = (signatureBytes: ArrayBuffer) => {
-            const bytes = new Uint8Array(signatureBytes)
-            const bytesSplit = bytes.toString().split(",")
-            const unicodeForm = bytesSplit.map(element => String.fromCharCode(parseInt(element))).join("")
-            return unicodeForm
-        }
 
         const getKeyBytes = async () => crypto.subtle.importKey("raw", 
             getByteArray(atob(this.privateKey)), 
