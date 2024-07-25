@@ -26,9 +26,8 @@ export class SigningContentBuilder {
         return this
     }
 
-    withRequested = (requestedOn: Date) => {
-        const utcTicks = ((requestedOn.getTime() * 10000) + 621355968000000000)
-        this.content.push(utcTicks)
+    withDateRequested = (requestedOn: Date) => {
+        this.content.push(requestedOn.getTime())
         return this
     }
 

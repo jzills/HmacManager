@@ -75,7 +75,7 @@ public class SigningContentBuilder : ISigningContentBuilder
             }
         }
 
-        Builder.Append($":{Context.DateRequested?.UtcTicks}");
+        Builder.Append($":{Context.DateRequested?.ToUnixTimeMilliseconds()}");
         Builder.Append($":{Context.PublicKey}");
 
         if (Context.ContentHash is not null)

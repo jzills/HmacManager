@@ -17,7 +17,7 @@ public class WeatherService : IWeatherService
 
         // Add the required headers for the policy scheme combination
         // from the requested client in the constructor above
-        request.Headers.Add("X-Account", Guid.NewGuid().ToString());
+        request.Headers.Add("X-Account", "123");
         request.Headers.Add("X-Email", "my@email.com");
 
         var response = await _client.SendAsync(request);
