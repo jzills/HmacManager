@@ -1,47 +1,51 @@
 import { HmacResult } from "./components/hmac-result.js"
 import { HmacProvider } from "./components/hmac-provider.js"
+import { Hmac } from "./components/hmac.js"
+import { HmacPolicy } from "./components/hmac-policy.js"
+import { HmacScheme } from "./components/hmac-scheme.js"
 
 export class HmacManager {
-    private readonly provider: HmacProvider
-    private readonly signedHeaders: string[]
+    private readonly policy: HmacPolicy;
+    private readonly scheme: HmacScheme | null;
+    private readonly provider: HmacProvider;
 
     constructor(
-        publicKey: string,
-        privateKey: string,
-        signedHeaders: string[] = []
+        policy: HmacPolicy,
+        scheme: HmacScheme | null = null
     ) {
+        this.policy = policy;
+        this.scheme = scheme;
         this.provider = new HmacProvider(
-            publicKey, 
-            privateKey, 
-            signedHeaders
+            this.policy.publicKey, 
+            this.policy.privateKey, 
+            this.scheme?.headers
         )
-
-        // These are required headers that are expected
-        // to be passed into the sign method call. This can be null,
-        // in which case no custom headers will be signed into the hmac.
-        this.signedHeaders = signedHeaders;
     }
 
     sign = async (request: Request): Promise<HmacResult> => {
         try {
             const dateRequested = new Date();
             const nonce = crypto.randomUUID();
-  
+
             const { signingContent, signature } = await
                 this.provider.compute(request,
                     dateRequested,
                     nonce
-                )
+                );
+            
+            const hmac = {
+                dateRequested,
+                nonce,
+                signingContent,
+                signature,
+                signedHeaders: this.scheme?.headers ?? null
+            };
+            
+            this.addRequiredHeaders(request.headers, hmac);
 
             return {
-                hmac: {
-                    dateRequested,
-                    nonce,
-                    signingContent,
-                    signature,
-                    signedHeaders: this.signedHeaders
-                },
-                isSuccess: true
+                isSuccess: true,
+                hmac
             }
         } catch (error: unknown) {
             return {
@@ -49,5 +53,18 @@ export class HmacManager {
                 message: (error as Error)?.message
             }
         }
+    }
+
+    private addRequiredHeaders(headers: Headers, hmac: Hmac) {
+        headers.append("X-Hmac-Policy", `${this.policy.name}`);
+        
+        if (this.scheme?.name) {
+            // TODO: Error if headers are not present from the scheme
+            headers.append("X-Hmac-Scheme", `${this.scheme.name}`);
+        }
+
+        headers.append("X-Hmac-Date-Requested", `${hmac.dateRequested}`);
+        headers.append("X-Hmac-Nonce", `${hmac.nonce}`);
+        headers.append("Authorization", `Hmac ${hmac.signature}`);
     }
 }
