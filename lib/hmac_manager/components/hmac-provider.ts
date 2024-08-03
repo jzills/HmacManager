@@ -8,7 +8,7 @@ export class HmacProvider {
     private readonly publicKey: string;
     private readonly privateKey: string;
     private readonly signedHeaders: string[] = [];
-    
+
     constructor(
         publicKey: string,
         privateKey: string,
@@ -24,7 +24,7 @@ export class HmacProvider {
         const { search, host, pathname } = new URL(url);
 
         const contentHash = await computeContentHash(body, "sha-256");
-        
+
         const signingContent = new SigningContentBuilder()
             .withMethod(method)
             .withPathAndQuery(`${pathname}${search}`)
@@ -37,7 +37,7 @@ export class HmacProvider {
             .build();
 
         const signatureBuilder = new SignatureBuilder(this.privateKey, signingContent);
-        
+
         return {
             signingContent,
             signature: await signatureBuilder.build()

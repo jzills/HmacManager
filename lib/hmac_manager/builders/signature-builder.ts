@@ -20,10 +20,10 @@ export class SignatureBuilder {
     build = async () => {
 
         const assertValidBuild = () => {
-            const isMissingRequiredValues = 
-                this.privateKey     === null || 
+            const isMissingRequiredValues =
+                this.privateKey === null ||
                 this.signingContent === null
-            
+
             if (isMissingRequiredValues) {
                 throw new Error("Required values are missing.")
             }
@@ -31,18 +31,18 @@ export class SignatureBuilder {
 
         assertValidBuild();
 
-        const getKeyBytes = async () => crypto.subtle.importKey("raw", 
-            getByteArray(atob(this.privateKey)), 
-            this.algorithm, 
-            false, 
+        const getKeyBytes = async () => crypto.subtle.importKey("raw",
+            getByteArray(atob(this.privateKey)),
+            this.algorithm,
+            false,
             ["sign"]
         )
 
-        const getSignature = async (keyBytes: CryptoKey, signingContentBytes: BufferSource) => 
+        const getSignature = async (keyBytes: CryptoKey, signingContentBytes: BufferSource) =>
             crypto.subtle.sign("HMAC", keyBytes, signingContentBytes)
 
-        const signatureBytes = await getSignature(await 
-            getKeyBytes(), 
+        const signatureBytes = await getSignature(await
+            getKeyBytes(),
             getByteArray(this.signingContent)
         )
 

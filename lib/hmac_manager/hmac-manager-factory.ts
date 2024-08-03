@@ -1,29 +1,18 @@
 import { HmacManager } from "./hmac-manager.js";
 import { HmacPolicy } from "./components/hmac-policy.js";
+import { HmacPolicyCollection } from "./components/hmac-policy-collection.js";
 
 export class HmacManagerFactory {
-    private readonly policies: HmacPolicy[];
+    private readonly policies: HmacPolicyCollection;
 
     constructor(policies: HmacPolicy[]) {
-        this.policies = policies;
+        this.policies = new HmacPolicyCollection(policies);
     }
 
     create(policy: string, scheme: string | null = null): HmacManager | null {
-        const matchingPolicy = this.policies.find(_ => _.name === policy);
+        const [matchingPolicy, matchingScheme] = this.policies.get(policy, scheme);
         if (matchingPolicy) {
-            if (scheme) {
-                const matchingScheme = matchingPolicy.schemes.find(_ => _.name === scheme);
-                if (matchingScheme) {
-                    return new HmacManager(
-                        matchingPolicy,
-                        matchingScheme
-                    );
-                } else {
-                    return null;
-                }
-            } else {
-                return new HmacManager(matchingPolicy);
-            }
+            return new HmacManager(matchingPolicy, matchingScheme);
         } else {
             return null;
         }
