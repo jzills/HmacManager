@@ -1,5 +1,5 @@
 import { equal } from "assert";
-import { expect, test } from "vitest";
+import { assert, test } from "vitest";
 import { HmacManagerFactory } from "../hmac_manager/hmac-manager-factory.js";
 
 test("HmacManagerFactory", async () => {
@@ -14,6 +14,8 @@ test("HmacManagerFactory", async () => {
         name: "Policy-A",
         publicKey: "eb8e9dae-08bd-4883-80fe-1d9a103b30b5",
         privateKey: btoa("thisIsMySuperCoolPrivateKey"),
+        contentHashAlgorithm: "sha-256",
+        signatureHashAlgorithm: "sha-256",
         schemes: [{
             name: "Scheme",
             headers: ["X-AccountId", "X-Email"]
@@ -25,6 +27,6 @@ test("HmacManagerFactory", async () => {
 
     const policyHeader = request.headers.get("X-Hmac-Policy");
     const schemeHeader = request.headers.get("X-Hmac-Scheme");
-    expect(equal(policyHeader, "Policy-A"));
-    expect(equal(schemeHeader, null));
+    assert.equal(policyHeader, "Policy-A");
+    assert.equal(schemeHeader, null);
 });

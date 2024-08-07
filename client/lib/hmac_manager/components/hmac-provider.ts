@@ -8,22 +8,28 @@ export class HmacProvider {
     private readonly publicKey: string;
     private readonly privateKey: string;
     private readonly signedHeaders: string[] = [];
+    private readonly contentHashAlgorithm: string = "sha-256";
+    private readonly signatureHashAlgorithm: string = "sha-256";
 
     constructor(
         publicKey: string,
         privateKey: string,
-        signedHeaders: string[] = []
+        signedHeaders: string[] = [],
+        contentHashAlgorithm: string = "sha-256",
+        signatureHashAlgorithm: string = "sha-256"
     ) {
         this.publicKey = publicKey;
         this.privateKey = privateKey;
         this.signedHeaders = signedHeaders;
+        this.contentHashAlgorithm = contentHashAlgorithm;
+        this.signatureHashAlgorithm = signatureHashAlgorithm;
     }
 
     compute = async (request: Request, dateRequested: Date, nonce: string): Promise<HmacSignature> => {
         const { method, body, headers, url } = request;
         const { search, host, pathname } = new URL(url);
 
-        const contentHash = await computeContentHash(body, "sha-256");
+        const contentHash = await computeContentHash(body, this.contentHashAlgorithm);
 
         const signingContent = new SigningContentBuilder()
             .withMethod(method)
@@ -36,7 +42,11 @@ export class HmacProvider {
             .withNonce(nonce)
             .build();
 
-        const signatureBuilder = new SignatureBuilder(this.privateKey, signingContent);
+        const signatureBuilder = new SignatureBuilder(
+            this.privateKey,
+            signingContent,
+            this.signatureHashAlgorithm
+        );
 
         return {
             signingContent,

@@ -1,5 +1,5 @@
 import { equal } from "assert";
-import { expect, test } from "vitest";
+import { assert, test } from "vitest";
 import { HmacProvider } from "../hmac_manager/components/hmac-provider.js";
 
 test("HmacProvider", async () => {
@@ -23,6 +23,6 @@ test("HmacProvider", async () => {
     const expectedSignature = "lg8T5yPtU6+T9zaRM4EvzDmj/5RPK4UP5RP9xsQqbZo=";
     const expectedSigningContent = "GET:/api/weatherforecast:localhost:7216:1721849479232:eb8e9dae-08bd-4883-80fe-1d9a103b30b5:123:my@email.com:e21a00ff-585c-4c29-976a-fcea069be118";
 
-    expect(equal(signature, expectedSignature));
-    expect(equal(signingContent, expectedSigningContent));
+    assert.equal(signature, expectedSignature);
+    assert.equal(signingContent, expectedSigningContent);
 })

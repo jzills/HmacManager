@@ -7,6 +7,7 @@
 - [Features](#features)
 - [Installation](#installation)
 - [Documentation](./src/README.md)
+- [Client Library](./client/)
 - [Resources](#resources)
 - [Further Reading](#further-reading)
 

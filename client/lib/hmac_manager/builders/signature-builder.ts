@@ -10,11 +10,11 @@ export class SignatureBuilder {
     constructor(
         privateKey: string,
         signingContent: string,
-        algorithm: Algorithm = { name: "HMAC", hash: "SHA-256" }
+        signatureHashAlgorithm: string = "sha-256"
     ) {
         this.privateKey = privateKey
         this.signingContent = signingContent
-        this.algorithm = algorithm
+        this.algorithm = { name: "HMAC", hash: signatureHashAlgorithm }
     }
 
     build = async () => {

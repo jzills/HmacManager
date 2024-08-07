@@ -5,7 +5,7 @@
 **.DS_Store
 **out
 
-lib/dist
+client/lib/dist
 
 TODO.txt
 HmacManager.sln
