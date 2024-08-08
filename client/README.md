@@ -11,14 +11,9 @@
 
 Integrate your client with ASP.NET Core applications utilizing [HmacManager](../src/README.md) for authentication.
 
-## Features
-
-- TODO
-
 ## Installation
 
 `hmac-manager` is available on [NPM](https://www.npmjs.com/package/hmac-manager). 
-
 
 ## Installation
 
