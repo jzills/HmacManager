@@ -5,6 +5,8 @@
 
 - [Summary](#summary)
 - [Installation](#installation)
+- [Documentation](lib/hmac_manager/README.md)
+- [Resources](#resources)
 
 ## Summary
 
@@ -15,3 +17,8 @@ Integrate your client with ASP.NET Core applications utilizing [HmacManager](../
 `hmac-manager` is available on [NPM](https://www.npmjs.com/package/hmac-manager). 
 
     npm i hmac-manager
+
+## Resources
+
+- [Documentation](lib/hmac_manager/)
+- [Samples](../samples/WebToApiAuthenticationWithJavaScriptClient/)
