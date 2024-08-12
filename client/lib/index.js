@@ -1,2 +1,3 @@
 import { HmacManager } from "./hmac_manager/hmac-manager"
-export { HmacManager }
+import { HmacManagerFactory } from "./hmac_manager/hmac-manager-factory"
+export { HmacManager, HmacManagerFactory }

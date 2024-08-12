@@ -189,9 +189,9 @@ internal static class HttpRequestHeadersExtensions
     )
     {
         if (headers.TryGetValues(HmacAuthenticationDefaults.Headers.DateRequested, out var value) &&
-            long.TryParse(value?.FirstOrDefault(), out var ticks))
+            long.TryParse(value?.FirstOrDefault(), out var unixTimeMilliseconds))
         {
-            dateRequested = new DateTimeOffset(ticks, TimeSpan.Zero);
+            dateRequested = DateTimeOffset.FromUnixTimeMilliseconds(unixTimeMilliseconds);
             return true;
         }
 

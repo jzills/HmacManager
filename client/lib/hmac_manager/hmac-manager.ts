@@ -63,7 +63,7 @@ export class HmacManager {
             headers.append("X-Hmac-Scheme", `${this.scheme.name}`);
         }
 
-        headers.append("X-Hmac-Date-Requested", `${hmac.dateRequested}`);
+        headers.append("X-Hmac-Date-Requested", `${hmac.dateRequested.getTime()}`);
         headers.append("X-Hmac-Nonce", `${hmac.nonce}`);
         headers.append("Authorization", `Hmac ${hmac.signature}`);
     }
