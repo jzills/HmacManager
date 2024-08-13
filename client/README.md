@@ -1,7 +1,7 @@
 
 # Client Library
 
-[![NPM Version](https://img.shields.io/npm/v/hmac-manager)](https://www.npmjs.com/package/hmac-manager) ![NPM Downloads](https://img.shields.io/npm/d18m/hmac-manager)
+[![NPM Version](https://img.shields.io/npm/v/hmac-manager)](https://www.npmjs.com/package/hmac-manager) [![NPM Downloads](https://img.shields.io/npm/d18m/hmac-manager)](https://www.npmjs.com/package/hmac-manager)
 
 - [Summary](#summary)
 - [Installation](#installation)
