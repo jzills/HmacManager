@@ -8,7 +8,7 @@ public class HmacPartial
     /// Represents the date a request is made.
     /// </summary>
     /// <value>Defaults to the current utc time.</value>
-    public DateTimeOffset DateRequested { get; init; } = DateTimeOffset.UtcNow;
+    public DateTimeOffset DateRequested { get; init; } = DateTimeOffset.FromUnixTimeMilliseconds(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
     /// <summary>
     /// Represents a nonce to prevent replay attacks.
     /// </summary>

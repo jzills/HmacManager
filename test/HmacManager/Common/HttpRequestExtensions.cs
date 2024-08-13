@@ -25,7 +25,7 @@ public static class HttpRequestExtensions
         {
             headers.Append(
                 HmacAuthenticationDefaults.Headers.DateRequested, 
-                hmac.DateRequested.UtcDateTime.Ticks.ToString()
+                hmac.DateRequested.ToUnixTimeMilliseconds().ToString()
             );
 
             headers.Append(

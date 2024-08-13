@@ -35,7 +35,7 @@ internal static class HttpRequestHeadersExtensions
         DateTimeOffset dateRequested
     )
     {
-        headers.Add(HmacAuthenticationDefaults.Headers.DateRequested, dateRequested.UtcDateTime.Ticks.ToString());
+        headers.Add(HmacAuthenticationDefaults.Headers.DateRequested, dateRequested.ToUnixTimeMilliseconds().ToString());
     }
 
     public static void AddNonce(

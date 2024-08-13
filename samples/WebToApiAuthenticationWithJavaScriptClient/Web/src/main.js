@@ -31,5 +31,7 @@ request.headers.append("X-Email", "myemail@domain.com");
 const hmacResult = await hmacManager.sign(request);
 const response = await fetch(request);
 
+console.dir(hmacResult);
 console.assert(hmacResult.isSuccess);
 console.assert(response.ok);
+console.dir(await response.json());
