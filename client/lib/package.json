@@ -1,6 +1,6 @@
 {
     "name": "hmac-manager",
-    "version": "0.0.5",
+    "version": "1.0.0",
     "author": "Joshua Zillwood",
     "license": "MIT",
     "type": "module",
