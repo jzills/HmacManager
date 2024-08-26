@@ -1,6 +1,5 @@
-import { getByteArray, getUnicodeForm } from "../utilities/hmac-utilities.js";
-
-export type Algorithm = { name: string, hash: string };
+import { getByteArray, getKeyBytes, getSignature, getUnicodeForm } from "../utilities/hmac-utilities.js";
+import { Algorithm } from "../components/algorithm.js";
 
 export class SignatureBuilder {
     private readonly privateKey: string
@@ -18,31 +17,8 @@ export class SignatureBuilder {
     }
 
     build = async () => {
-
-        const assertValidBuild = () => {
-            const isMissingRequiredValues =
-                this.privateKey === null ||
-                this.signingContent === null
-
-            if (isMissingRequiredValues) {
-                throw new Error("Required values are missing.")
-            }
-        }
-
-        assertValidBuild();
-
-        const getKeyBytes = async () => crypto.subtle.importKey("raw",
-            getByteArray(atob(this.privateKey)),
-            this.algorithm,
-            false,
-            ["sign"]
-        )
-
-        const getSignature = async (keyBytes: CryptoKey, signingContentBytes: BufferSource) =>
-            crypto.subtle.sign("HMAC", keyBytes, signingContentBytes)
-
         const signatureBytes = await getSignature(await
-            getKeyBytes(),
+            getKeyBytes(this.privateKey, this.algorithm),
             getByteArray(this.signingContent)
         )
 

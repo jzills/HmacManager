@@ -1,4 +1,3 @@
-import { equal } from "assert";
 import { assert, test } from "vitest";
 import { HmacManagerFactory } from "../hmac_manager/hmac-manager-factory.js";
 

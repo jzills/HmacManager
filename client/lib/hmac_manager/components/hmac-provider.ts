@@ -1,8 +1,7 @@
 import { SignatureBuilder } from "../builders/signature-builder.js"
 import { SigningContentBuilder } from "../builders/signing-content-builder.js"
 import { computeContentHash } from "../utilities/hmac-utilities.js";
-
-export type HmacSignature = { signingContent: string, signature: string };
+import { HmacSignature } from "./hmac-signature.js";
 
 export class HmacProvider {
     private readonly publicKey: string;

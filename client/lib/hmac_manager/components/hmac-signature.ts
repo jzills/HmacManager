@@ -1,0 +1,1 @@
+export type HmacSignature = { signingContent: string, signature: string };

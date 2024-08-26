@@ -7,4 +7,4 @@ export type HmacPolicy = {
     contentHashAlgorithm: string,
     signatureHashAlgorithm: string,
     schemes: HmacScheme[]
-}
+};

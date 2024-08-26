@@ -1,4 +1,3 @@
-import { equal } from "assert";
 import { assert, test } from "vitest";
 import { HmacManager } from "../hmac_manager/hmac-manager.js";
 
@@ -32,7 +31,7 @@ test("HmacManager_Sign_Adds_DateRequested_Header", async () => {
 
     const signingResult = await hmacManager.sign(request)
     const dateRequestedHeader = request.headers.get("X-Hmac-Date-Requested");
-    assert.equal(signingResult.hmac?.dateRequested.toString(), dateRequestedHeader);
+    assert.equal(signingResult.hmac?.dateRequested.getTime().toString(), dateRequestedHeader);
 });
 
 test("HmacManager_Sign_Adds_Nonce_Header", async () => {
