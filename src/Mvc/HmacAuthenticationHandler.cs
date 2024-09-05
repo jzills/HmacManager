@@ -3,11 +3,11 @@ using System.Text.Encodings.Web;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Mvc.WebApiCompatShim;
 using HmacManager.Components;
 using HmacManager.Exceptions;
 using HmacManager.Policies;
 using HmacManager.Mvc.Extensions.Internal;
+using HmacManager.Features;
 
 namespace HmacManager.Mvc;
 
