@@ -43,8 +43,6 @@ public class HttpRequestMessageFeature : IHttpRequestMessageFeature
             httpRequest.QueryString;
 
         var message = new HttpRequestMessage(new HttpMethod(httpRequest.Method), uriString);
-
-        //message.Properties[nameof(HttpContext)] = httpContext;
         message.Options.TryAdd(nameof(HttpContext), httpContext);
         message.Content = new StreamContent(httpRequest.Body);
 

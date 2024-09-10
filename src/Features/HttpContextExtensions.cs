@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace HmacManager.Features;
 
-public static class HttpRequestMessageHttpContextExtensions
+public static class HttpContextExtensions
 {
     public static HttpRequestMessage GetHttpRequestMessage(this HttpContext httpContext)
     {

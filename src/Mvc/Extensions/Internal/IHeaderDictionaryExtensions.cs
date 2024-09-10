@@ -2,7 +2,6 @@ using HmacManager.Components;
 using HmacManager.Policies;
 using HmacManager.Policies.Extensions;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Primitives;
 
 namespace HmacManager.Mvc.Extensions.Internal;
 
