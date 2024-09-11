@@ -33,8 +33,11 @@ public class HmacProvider : IHmacProvider
         if (request.TryGetContent(out var content))
         {
             var contentString = await content.ReadAsStringAsync();
-            var contentHash = await Options.ContentHashGenerator.HashAsync(contentString);
-            builder.WithContentHash(contentHash);
+            if (!string.IsNullOrWhiteSpace(contentString))
+            {
+                var contentHash = await Options.ContentHashGenerator.HashAsync(contentString);
+                builder.WithContentHash(contentHash);
+            }
         }
 
         return builder.Build();
