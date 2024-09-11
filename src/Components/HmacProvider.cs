@@ -1,5 +1,7 @@
+using System.Text;
 using HmacManager.Extensions;
 using HmacManager.Headers;
+using HmacManager.Mvc.Extensions.Internal;
 
 namespace HmacManager.Components;
 
@@ -30,14 +32,11 @@ public class HmacProvider : IHmacProvider
             .WithNonce(nonce)
             .WithHeaderValues(headerValues ?? []);
 
-        if (request.TryGetContent(out var content))
-        {
-            var contentString = await content.ReadAsStringAsync();
-            if (!string.IsNullOrWhiteSpace(contentString))
-            {
-                var contentHash = await Options.ContentHashGenerator.HashAsync(contentString);
-                builder.WithContentHash(contentHash);
-            }
+        if (request.TryCopyAndAssignContent(out var stream) && 
+            stream.TryReadAndResetPosition(out var contentString))
+        {              
+            var contentHash = await Options.ContentHashGenerator.HashAsync(contentString);
+            builder.WithContentHash(contentHash);
         }
 
         return builder.Build();

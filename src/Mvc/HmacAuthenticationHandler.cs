@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authentication;
 using HmacManager.Components;
 using HmacManager.Exceptions;
+using HmacManager.Extensions;
 using HmacManager.Policies;
 using HmacManager.Mvc.Extensions.Internal;
 using HmacManager.Features;
@@ -44,6 +45,11 @@ internal class HmacAuthenticationHandler : AuthenticationHandler<HmacAuthenticat
                 }
 
                 var request = Request.HttpContext.GetHttpRequestMessage();
+                if (request.TryCopyAndAssignContent(out var rewindableBody))
+                {
+                    Request.Body = rewindableBody;
+                }
+
                 var hmacResult = await hmacManager!.VerifyAsync(request);
 
                 Request.Body.Rewind();
