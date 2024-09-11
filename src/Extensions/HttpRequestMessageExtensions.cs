@@ -16,7 +16,8 @@ internal static class HttpRequestMessageExtensions
         }
     }
 
-    public static bool HasContent(this HttpRequestMessage request) =>
-        request.Content is not null &&
-        request.Content.Headers.ContentLength > 0;
+    public static bool HasContent(this HttpRequestMessage request) => request.Content is not null;
+        // TODO: Review this as using extensions like PostAsJsonAsync does not 
+        // set the ContentLength until later in the pipeline.
+        //(request.Content.Headers.ContentLength > 0 || (request.Headers.TransferEncodingChunked ?? false));
 }
