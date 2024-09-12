@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using HmacManager.Mvc;
+using Api.Models;
 
 namespace Api.Controllers;
 
@@ -31,4 +32,8 @@ public class WeatherForecastController : ControllerBase
             Summary = Summaries[Random.Shared.Next(Summaries.Length)]
         })
         .ToArray();
+
+    [HttpPost]
+    [Route("")]
+    public IActionResult Post([FromBody] WeatherForecastPost weatherForecast) => Ok(weatherForecast);
 }

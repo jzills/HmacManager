@@ -10,18 +10,19 @@ public class WeatherService : IWeatherService
 
     // Create an instance of the "Hmac_MyPolicy_RequireAccountAndEmail"
     // HttpClient which is registered in the Program.cs
-    public WeatherService(IHttpClientFactory clientFactory) => 
+    public WeatherService(IHttpClientFactory clientFactory)
+    {
         _client = clientFactory.CreateClient("Hmac_MyPolicy_RequireAccountAndEmail");
+
+        // Add the required headers for the policy scheme combination
+        // from the requested client in the constructor above
+        _client.DefaultRequestHeaders.Add("X-Account", "123");
+        _client.DefaultRequestHeaders.Add("X-Email", "my@email.com");
+    }
 
     public async Task<IAsyncEnumerable<WeatherForecast?>> GetWeatherForecastAsync()
     {
         using var request = new HttpRequestMessage(HttpMethod.Get, "api/weatherforecast");
-
-        // Add the required headers for the policy scheme combination
-        // from the requested client in the constructor above
-        request.Headers.Add("X-Account", "123");
-        request.Headers.Add("X-Email", "my@email.com");
-
         var response = await _client.SendAsync(request);
         if (response.IsSuccessStatusCode)
         {
@@ -35,20 +36,11 @@ public class WeatherService : IWeatherService
 
     public async Task<WeatherForecastPost?> CreateWeatherForecastAsync()
     {
-        using var request = new HttpRequestMessage(HttpMethod.Post, "api/weatherforecast")
+        var response = await _client.PostAsJsonAsync("api/weatherforecast", new WeatherForecastPost
         {
-            Content = new StringContent(JsonSerializer.Serialize(new WeatherForecastPost
-            {
-                Summary = "This is a test."
-            }), Encoding.UTF8, "application/json")
-        };
+            Summary = "This is a test."
+        });
 
-        // Add the required headers for the policy scheme combination
-        // from the requested client in the constructor above
-        request.Headers.Add("X-Account", "123");
-        request.Headers.Add("X-Email", "my@email.com");
-
-        var response = await _client.SendAsync(request);
         if (response.IsSuccessStatusCode)
         {
             return await response.Content.ReadFromJsonAsync<WeatherForecastPost>();

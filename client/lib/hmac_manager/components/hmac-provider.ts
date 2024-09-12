@@ -25,7 +25,8 @@ export class HmacProvider {
     }
 
     compute = async (request: Request, dateRequested: Date, nonce: string): Promise<HmacSignature> => {
-        const { method, body, headers, url } = request;
+        // Clone the request since we need to read the body if it exists
+        const { method, body, headers, url } = request.clone();
         const { search, host, pathname } = new URL(url);
 
         const contentHash = await computeContentHash(body, this.contentHashAlgorithm);
