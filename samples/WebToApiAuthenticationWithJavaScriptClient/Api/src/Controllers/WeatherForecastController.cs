@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using HmacManager.Mvc;
-using System.Web.Http;
 
 namespace Api.Controllers;
 
