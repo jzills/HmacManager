@@ -6,12 +6,14 @@ using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Primitives;
+using System.Text;
+using System.Text.Json;
 using Unit.Tests.Common;
 
 namespace Unit.Tests.Mvc;
 
 [TestFixture]
-public class Test_HmacAuthenticationHandler_HandleAuthenticateAsync : TestServiceCollection
+public class Test_HmacAuthenticationHandler_HandleAuthenticateAsync_Post : TestServiceCollection
 {
     public HttpContext HttpContext;
     public AuthorizationFilterContext FilterContext;
@@ -40,7 +42,14 @@ public class Test_HmacAuthenticationHandler_HandleAuthenticateAsync : TestServic
         FilterContext.Filters.Add(hmacAuthorizationFilter);
 
         var uri = new Uri("https://localhost:1122/api/endpoint");
-        var request = new HttpRequestMessage(HttpMethod.Get, uri);
+        var request = new HttpRequestMessage(HttpMethod.Post, uri)
+        {
+            Content = new StringContent(JsonSerializer.Serialize(new
+            {
+
+            }), Encoding.UTF8, "application/json")
+        };
+
         request.Headers.Add("Scheme_Header_1", "Scheme_Header_Value_1");
 
         var hmacManager = HmacManagerFactory.Create(
@@ -49,7 +58,11 @@ public class Test_HmacAuthenticationHandler_HandleAuthenticateAsync : TestServic
         );
 
         var signingResult = await hmacManager!.SignAsync(request);
-        FilterContext.HttpContext.Request.ConfigureFor(uri, HttpMethod.Get);
+
+        var body = new MemoryStream();
+        await request.Content.CopyToAsync(body);
+        body.Position = 0;
+        FilterContext.HttpContext.Request.ConfigureFor(uri, HttpMethod.Post, body);
         FilterContext.HttpContext.Request.AddHmacHeaders(signingResult);
         FilterContext.HttpContext.Request.Headers.Append("Scheme_Header_1", "Scheme_Header_Value_1");
 

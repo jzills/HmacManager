@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Http;
+using HmacManager.Mvc.Extensions.Internal;
 
 namespace HmacManager.Features;
 
@@ -44,7 +45,11 @@ public class HttpRequestMessageFeature : IHttpRequestMessageFeature
 
         var message = new HttpRequestMessage(new HttpMethod(httpRequest.Method), uriString);
         message.Options.TryAdd(nameof(HttpContext), httpContext);
-        message.Content = new StreamContent(httpRequest.Body);
+
+        if (httpRequest.HasContent())
+        {
+            message.Content = new StreamContent(httpRequest.Body);
+        }
 
         foreach (var header in httpRequest.Headers)
         {

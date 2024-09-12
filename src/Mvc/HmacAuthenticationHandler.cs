@@ -3,6 +3,7 @@ using System.Text.Encodings.Web;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using HmacManager.Components;
 using HmacManager.Exceptions;
 using HmacManager.Extensions;
@@ -47,12 +48,16 @@ internal class HmacAuthenticationHandler : AuthenticationHandler<HmacAuthenticat
                 var request = Request.HttpContext.GetHttpRequestMessage();
                 if (request.TryCopyAndAssignContent(out var rewindableBody))
                 {
+                    Request.EnableBuffering();
                     Request.Body = rewindableBody;
                 }
 
                 var hmacResult = await hmacManager!.VerifyAsync(request);
 
-                Request.Body.Rewind();
+                if (Request.HasContent())
+                {
+                    Request.Body.Rewind();
+                }
 
                 if (hmacResult.IsSuccess)
                 {
