@@ -32,9 +32,6 @@ public class HmacProvider : IHmacProvider
             .WithHeaderValues(headerValues ?? []);
 
         if (request.HasContent())
-        // No longer needed
-        // if (request.TryCopyAndAssignContent(out var stream) && 
-        //     stream.TryReadAndResetPosition(out var contentString))
         {
             var contentString = await request.Content!.ReadAsStringAsync();            
             var contentHash = await Options.ContentHashGenerator.HashAsync(contentString);

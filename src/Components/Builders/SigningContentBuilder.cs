@@ -63,14 +63,13 @@ public class SigningContentBuilder : ISigningContentBuilder
             if (Context.Request.RequestUri.IsAbsoluteUri)
             {
                 Builder.Append($":{Context.Request.RequestUri.PathAndQuery}");
-                Builder.Append($":{Context.Request.RequestUri.Authority}");
+
+                // Authority is not an available property in a relative uri. The immediate fix
+                // is to remove it from the signing content in favor of consistent behavior.
+                //Builder.Append($":{Context.Request.RequestUri.Authority}");
             }
             else
             {
-                // Handle the case when a relative uri is used, for instance,
-                // when using an HttpClient with a predefined BaseAddress. For
-                // cases like this, only append the path and any potential query
-                // but disregard the authority.
                 Builder.Append($":{Context.Request.RequestUri.OriginalString}");
             }
         }
