@@ -45,12 +45,19 @@ internal class HmacAuthenticationHandler : AuthenticationHandler<HmacAuthenticat
                     return AuthenticateResult.Fail(new HmacAuthenticationException());
                 }
 
-                var request = Request.HttpContext.GetHttpRequestMessage();
-                if (request.TryCopyAndAssignContent(out var rewindableBody))
+                if (Request.HasContent())
                 {
                     Request.EnableBuffering();
-                    Request.Body = rewindableBody;
                 }
+                
+                var request = Request.HttpContext.GetHttpRequestMessage();
+
+                // No longer needed
+                // if (request.TryCopyAndAssignContent(out var rewindableBody))
+                // {
+                //     Request.EnableBuffering();
+                //     Request.Body = rewindableBody;
+                // }
 
                 var hmacResult = await hmacManager!.VerifyAsync(request);
 

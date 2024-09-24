@@ -4,6 +4,7 @@ using HmacManager.Mvc;
 
 namespace Unit.Tests;
 
+[TestFixture]
 public class Test_HttpRequestHeaderExtensions_AddRequiredHeaders_DateRequested : TestBase
 {
     [Test]

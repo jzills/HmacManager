@@ -3,6 +3,7 @@ using HmacManager.Headers;
 
 namespace Unit.Tests;
 
+[TestFixture]
 public class Test_HttpRequestHeaderExtensions_TryParseHeaders : TestBase
 {
     [Test]

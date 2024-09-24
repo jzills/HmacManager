@@ -2,7 +2,7 @@ namespace HmacManager.Extensions;
 
 internal static class HttpRequestMessageExtensions
 {
-    public static bool TryCopyAndAssignContent(this HttpRequestMessage request, out MemoryStream contentStream)
+    internal static bool TryCopyAndAssignContent(this HttpRequestMessage request, out MemoryStream contentStream)
     {
         if (request.HasContent())
         {
@@ -33,7 +33,7 @@ internal static class HttpRequestMessageExtensions
         }
     }
 
-    public static bool TryGetContent(this HttpRequestMessage request, out HttpContent content)
+    internal static bool TryGetContent(this HttpRequestMessage request, out HttpContent content)
     {
         if (request.HasContent())
         {
@@ -47,7 +47,7 @@ internal static class HttpRequestMessageExtensions
         }
     }
 
-    public static bool HasContent(this HttpRequestMessage request)
+    internal static bool HasContent(this HttpRequestMessage request)
     {
         if (request.Content is not null)
         {

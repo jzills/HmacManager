@@ -3,6 +3,7 @@ using HmacManager.Extensions;
 
 namespace Unit.Tests;
 
+[TestFixture]
 public class Test_HttpRequestHeaderExtensions_TryGetDateRequestedHeader : TestBase
 {
     [Test]
