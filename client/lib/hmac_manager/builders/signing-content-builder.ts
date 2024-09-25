@@ -17,12 +17,18 @@ export class SigningContentBuilder {
     }
 
     withAuthority = (authority: string) => {
-        this.content.push(authority)
+        // Pending solution in .NET code. For now, the
+        // pathAndQuery will be the only url component added
+        // to the signing content.
+        //this.content.push(authority)
         return this
     }
 
     withHost = (host: string) => {
-        this.content.push(host)
+        // Pending solution in .NET code. For now, the
+        // pathAndQuery will be the only url component added
+        // to the signing content.
+        //this.content.push(host)
         return this
     }
 

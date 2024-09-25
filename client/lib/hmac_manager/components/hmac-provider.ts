@@ -34,7 +34,6 @@ export class HmacProvider {
         const signingContent = new SigningContentBuilder()
             .withMethod(method)
             .withPathAndQuery(`${pathname}${search}`)
-            .withAuthority(host)
             .withDateRequested(dateRequested)
             .withPublicKey(this.publicKey)
             .withContentHash(contentHash)
