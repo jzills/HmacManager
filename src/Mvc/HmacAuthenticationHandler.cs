@@ -39,7 +39,7 @@ internal class HmacAuthenticationHandler : AuthenticationHandler<HmacAuthenticat
                     out var hmacPolicy
             ))
             {
-                var hasValidKeys = Options.Events.OnValidateKeys(Context, hmacPolicy!.Keys);
+                var hasValidKeys = await Options.Events.OnValidateKeysAsync(Context, hmacPolicy!.Keys);
                 if (!hasValidKeys)
                 {
                     return AuthenticateResult.Fail(new HmacAuthenticationException());
@@ -49,17 +49,10 @@ internal class HmacAuthenticationHandler : AuthenticationHandler<HmacAuthenticat
                 {
                     Request.EnableBuffering();
                 }
-                
-                var request = Request.HttpContext.GetHttpRequestMessage();
-
-                // No longer needed
-                // if (request.TryCopyAndAssignContent(out var rewindableBody))
-                // {
-                //     Request.EnableBuffering();
-                //     Request.Body = rewindableBody;
-                // }
-
-                var hmacResult = await hmacManager!.VerifyAsync(request);
+        
+                var hmacResult = await hmacManager!.VerifyAsync(
+                    Request.HttpContext.GetHttpRequestMessage()
+                );
 
                 if (Request.HasContent())
                 {
@@ -68,7 +61,7 @@ internal class HmacAuthenticationHandler : AuthenticationHandler<HmacAuthenticat
 
                 if (hmacResult.IsSuccess)
                 {
-                    var claims = CreateClaims(hmacResult);
+                    var claims = await CreateClaimsAsync(hmacResult);
                     return AuthenticateResult.Success(CreateSuccessTicket(claims, 
                         hmacResult.Policy, 
                         hmacResult.HeaderScheme
@@ -76,7 +69,7 @@ internal class HmacAuthenticationHandler : AuthenticationHandler<HmacAuthenticat
                 }
                 else
                 {
-                    var failure = Options.Events.OnAuthenticationFailure(Request.HttpContext, hmacResult);
+                    var failure = await Options.Events.OnAuthenticationFailureAsync(Request.HttpContext, hmacResult);
                     return AuthenticateResult.Fail(failure);
                 }
             }
@@ -91,7 +84,7 @@ internal class HmacAuthenticationHandler : AuthenticationHandler<HmacAuthenticat
         }
     }
 
-    private IEnumerable<Claim> CreateClaims(HmacResult hmacResult)
+    private async Task<IEnumerable<Claim>> CreateClaimsAsync(HmacResult hmacResult)
     {
         var claims = new List<Claim>();
         foreach (var headerValue in hmacResult!.Hmac!.HeaderValues)
@@ -102,7 +95,7 @@ internal class HmacAuthenticationHandler : AuthenticationHandler<HmacAuthenticat
             ));
         }
 
-        var successHandlerClaims = Options.Events.OnAuthenticationSuccess(Request.HttpContext, hmacResult);
+        var successHandlerClaims = await Options.Events.OnAuthenticationSuccessAsync(Request.HttpContext, hmacResult);
         foreach (var claim in successHandlerClaims)
         {
             claims.Add(claim);

@@ -38,14 +38,16 @@ builder.Services
             });
         });
 
+        // Subscribe to HmacEvents to handle
+        // successes and failures
         options.Events = new HmacEvents
         {
-            OnValidateKeys = (context, keys) => 
+            OnValidateKeysAsync = (context, keys) => 
             {
                 // Validate keys against database
-                return true;
+                return Task.FromResult(true);
             },
-            OnAuthenticationSuccess = (context, hmacResult) =>
+            OnAuthenticationSuccessAsync = (context, hmacResult) =>
             {
                 var claims = new Claim[]
                 {
@@ -54,9 +56,9 @@ builder.Services
                     new Claim(ClaimTypes.Email, "MyEmail")
                 };
 
-                return claims;
+                return Task.FromResult(claims);
             },
-            OnAuthenticationFailure = (context, hmacResult) => new Exception("An error occurred authenticating request.")
+            OnAuthenticationFailureAsync = (context, hmacResult) => Task.FromResult(new Exception("An error occurred authenticating request."))
         };
     });
 

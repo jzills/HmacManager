@@ -13,50 +13,50 @@ public class Test_HmacEvents_Defaults
     public void Test_HmacEvents_Default_Init()
     {
         var events = new HmacEvents();
-        Assert.That(events.OnAuthenticationFailure, Is.EqualTo(HmacEventsDefaults.OnAuthenticationFailure));
-        Assert.That(events.OnAuthenticationSuccess, Is.EqualTo(HmacEventsDefaults.OnAuthenticationSuccess));
-        Assert.That(events.OnValidateKeys, Is.EqualTo(HmacEventsDefaults.OnValidateKeys));
+        Assert.That(events.OnAuthenticationFailureAsync, Is.EqualTo(HmacEventsDefaults.OnAuthenticationFailureAsync));
+        Assert.That(events.OnAuthenticationSuccessAsync, Is.EqualTo(HmacEventsDefaults.OnAuthenticationSuccessAsync));
+        Assert.That(events.OnValidateKeysAsync, Is.EqualTo(HmacEventsDefaults.OnValidateKeysAsync));
     }
 
     [Test]
-    public void Test_HmacEvents_OnAuthenticationFailure_Init()
+    public async Task Test_HmacEvents_OnAuthenticationFailure_Init()
     {
         var events = new HmacEvents
         {
-            OnAuthenticationFailure = (_, _) => new Exception("Test")
+            OnAuthenticationFailureAsync = (_, _) => Task.FromResult(new Exception("Test"))
         };
 
-        var error = events.OnAuthenticationFailure(new DefaultHttpContext(), new HmacResult("Policy", "Scheme"));
+        var error = await events.OnAuthenticationFailureAsync(new DefaultHttpContext(), new HmacResult("Policy", "Scheme"));
         Assert.That(error.Message, Is.EqualTo("Test"));
-        Assert.That(events.OnAuthenticationSuccess, Is.EqualTo(HmacEventsDefaults.OnAuthenticationSuccess));
-        Assert.That(events.OnValidateKeys, Is.EqualTo(HmacEventsDefaults.OnValidateKeys));
+        Assert.That(events.OnAuthenticationSuccessAsync, Is.EqualTo(HmacEventsDefaults.OnAuthenticationSuccessAsync));
+        Assert.That(events.OnValidateKeysAsync, Is.EqualTo(HmacEventsDefaults.OnValidateKeysAsync));
     }
 
     [Test]
-    public void Test_HmacEvents_OnAuthenticationSuccess_Init()
+    public async Task Test_HmacEvents_OnAuthenticationSuccess_Init()
     {
         var events = new HmacEvents
         {
-            OnAuthenticationSuccess = (_, _) => [new Claim("Test", "Value")]
+            OnAuthenticationSuccessAsync = (_, _) => Task.FromResult<Claim[]>([new Claim("Test", "Value")])
         };
 
-        var claims = events.OnAuthenticationSuccess(new DefaultHttpContext(), new HmacResult("Policy", "Scheme"));
+        var claims = await events.OnAuthenticationSuccessAsync(new DefaultHttpContext(), new HmacResult("Policy", "Scheme"));
         Assert.DoesNotThrow(() => claims.First(claim => claim.Type == "Test" && claim.Value == "Value"));
-        Assert.That(events.OnAuthenticationFailure, Is.EqualTo(HmacEventsDefaults.OnAuthenticationFailure));
-        Assert.That(events.OnValidateKeys, Is.EqualTo(HmacEventsDefaults.OnValidateKeys));
+        Assert.That(events.OnAuthenticationFailureAsync, Is.EqualTo(HmacEventsDefaults.OnAuthenticationFailureAsync));
+        Assert.That(events.OnValidateKeysAsync, Is.EqualTo(HmacEventsDefaults.OnValidateKeysAsync));
     }
 
     [Test]
-    public void Test_HmacEvents_OnValidateKeys_Init()
+    public async Task Test_HmacEvents_OnValidateKeys_Init()
     {
         var events = new HmacEvents 
         { 
-            OnValidateKeys = (_, _) => true 
+            OnValidateKeysAsync = (_, _) => Task.FromResult(true) 
         };
 
-        var isValid = events.OnValidateKeys(new DefaultHttpContext(), new KeyCredentials());
+        var isValid = await events.OnValidateKeysAsync(new DefaultHttpContext(), new KeyCredentials());
         Assert.That(isValid, Is.True);
-        Assert.That(events.OnAuthenticationFailure, Is.EqualTo(HmacEventsDefaults.OnAuthenticationFailure));
-        Assert.That(events.OnAuthenticationSuccess, Is.EqualTo(HmacEventsDefaults.OnAuthenticationSuccess));
+        Assert.That(events.OnAuthenticationFailureAsync, Is.EqualTo(HmacEventsDefaults.OnAuthenticationFailureAsync));
+        Assert.That(events.OnAuthenticationSuccessAsync, Is.EqualTo(HmacEventsDefaults.OnAuthenticationSuccessAsync));
     }
 }

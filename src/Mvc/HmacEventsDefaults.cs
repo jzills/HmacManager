@@ -8,7 +8,7 @@ namespace HmacManager.Mvc;
 
 internal static class HmacEventsDefaults
 {
-    internal static Func<HttpContext, HmacResult, Claim[]> OnAuthenticationSuccess = (_, _) => [];
-    internal static Func<HttpContext, HmacResult, Exception> OnAuthenticationFailure = (_, _) => new HmacAuthenticationException();
-    internal static Func<HttpContext, KeyCredentials, bool> OnValidateKeys = (_, _) => true;
+    internal static Func<HttpContext, HmacResult, Task<Claim[]>> OnAuthenticationSuccessAsync = (_, _) => Task.FromResult<Claim[]>([]);
+    internal static Func<HttpContext, HmacResult, Task<Exception>> OnAuthenticationFailureAsync = (_, _) => Task.FromResult<Exception>(new HmacAuthenticationException());
+    internal static Func<HttpContext, KeyCredentials, Task<bool>> OnValidateKeysAsync = (_, _) => Task.FromResult(true);
 }

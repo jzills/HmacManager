@@ -17,7 +17,7 @@ public class HmacEvents
     /// the expectation that user claims will be returned and automatically added to the <c>ClaimsIdentity</c>
     /// for the authentication scheme found at <c>HmacAuthenticationDefaults.AuthenticationScheme</c>.
     /// </remarks>
-    public Func<HttpContext, HmacResult, Claim[]> OnAuthenticationSuccess { get; init; } = HmacEventsDefaults.OnAuthenticationSuccess;
+    public Func<HttpContext, HmacResult, Task<Claim[]>> OnAuthenticationSuccessAsync { get; init; } = HmacEventsDefaults.OnAuthenticationSuccessAsync;
 
     /// <summary>
     /// The event fired when authentication is a failure.
@@ -25,7 +25,7 @@ public class HmacEvents
     /// /// <remarks>The <c>HttpContext</c> and <c>HmacResult</c> are passed into the handler with
     /// the expectation that an exception will be returned indicating the error.
     /// </remarks>
-    public Func<HttpContext, HmacResult, Exception> OnAuthenticationFailure { get; init; } = HmacEventsDefaults.OnAuthenticationFailure;
+    public Func<HttpContext, HmacResult, Task<Exception>> OnAuthenticationFailureAsync { get; init; } = HmacEventsDefaults.OnAuthenticationFailureAsync;
 
     /// <summary>
     /// The event fired prior to authenticating a request in order to prevalidate the keys.
@@ -33,5 +33,5 @@ public class HmacEvents
     /// /// <remarks>The <c>HttpContext</c> and <c>KeyCredentials</c> are passed into the handler with
     /// the expectation that a <c>bool</c> will be returned indicating the validity of the keys.
     /// </remarks>
-    public Func<HttpContext, KeyCredentials, bool> OnValidateKeys { get; init;  } = HmacEventsDefaults.OnValidateKeys;
+    public Func<HttpContext, KeyCredentials, Task<bool>> OnValidateKeysAsync { get; init;  } = HmacEventsDefaults.OnValidateKeysAsync;
 }

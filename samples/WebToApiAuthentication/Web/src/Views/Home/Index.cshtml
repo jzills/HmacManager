@@ -1,7 +1,6 @@
 ﻿@using Web.Services
 @inject IWeatherService weatherService
 @{
-    var response = await weatherService.CreateWeatherForecastAsync();
     var weatherForecast = await weatherService.GetWeatherForecastAsync();
 }
 
