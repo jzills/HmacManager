@@ -24,8 +24,8 @@ test("HmacManagerFactory", async () => {
     const hmacManager = hmacManagerFactory.create("Policy-A");
     await hmacManager?.sign(request);
 
-    const policyHeader = request.headers.get("X-Hmac-Policy");
-    const schemeHeader = request.headers.get("X-Hmac-Scheme");
+    const policyHeader = request.headers.get("Hmac-Policy");
+    const schemeHeader = request.headers.get("Hmac-Scheme");
     assert.equal(policyHeader, "Policy-A");
     assert.equal(schemeHeader, null);
 });

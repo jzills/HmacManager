@@ -56,15 +56,15 @@ export class HmacManager {
     }
 
     private addRequiredHeaders(headers: Headers, hmac: Hmac) {
-        headers.append("X-Hmac-Policy", `${this.policy.name}`);
+        headers.append("Hmac-Policy", `${this.policy.name}`);
         
         if (this.scheme?.name) {
             // TODO: Error if headers are not present from the scheme
-            headers.append("X-Hmac-Scheme", `${this.scheme.name}`);
+            headers.append("Hmac-Scheme", `${this.scheme.name}`);
         }
 
-        headers.append("X-Hmac-Date-Requested", `${hmac.dateRequested.getTime()}`);
-        headers.append("X-Hmac-Nonce", `${hmac.nonce}`);
+        headers.append("Hmac-Date-Requested", `${hmac.dateRequested.getTime()}`);
+        headers.append("Hmac-Nonce", `${hmac.nonce}`);
         headers.append("Authorization", `Hmac ${hmac.signature}`);
     }
 }

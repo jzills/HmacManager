@@ -30,7 +30,7 @@ test("HmacManager_Sign_Adds_DateRequested_Header", async () => {
     });
 
     const signingResult = await hmacManager.sign(request)
-    const dateRequestedHeader = request.headers.get("X-Hmac-Date-Requested");
+    const dateRequestedHeader = request.headers.get("Hmac-Date-Requested");
     assert.equal(signingResult.hmac?.dateRequested.getTime().toString(), dateRequestedHeader);
 });
 
@@ -46,6 +46,6 @@ test("HmacManager_Sign_Adds_Nonce_Header", async () => {
     });
 
     const signingResult = await hmacManager.sign(request)
-    const nonceHeader = request.headers.get("X-Hmac-Nonce");
+    const nonceHeader = request.headers.get("Hmac-Nonce");
     assert.equal(signingResult.hmac?.nonce, nonceHeader);
 });
