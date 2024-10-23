@@ -41,7 +41,7 @@ Configure one or more policies with the options builder.
 
 Access an instance of a `HmacManager` responsible for a specified policy from `IHmacManagerFactory`.
 
-    var hmacManager = hmacManagerFactory.Create("SomePolicy")
+    var hmacManager = hmacManagerFactory.Create("SomePolicy");
 
 > [!NOTE]
 > An implementation of `IHmacManagerFactory` is automatically registered with the DI container so it can be accessed anywhere services can be injected.
