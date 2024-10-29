@@ -11,7 +11,7 @@ public class Test_SignatureHashGenerator
 {
     public SignatureHashGenerator Generator;
 
-    public readonly HmacProviderOptions Options;
+    public readonly HmacSignatureProviderOptions Options;
 
     public Test_SignatureHashGenerator(
         string publicKey, 
@@ -19,7 +19,7 @@ public class Test_SignatureHashGenerator
         SigningHashAlgorithm signingHashAlgorithm
     )
     {
-        Options = new HmacProviderOptions
+        Options = new HmacSignatureProviderOptions
         {
             Algorithms = new Algorithms
             {

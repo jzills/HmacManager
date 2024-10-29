@@ -1,6 +1,5 @@
 using HmacManager.Caching;
 using HmacManager.Caching.Extensions;
-using HmacManager.Components.Extensions;
 using HmacManager.Extensions;
 
 namespace HmacManager.Components;
@@ -51,7 +50,7 @@ public class HmacManager : IHmacManager
         Cache = cache;
     }
 
-    /// <Optionsnheritdoc/>
+    /// <inheritdoc/>
     public async Task<HmacResult> VerifyAsync(HttpRequestMessage request)
     {
         if (request.Headers.TryParseHmac(
@@ -66,9 +65,9 @@ public class HmacManager : IHmacManager
             ))
             {   
                 var hmacVerification = await Factory.CreateAsync(request, incomingHmac);
-                if (hmacVerification.IsExactMatch(incomingHmac))
+                if (hmacVerification is not null && hmacVerification.IsVerified(incomingHmac))
                 {
-                    return ResultFactory.Success(incomingHmac);
+                    return ResultFactory.Success(hmacVerification);
                 }
             }
         }

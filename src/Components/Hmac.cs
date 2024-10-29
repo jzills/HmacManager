@@ -3,7 +3,7 @@ namespace HmacManager.Components;
 /// <summary>
 /// A class representing a single, generated <c>Hmac</c>.
 /// </summary>
-public class Hmac : HmacPartial
+public record Hmac : HmacPartial
 {
     /// <summary>
     /// Represents the Hmac signature generated from concatenating the following values together with a semicolon:<br/>
@@ -43,7 +43,5 @@ public class Hmac : HmacPartial
     /// </value>
     public string Signature { get; set; } = string.Empty;
 
-    internal bool IsVerified(Hmac otherHmac) =>
-        Signature == otherHmac.Signature && 
-            base.IsVerified(otherHmac);
+    internal bool IsVerified(Hmac otherHmac) => Signature == otherHmac.Signature;
 }

@@ -3,7 +3,7 @@ import { SigningContentBuilder } from "../builders/signing-content-builder.js"
 import { computeContentHash } from "../utilities/hmac-utilities.js";
 import { HmacSignature } from "./hmac-signature.js";
 
-export class HmacProvider {
+export class HmacSignatureProvider {
     private readonly publicKey: string;
     private readonly privateKey: string;
     private readonly signedHeaders: string[] = [];

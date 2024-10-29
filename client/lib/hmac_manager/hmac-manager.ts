@@ -1,5 +1,5 @@
 import { HmacResult } from "./components/hmac-result.js"
-import { HmacProvider } from "./components/hmac-provider.js"
+import { HmacSignatureProvider } from "./components/hmac-signature-provider.js"
 import { Hmac } from "./components/hmac.js"
 import { HmacPolicy } from "./components/hmac-policy.js"
 import { HmacScheme } from "./components/hmac-scheme.js"
@@ -8,7 +8,7 @@ import { HmacResultFactory } from "./components/hmac-result-factory.js"
 export class HmacManager {
     private readonly policy: HmacPolicy;
     private readonly scheme: HmacScheme | null;
-    private readonly provider: HmacProvider;
+    private readonly provider: HmacSignatureProvider;
     private readonly resultFactory: HmacResultFactory;
 
     constructor(
@@ -17,7 +17,7 @@ export class HmacManager {
     ) {
         this.policy = policy;
         this.scheme = scheme;
-        this.provider = new HmacProvider(
+        this.provider = new HmacSignatureProvider(
             this.policy.publicKey,
             this.policy.privateKey,
             this.scheme?.headers

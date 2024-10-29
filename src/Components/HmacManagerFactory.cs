@@ -26,7 +26,7 @@ public class HmacManagerFactory : IHmacManagerFactory
     /// Creates a <c>HmacManagerFactory</c> object.
     /// </summary>
     /// <param name="policies"><c>HmacManagerOptions</c></param>
-    /// <param name="caches"><c>IHmacProvider</c></param>
+    /// <param name="caches"><c>IHmacSignatureProvider</c></param>
     /// <returns>A <c>HmacManagerFactory</c> object.</returns>
     public HmacManagerFactory(
         IHmacPolicyCollection policies,
@@ -99,8 +99,8 @@ public class HmacManagerFactory : IHmacManagerFactory
         string? scheme = null
     ) => new HmacResultFactory(policy, scheme);
 
-    private HmacProvider CreateProvider(KeyCredentials keys, Algorithms algorithms, SigningContentBuilder signingContentBuilder) =>
-        new HmacProvider(new HmacProviderOptions 
+    private HmacSignatureProvider CreateProvider(KeyCredentials keys, Algorithms algorithms, SigningContentBuilder signingContentBuilder) =>
+        new HmacSignatureProvider(new HmacSignatureProviderOptions 
         { 
             Keys = keys, 
             Algorithms = algorithms,

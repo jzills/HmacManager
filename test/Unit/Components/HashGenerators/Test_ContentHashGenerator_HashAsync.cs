@@ -11,7 +11,7 @@ public class Test_ContentHashGenerator
 {
     public ContentHashGenerator Generator;
 
-    public readonly HmacProviderOptions Options;
+    public readonly HmacSignatureProviderOptions Options;
 
     public Test_ContentHashGenerator(
         string publicKey, 
@@ -19,7 +19,7 @@ public class Test_ContentHashGenerator
         ContentHashAlgorithm contentHashAlgorithm
     )
     {
-        Options = new HmacProviderOptions
+        Options = new HmacSignatureProviderOptions
         {
             Algorithms = new Algorithms
             {

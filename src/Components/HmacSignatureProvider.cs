@@ -4,11 +4,11 @@ using HmacManager.Mvc.Extensions.Internal;
 
 namespace HmacManager.Components;
 
-public class HmacProvider : IHmacProvider
+public class HmacSignatureProvider : IHmacSignatureProvider
 {
-    protected readonly HmacProviderOptions Options;
+    protected readonly HmacSignatureProviderOptions Options;
 
-    public HmacProvider(HmacProviderOptions options) => Options = options;
+    public HmacSignatureProvider(HmacSignatureProviderOptions options) => Options = options;
 
     public Task<string> ComputeSignatureAsync(string signingContent)
     {

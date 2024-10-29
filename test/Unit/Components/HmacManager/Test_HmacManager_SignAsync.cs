@@ -14,7 +14,7 @@ public class Test_HmacManager_SignAsync
 {
     public readonly HmacManager.Components.HmacManager HmacManager;
     public readonly HmacManagerOptions HmacManagerOptions;
-    public readonly HmacProviderOptions HmacProviderOptions;
+    public readonly HmacSignatureProviderOptions HmacSignatureProviderOptions;
 
     public Test_HmacManager_SignAsync(
         string publicKey, 
@@ -23,7 +23,7 @@ public class Test_HmacManager_SignAsync
         SigningHashAlgorithm signingHashAlgorithm
     )
     {
-        HmacProviderOptions = new HmacProviderOptions
+        HmacSignatureProviderOptions = new HmacSignatureProviderOptions
         {
             Algorithms = new Algorithms
             {
@@ -47,7 +47,7 @@ public class Test_HmacManager_SignAsync
 
         HmacManager = new HmacManager.Components.HmacManager(
             HmacManagerOptions, 
-            new HmacFactory(new HmacProvider(HmacProviderOptions)), 
+            new HmacFactory(new HmacSignatureProvider(HmacSignatureProviderOptions)), 
             new HmacResultFactory(HmacManagerOptions.Policy, HmacManagerOptions.HeaderScheme.Name),
             new NonceMemoryCache(
                 new MemoryCache(Options.Create(new MemoryCacheOptions())), 

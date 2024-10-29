@@ -1,70 +1,50 @@
-using HmacManager.Extensions;
 using HmacManager.Headers;
 
 namespace HmacManager.Components;
 
+/// <summary>
+/// A class responsible for creating hmacs.
+/// </summary> 
 public class HmacFactory : IHmacFactory
 {
-    private readonly IHmacProvider _hmacProvider;
+    /// <summary>
+    /// An implementation of <see cref="IHmacSignatureProvider"/>. 
+    /// </summary>
+    protected readonly IHmacSignatureProvider Provider;
 
-    public HmacFactory(IHmacProvider hmacProvider)
+    /// <summary>
+    /// Creates an instance of <see cref="HmacFactory"/>.
+    /// </summary>
+    /// <param name="provider">The provider to compute hmac signatures.</param>
+    public HmacFactory(IHmacSignatureProvider provider) => Provider = provider;
+
+    /// <summary>
+    /// Creates an hmac from a http request, optionally based on a specified header scheme.
+    /// </summary>
+    /// <param name="request">A http request message.</param>
+    /// <param name="headerScheme">An optional header scheme.</param>
+    /// <returns></returns>
+    public Task<Hmac?> CreateAsync(HttpRequestMessage request, HeaderScheme? headerScheme = null)
     {
-        _hmacProvider = hmacProvider;
+        ArgumentNullException.ThrowIfNull(request, nameof(request));
+
+        return CreateInstance(new HmacBuilder(request, headerScheme));
     }
 
-    public async Task<Hmac?> CreateAsync(HttpRequestMessage request, HeaderScheme? headerScheme = null)
+    /// <summary>
+    /// Creates an hmac from a http request and partial hmac.
+    /// </summary>
+    /// <param name="request">A http request message.</param>
+    /// <param name="hmac">A partial hmac.</param>
+    /// <returns></returns>
+    public Task<Hmac?> CreateAsync(HttpRequestMessage request, HmacPartial? hmac)
     {
-        if (request.Headers.TryParseHeaders(headerScheme, out var headerValues))
-        {   
-            var hmac = new Hmac { HeaderValues = headerValues.ToArray() };
+        ArgumentNullException.ThrowIfNull(hmac, nameof(hmac));
+        ArgumentNullException.ThrowIfNull(request, nameof(request));
 
-            // Generate the formatted signing content based on
-            // the provided hmac values
-            hmac.SigningContent = await _hmacProvider
-                .ComputeSigningContentAsync(request, 
-                    hmac.DateRequested, 
-                    hmac.Nonce,
-                    hmac.HeaderValues
-                );
-
-            // Compute the signature against the signing content
-            hmac.Signature = await _hmacProvider
-                .ComputeSignatureAsync(hmac.SigningContent);
-
-            return hmac;
-        }
-        else
-        {
-            return null;
-        }
+        return CreateInstance(new HmacBuilder(request, hmac));
     }
 
-    public async Task<Hmac?> CreateAsync(HttpRequestMessage request, HmacPartial? hmac)
-    {
-        if (hmac is not null)
-        {
-            hmac.SigningContent = await _hmacProvider
-                .ComputeSigningContentAsync(request, 
-                    hmac.DateRequested, 
-                    hmac.Nonce,
-                    hmac.HeaderValues
-                );
-
-            var signature = await _hmacProvider
-                .ComputeSignatureAsync(hmac.SigningContent);
-
-            return new Hmac
-            {
-                DateRequested = hmac.DateRequested,
-                HeaderValues = hmac.HeaderValues,
-                Nonce = hmac.Nonce,
-                Signature = signature,
-                SigningContent = hmac.SigningContent
-            };
-        }
-        else
-        {
-            return null;
-        }
-    }
+    private Task<Hmac?> CreateInstance(HmacBuilder builder) => 
+        builder.WithProvider(Provider).BuildAsync();
 }
