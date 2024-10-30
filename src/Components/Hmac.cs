@@ -41,7 +41,7 @@ public record Hmac : HmacPartial
     /// <value>
     /// The complete, hashed signature added to the authorization header based on the above.
     /// </value>
-    public string Signature { get; set; } = string.Empty;
+    public string? Signature { get; init; }
 
     internal bool IsVerified(Hmac otherHmac) => Signature == otherHmac.Signature;
 }

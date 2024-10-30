@@ -1,4 +1,5 @@
 using HmacManager.Caching;
+using HmacManager.Exceptions;
 using HmacManager.Policies;
 
 namespace HmacManager.Mvc.Configuration;
@@ -26,9 +27,9 @@ internal class HmacPolicyConfigurationBuilder : HmacPolicyBuilder
                 UseDistributedCache(policy.Nonce.MaxAgeInSeconds);
                 break;
             default:
-                throw new ArgumentException($"The specified \"CacheType\" of {Enum.GetName(policy.Nonce.CacheType)} is not supported.");
+                throw new NonceCacheTypeNotSupportedException($"The specified \"CacheType\" of {Enum.GetName(policy.Nonce.CacheType)} is not supported.");
         }
-
+ 
         if (policy.HeaderSchemes?.Any() ?? false)
         {
             foreach (var headerScheme in policy.HeaderSchemes)

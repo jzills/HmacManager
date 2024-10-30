@@ -45,6 +45,5 @@ public class HmacFactory : IHmacFactory
         return CreateInstance(new HmacBuilder(request, hmac));
     }
 
-    private Task<Hmac?> CreateInstance(HmacBuilder builder) => 
-        builder.WithProvider(Provider).BuildAsync();
+    private Task<Hmac?> CreateInstance(HmacBuilder builder) => builder.BuildAsync(Provider);
 }

@@ -21,7 +21,7 @@ public class Test_HttpRequestHeaderExtensions_TryParseHmac : TestServiceCollecti
 
         var hasHeaderValues = request.Headers.TryParseHmac(headerScheme, 30, out var hmac);
         Assert.IsTrue(hasHeaderValues);
-        Assert.That(signingResult.Hmac!.HeaderValues.Length, Is.EqualTo(hmac.HeaderValues.Length));
+        Assert.That(signingResult.Hmac!.HeaderValues.Count, Is.EqualTo(hmac.HeaderValues.Count));
 
         foreach (var (signingHeaderValue, headerValue) in 
             signingResult.Hmac!.HeaderValues.Zip(hmac.HeaderValues))

@@ -1,9 +1,16 @@
 namespace HmacManager.Exceptions;
 
-internal class HmacAuthenticationException : Exception
+/// <summary>
+/// A class representing an exception that occurs due to authentication issues.
+/// </summary>
+public class HmacAuthenticationException : Exception
 {
-    public HmacAuthenticationException() 
-        : base("Hmac authentication failed with the current manager configuration.")
+    /// <summary>
+    /// Creates an instance of <c>HmacAuthenticationException</c>.
+    /// </summary>
+    /// <param name="message">An optional error message.</param>
+    public HmacAuthenticationException(string? message = null) 
+        : base(message ?? "Hmac authentication failed with the current manager configuration.")
     {
     }
 }

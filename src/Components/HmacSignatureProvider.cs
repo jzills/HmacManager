@@ -21,7 +21,7 @@ public class HmacSignatureProvider : IHmacSignatureProvider
         HttpRequestMessage request, 
         DateTimeOffset dateRequested, 
         Guid nonce,
-        HeaderValue[]? headerValues = null
+        IReadOnlyCollection<HeaderValue>? headerValues = null
     )
     {
         var builder = Options.SigningContentBuilder.CreateBuilder()

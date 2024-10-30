@@ -2,15 +2,24 @@ using HmacManager.Components;
 
 namespace HmacManager.Exceptions;
 
-internal class HmacSigningException : Exception
+/// <summary>
+/// A class representing an exception that occurs due to signing issues.
+/// </summary>
+public class HmacSigningException : Exception
 {
-    public readonly HmacResult SigningResult;
-    public readonly HttpRequestMessage Request;
+    /// <summary>
+    /// An instance of <c>HmacResult</c> representing the signing attempt.
+    /// </summary> 
+    public readonly HmacResult Result;
 
-    public HmacSigningException(HmacResult signingResult, HttpRequestMessage request) 
-        : base("The hmac signing result indicated an error.")
+    /// <summary>
+    /// Creates an instance of <c>HmacSigningException</c>.
+    /// </summary>
+    /// <param name="result">A <c>HmacResult</c> representing the signing attempt.</param> 
+    /// <param name="message">An optional error message.</param>
+    public HmacSigningException(HmacResult result, string? message = null) 
+        : base(message ?? "The hmac signing result indicated an error.")
     {
-        SigningResult = signingResult;
-        Request = request;
+        Result = result;
     }
 }

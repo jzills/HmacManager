@@ -1,17 +1,3 @@
 namespace HmacManager.Headers;
 
-public class HeaderValue : Header
-{
-    public HeaderValue(
-        string name, 
-        string claimType, 
-        string value
-    )
-    {
-        Name = name;
-        ClaimType = claimType;
-        Value = value;
-    }
-
-    public readonly string Value;
-}
+public record HeaderValue(string Name, string ClaimType, string Value) : Header(Name, ClaimType);

@@ -27,6 +27,6 @@ public interface IHmacSignatureProvider
         HttpRequestMessage request, 
         DateTimeOffset dateRequested, 
         Guid nonce,
-        HeaderValue[]? headerValues = null
+        IReadOnlyCollection<HeaderValue>? headerValues = null
     );
 }

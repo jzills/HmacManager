@@ -23,11 +23,11 @@ public record HmacPartial
     /// Represents the request content hash based on the configured HmacManager.
     /// </summary>
     /// <value>The hashed request content, if exists, otherwise null.</value>
-    public string? SigningContent { get; set; }
+    public string? SigningContent { get; init; }
 
     /// <summary>
     /// Represents custom header values configured on a per scheme basis. If defined, these become part of the signature.
     /// </summary>
     /// <value>An array of header values, empty if there is no scheme defined.</value>
-    public HeaderValue[] HeaderValues { get; set; } = [];
+    public IReadOnlyCollection<HeaderValue> HeaderValues { get; init; } = [];
 }

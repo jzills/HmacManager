@@ -9,9 +9,9 @@ public class Test_HeaderCollection
     public void Test()
     {
         var headers = new HeaderCollection();
-        Assert.Throws<ArgumentException>(() => headers.Add(new Header { Name = "Header_1", ClaimType = string.Empty }));
-        Assert.Throws<ArgumentException>(() => headers.Add(new Header { Name = "Header_1", ClaimType = "          " }));
-        Assert.Throws<ArgumentException>(() => headers.Add(new Header { Name = "Header_1", ClaimType = default! }));
-        Assert.Throws<ArgumentException>(() => headers.Add(new Header { Name = "Header_1", ClaimType = null! }));
+        Assert.DoesNotThrow(() => headers.Add(new Header("Header_1", string.Empty)));
+        Assert.DoesNotThrow(() => headers.Add(new Header("Header_1", "          ")));
+        Assert.DoesNotThrow(() => headers.Add(new Header("Header_1", default!)));
+        Assert.DoesNotThrow(() => headers.Add(new Header("Header_1", null!)));
     }
 }

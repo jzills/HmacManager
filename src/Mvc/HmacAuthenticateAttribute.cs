@@ -1,3 +1,4 @@
+using HmacManager.Mvc.Extensions.Internal;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,8 +21,7 @@ public class HmacAuthenticateAttribute : Attribute, IAuthorizationRequirement, I
             {
                 if (authenticateResult.Succeeded)
                 {
-                    if (authenticateResult.Properties.Items.TryGetValue(HmacAuthenticationDefaults.Properties.PolicyProperty, out var policy) &&
-                        authenticateResult.Properties.Items.TryGetValue(HmacAuthenticationDefaults.Properties.SchemeProperty, out var scheme))
+                    if (authenticateResult.Properties.TryGetHmacProperties(out var policy, out var scheme))
                     {
                         if (!IsMatch(policy, scheme))
                         {

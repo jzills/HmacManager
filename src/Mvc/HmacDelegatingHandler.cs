@@ -27,7 +27,7 @@ public class HmacDelegatingHandler : DelegatingHandler
         }
         else
         {
-            throw new HmacSigningException(signingResult, request);  
+            throw new HmacSigningException(signingResult);  
         }
     }
 }

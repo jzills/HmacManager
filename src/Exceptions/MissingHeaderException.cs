@@ -1,31 +1,17 @@
-using HmacManager.Headers;
-
 namespace HmacManager.Exceptions;
 
-internal class MissingHeaderException : Exception
+/// <summary>
+/// A class representing an exception that occurs when attempting to authenticate against
+/// a specific scheme but required headers are missing from the request.
+/// </summary>
+public class MissingHeaderException : Exception
 {
-    public MissingHeaderException() 
-        : base("One or more headers defined in HmacManagerOptions is missing.")
+    /// <summary>
+    /// Creates an instance of <c>MissingHeaderException</c>.
+    /// </summary>
+    /// <param name="message">An optional error message.</param>
+    public MissingHeaderException(string? message = null) 
+        : base(message ?? "One or more headers defined in HmacManagerOptions is missing.")
     {
-    }
-
-    public static void ThrowIfMissing(
-        string[] requiredHeaders, 
-        Header[]? headersToSign
-    )
-    {
-        if (headersToSign is not null)
-        {
-            var hasMissingHeaders = 
-                requiredHeaders
-                    .Except(headersToSign
-                    .Select(header => header.Name))
-                    .Any();
-
-            if (hasMissingHeaders)
-            {
-                throw new MissingHeaderException();
-            }
-        }
     }
 }

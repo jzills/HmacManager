@@ -8,6 +8,6 @@ public class SigningContentContext
     public Guid? PublicKey { get; set; }
     public DateTimeOffset? DateRequested { get; set; }
     public Guid? Nonce { get; set; }
-    public HeaderValue[] HeaderValues { get; set; } = [];
+    public IReadOnlyCollection<HeaderValue> HeaderValues { get; set; } = [];
     public string? ContentHash { get; set; }
 }

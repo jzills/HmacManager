@@ -41,7 +41,8 @@ internal static class Utf8JsonReaderExtensions
 
     public static bool TryGetHeader(this ref Utf8JsonReader reader, out Header value)
     {
-        value = new Header();
+        string? name = null;
+        string? claimType = null;
 
         if (reader.TokenType is JsonTokenType.StartObject)
         {
@@ -54,11 +55,11 @@ internal static class Utf8JsonReaderExtensions
 
                     if (propertyName == nameof(Header.Name))
                     {
-                        value.Name = reader.GetString() ?? string.Empty;
+                        name = reader.GetString() ?? string.Empty;
                     }
                     else if (propertyName == nameof(Header.ClaimType))
                     {
-                        value.ClaimType = reader.GetString() ?? string.Empty;
+                        claimType = reader.GetString() ?? string.Empty;
                     }
                 }
                 else if (reader.TokenType is not JsonTokenType.EndObject)
@@ -67,10 +68,12 @@ internal static class Utf8JsonReaderExtensions
                 }
             }
 
+            value = new Header(name, claimType);
             return true;
         }
         else
         {
+            value = new Header(name, claimType);
             return false;
         }
     }

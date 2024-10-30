@@ -27,8 +27,7 @@ public class HeaderScheme
     /// will be required for authentication to succeed.
     /// </summary>
     /// <param name="name">The name of the header on the <c>HttpRequestMessage</c>.</param>
-    public void AddHeader(string name) =>
-        AddHeader(name, name);
+    public void AddHeader(string name) => AddHeader(name, name);
 
     /// <summary>
     /// Adds a specified header name to the <c>HeaderScheme</c>. This header
@@ -36,16 +35,5 @@ public class HeaderScheme
     /// </summary>
     /// <param name="name">The name of the header on the HTTP request.</param>
     /// <param name="claimType">The name of the claim that the header value should be converted to.</param>
-    public void AddHeader(string name, string claimType)
-    {
-        var value = new Header { Name = name, ClaimType = claimType };
-
-        // Set defaults for claimType if missing
-        if (string.IsNullOrWhiteSpace(claimType))
-        {
-            value.ClaimType = name;
-        }
-        
-        _headers.Add(value);
-    }
+    public void AddHeader(string name, string claimType) => _headers.Add(new Header(name, claimType));
 }

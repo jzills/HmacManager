@@ -16,6 +16,8 @@ public class SigningContentBuilder : ISigningContentBuilder
 
     internal SigningContentBuilder WithRequest(HttpRequestMessage request)
     {
+        ArgumentNullException.ThrowIfNull(request, nameof(request));
+
         Context.Request = request;
         return this;
     }  
@@ -38,7 +40,7 @@ public class SigningContentBuilder : ISigningContentBuilder
         return this;
     }
 
-    internal SigningContentBuilder WithHeaderValues(HeaderValue[] headerValues)
+    internal SigningContentBuilder WithHeaderValues(IReadOnlyCollection<HeaderValue> headerValues)
     {
         Context.HeaderValues = headerValues;
         return this;
@@ -54,8 +56,6 @@ public class SigningContentBuilder : ISigningContentBuilder
 
     public virtual string Build()
     {
-        ArgumentNullException.ThrowIfNull(Context.Request, nameof(Context.Request));
-
         Builder.Append($"{Context.Request.Method}");
 
         if (Context.Request.RequestUri is not null)
