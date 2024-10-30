@@ -16,7 +16,7 @@ Register [HmacManager](../../README.md) through the [AddHmac](/src/Mvc/Extension
             {
                 policy.UsePublicKey(...);
                 policy.UsePrivateKey(...);
-                policy.UseMemoryCache(TimeSpan.FromSeconds(30));
+                policy.UseMemoryCache(30);
                 policy.AddScheme("RequireAccountAndEmail", scheme =>
                 {
                     scheme.AddHeader("X-Account");
@@ -43,7 +43,7 @@ Register [HmacManager](../../README.md) through the [AddHmacManager](/src/Mvc/Ex
             {
                 policy.UsePublicKey(...);
                 policy.UsePrivateKey(...);
-                policy.UseMemoryCache(TimeSpan.FromSeconds(30));
+                policy.UseMemoryCache(30);
                 policy.AddScheme("RequireAccountAndEmail", scheme =>
                 {
                     scheme.AddHeader("X-Account");

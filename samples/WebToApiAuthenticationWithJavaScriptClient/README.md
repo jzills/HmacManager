@@ -1,12 +1,4 @@
 
 # WebToApiAuthenticationWithJavaScriptClient
 
-TODO
-
-## Api
-
-TODO
-
-## Web
-
-TODO
+We're working here
