@@ -2,11 +2,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using HmacManager.Caching;
 using HmacManager.Common;
 using HmacManager.Components;
-using HmacManager.Policies;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace HmacManager.Mvc.Extensions.Internal;
 
@@ -15,18 +14,29 @@ internal static class IServiceCollectionExtensions
     internal static IServiceCollection AddHmacManager(
         this IServiceCollection services,
         HmacManagerOptions options
-    ) =>
-        services
+    ) => services
             .AddHttpContextAccessor()
+            .AddPolicyCollection(options.GetPolicyCollectionOptions())
             .AddCacheCollection()
-            .AddPolicyCollection(options.GetPolicies())
             .AddFactory()
             .AddSingleton<IAuthorizationHandler, HmacAuthorizationHandler>(); // Add AuthorizationHandler for dynamic policies
 
     internal static IServiceCollection AddPolicyCollection(
         this IServiceCollection services, 
-        HmacPolicyCollection policies
-    ) => services.AddSingleton<IHmacPolicyCollection,  HmacPolicyCollection>(_ => policies);
+        HmacPolicyCollectionOptions options
+    )
+    {
+        if (options.IsScopedPoliciesEnabled)
+        {
+            services.AddScoped(options.PoliciesAccessor);
+        }
+        else
+        {
+            services.AddSingleton(options.Policies);
+        }
+
+        return services;
+    }
 
     internal static IServiceCollection AddCacheCollection(this IServiceCollection services)
     {

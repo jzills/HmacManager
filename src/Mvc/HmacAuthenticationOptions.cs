@@ -15,7 +15,7 @@ public class HmacAuthenticationOptions : AuthenticationSchemeOptions
     {
     }
 
-    internal HmacAuthenticationOptions(HmacPolicyCollection policies) =>
+    internal HmacAuthenticationOptions(IHmacPolicyCollection policies) =>
         Options = new HmacManagerOptions(policies);
 
     /// <summary>
@@ -28,6 +28,9 @@ public class HmacAuthenticationOptions : AuthenticationSchemeOptions
     /// </summary>
     public new HmacEvents Events { get; set; } = new();
 
+    public void EnableScopedPolicies(Func<IServiceProvider, IHmacPolicyCollection> policiesAccessor) =>
+        Options.EnableScopedPolicies(policiesAccessor);
+
     /// <summary>
     /// Adds an <c>HmacPolicy</c> to the <c>HmacPolicyCollection</c>
     /// with the specified name and configuration defined by the <c>HmacPolicyBuilder</c> action.
@@ -36,9 +39,6 @@ public class HmacAuthenticationOptions : AuthenticationSchemeOptions
     /// <param name="configurePolicy">The configuration action for <c>HmacPolicyBuilder</c>.</param>
     public void AddPolicy(string name, Action<HmacPolicyBuilder> configurePolicy) => 
         Options.AddPolicy(name, configurePolicy);
-
-    internal HmacPolicyCollection GetPolicies() => 
-        Options.GetPolicies();
 
     internal HmacManagerOptions GetOptions() => Options;
 }

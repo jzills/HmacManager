@@ -1,5 +1,6 @@
 using HmacManager.Components;
 using HmacManager.Mvc.Extensions;
+using HmacManager.Policies;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Unit.Tests;

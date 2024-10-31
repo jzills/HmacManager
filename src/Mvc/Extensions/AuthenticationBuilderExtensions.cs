@@ -87,7 +87,7 @@ public static class AuthenticationBuilderExtensions
 
     internal static void AddHmacScheme(
         this AuthenticationBuilder builder,
-        HmacPolicyCollection policies,
+        IHmacPolicyCollection policies,
         HmacEvents? events = null
     ) => builder.AddHmacScheme(_ => new HmacAuthenticationOptions(policies) 
             { Events = events ?? new HmacEvents() });

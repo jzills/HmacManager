@@ -1,5 +1,4 @@
 using System.Security.Claims;
-using System.Text;
 using HmacManager.Mvc;
 using HmacManager.Mvc.Extensions;
 
