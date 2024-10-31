@@ -26,7 +26,7 @@ public class Test_HmacEvents_Defaults
             OnAuthenticationFailureAsync = (_, _) => Task.FromResult(new Exception("Test"))
         };
 
-        var error = await events.OnAuthenticationFailureAsync(new DefaultHttpContext(), new HmacResult("Policy", "Scheme"));
+        var error = await events.OnAuthenticationFailureAsync(new DefaultHttpContext(), new HmacResult("Policy", "Scheme", true, new Hmac()));
         Assert.That(error.Message, Is.EqualTo("Test"));
         Assert.That(events.OnAuthenticationSuccessAsync, Is.EqualTo(HmacEventsDefaults.OnAuthenticationSuccessAsync));
         Assert.That(events.OnValidateKeysAsync, Is.EqualTo(HmacEventsDefaults.OnValidateKeysAsync));
@@ -40,7 +40,7 @@ public class Test_HmacEvents_Defaults
             OnAuthenticationSuccessAsync = (_, _) => Task.FromResult<Claim[]>([new Claim("Test", "Value")])
         };
 
-        var claims = await events.OnAuthenticationSuccessAsync(new DefaultHttpContext(), new HmacResult("Policy", "Scheme"));
+        var claims = await events.OnAuthenticationSuccessAsync(new DefaultHttpContext(), new HmacResult("Policy", "Scheme", true, new Hmac()));
         Assert.DoesNotThrow(() => claims.First(claim => claim.Type == "Test" && claim.Value == "Value"));
         Assert.That(events.OnAuthenticationFailureAsync, Is.EqualTo(HmacEventsDefaults.OnAuthenticationFailureAsync));
         Assert.That(events.OnValidateKeysAsync, Is.EqualTo(HmacEventsDefaults.OnValidateKeysAsync));
