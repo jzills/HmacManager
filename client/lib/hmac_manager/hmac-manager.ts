@@ -4,13 +4,23 @@ import { Hmac } from "./components/hmac.js"
 import { HmacPolicy } from "./components/hmac-policy.js"
 import { HmacScheme } from "./components/hmac-scheme.js"
 import { HmacResultFactory } from "./components/hmac-result-factory.js"
+import { HmacAuthenticationDefaults } from "./hmac-authentication-defaults.js"
 
+/**
+ * HmacManager is responsible for handling HMAC signing of requests.
+ * Initializes the required policy, scheme, provider, and result factory to generate signed requests.
+ */
 export class HmacManager {
     private readonly policy: HmacPolicy;
     private readonly scheme: HmacScheme | null;
     private readonly provider: HmacSignatureProvider;
     private readonly resultFactory: HmacResultFactory;
 
+    /**
+     * Constructs an HmacManager instance.
+     * @param policy - The policy defining the public and private keys for HMAC signing.
+     * @param scheme - The scheme specifying headers required for HMAC (optional).
+     */
     constructor(
         policy: HmacPolicy,
         scheme: HmacScheme | null = null
@@ -29,6 +39,11 @@ export class HmacManager {
         );
     }
 
+    /**
+     * Signs an HTTP request with HMAC headers.
+     * @param request - The HTTP request to sign.
+     * @returns A Promise that resolves to an HmacResult indicating success or failure.
+     */
     sign = async (request: Request): Promise<HmacResult> => {
         try {
             const {
@@ -54,6 +69,11 @@ export class HmacManager {
         }
     }
 
+    /**
+     * Computes the signature components needed for HMAC authentication.
+     * @param request - The HTTP request to compute the signature for.
+     * @returns A Promise with dateRequested, nonce, signingContent, and signature.
+     */
     private computeSignature = async (request: Request) => {
         const dateRequested = new Date();
         const nonce = crypto.randomUUID();
@@ -65,16 +85,21 @@ export class HmacManager {
         return { dateRequested, nonce, signingContent, signature };
     }
 
+    /**
+     * Adds the required HMAC headers to an HTTP request.
+     * @param headers - The headers of the HTTP request.
+     * @param hmac - The HMAC object containing the signature data.
+     */
     private addRequiredHeaders(headers: Headers, hmac: Hmac): void {
-        headers.append("Hmac-Policy", `${this.policy.name}`);
+        headers.append(HmacAuthenticationDefaults.Headers.Policy, `${this.policy.name}`);
         
         if (this.scheme?.name) {
             // TODO: Error if headers are not present from the scheme
-            headers.append("Hmac-Scheme", `${this.scheme.name}`);
+            headers.append(HmacAuthenticationDefaults.Headers.Scheme, `${this.scheme.name}`);
         }
 
-        headers.append("Hmac-Date-Requested", `${hmac.dateRequested.getTime()}`);
-        headers.append("Hmac-Nonce", `${hmac.nonce}`);
-        headers.append("Authorization", `Hmac ${hmac.signature}`);
+        headers.append(HmacAuthenticationDefaults.Headers.DateRequested, `${hmac.dateRequested.getTime()}`);
+        headers.append(HmacAuthenticationDefaults.Headers.Nonce, `${hmac.nonce}`);
+        headers.append("Authorization", `${HmacAuthenticationDefaults.AuthenticationScheme} ${hmac.signature}`);
     }
 }
