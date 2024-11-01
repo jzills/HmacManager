@@ -1,4 +1,5 @@
 using System.Net.Http.Headers;
+using System.Text;
 using HmacManager.Components;
 using HmacManager.Headers;
 using HmacManager.Mvc;

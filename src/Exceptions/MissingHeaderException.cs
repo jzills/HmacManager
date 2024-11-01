@@ -11,7 +11,7 @@ public class MissingHeaderException : Exception
     /// </summary>
     /// <param name="message">An optional error message.</param>
     public MissingHeaderException(string? message = null) 
-        : base(message ?? "One or more headers defined in HmacManagerOptions is missing.")
+        : base(message ?? "One or more required headers are missing.")
     {
     }
 }

@@ -45,6 +45,8 @@ public static class HmacAuthenticationDefaults
         /// <c>IHmacManager</c> when signing and verifying requests.
         /// </summary>
         public const string DateRequested = "Hmac-Date-Requested";
+
+        public const string HmacOptions = "Hmac-Options";
     }
 
     internal class Properties
