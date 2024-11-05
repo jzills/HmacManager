@@ -12,10 +12,18 @@ namespace HmacManager.Components;
 public class HmacOptionsHeaderBuilder : HmacHeaderBuilder
 {
     /// <inheritdoc/>
+    public HmacOptionsHeaderBuilder()
+    {
+    }
+
+    /// <inheritdoc/>
     public HmacOptionsHeaderBuilder(HmacManagerOptions options, Hmac hmac) 
         : base(options, hmac)
     {
     }
+
+    /// <inheritdoc/>
+    public override HmacHeaderBuilder CreateBuilder(HmacManagerOptions options, Hmac hmac) => new HmacOptionsHeaderBuilder(options, hmac);
 
     /// <inheritdoc/>
     public override IReadOnlyCollection<HeaderValue> Build()
@@ -24,7 +32,7 @@ public class HmacOptionsHeaderBuilder : HmacHeaderBuilder
         {
             var headerOptionsValueFormatted = string.Join("&", NonEmptyHeaderValues.Select(element => element.FormatAsEquality()));
             var headerOptionsValue = Convert.ToBase64String(Encoding.UTF8.GetBytes(headerOptionsValueFormatted));
-            return [new HeaderValue(HmacAuthenticationDefaults.Headers.HmacOptions, headerOptionsValue)];
+            return [new HeaderValue(HmacAuthenticationDefaults.Headers.Options, headerOptionsValue)];
         }
         else
         {

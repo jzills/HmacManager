@@ -11,15 +11,15 @@ public class Test_Memory_ReplayAttack : TestServiceCollection
 
         var signingResult = await hmacManager.SignAsync(request);
         Assert.IsTrue(signingResult.IsSuccess);
-        Assert.IsTrue(signingResult.Policy == "Policy_Memory");
+        Assert.IsTrue(signingResult.Hmac?.Policy == "Policy_Memory");
         Assert.IsTrue(signingResult.Hmac!.HeaderValues!.Count() == 0);
-        Assert.IsNull(signingResult.HeaderScheme);
+        Assert.IsNull(signingResult.Hmac?.HeaderScheme);
 
         var verificationResult = await hmacManager.VerifyAsync(request);
         Assert.IsTrue(verificationResult.IsSuccess);
-        Assert.IsTrue(verificationResult.Policy == "Policy_Memory");
+        Assert.IsTrue(verificationResult.Hmac?.Policy == "Policy_Memory");
         Assert.IsTrue(verificationResult.Hmac!.HeaderValues!.Count() == 0);
-        Assert.IsNull(verificationResult.HeaderScheme);
+        Assert.IsNull(verificationResult.Hmac?.HeaderScheme);
 
         var replayVerificationResult = await hmacManager.VerifyAsync(request);
         Assert.IsFalse(replayVerificationResult.IsSuccess);

@@ -50,14 +50,14 @@ public class Test_AddHmac_OnePolicy_ManySchemes : TestBase
 
         var signingResult = await hmacManager.SignAsync(request);
         Assert.IsTrue(signingResult.IsSuccess);
-        Assert.IsTrue(signingResult.Policy == "MyPolicy");
+        Assert.IsTrue(signingResult.Hmac?.Policy == "MyPolicy");
         Assert.IsTrue(signingResult.Hmac?.HeaderValues?.Count() == 0);
-        Assert.IsNull(signingResult.HeaderScheme);
+        Assert.IsNull(signingResult.Hmac?.HeaderScheme);
 
         var verificationResult = await hmacManager.VerifyAsync(request);
         Assert.IsTrue(verificationResult.IsSuccess);
-        Assert.IsTrue(verificationResult.Policy == "MyPolicy");
+        Assert.IsTrue(verificationResult.Hmac?.Policy == "MyPolicy");
         Assert.IsTrue(verificationResult.Hmac?.HeaderValues?.Count() == 0);
-        Assert.IsNull(verificationResult.HeaderScheme);
+        Assert.IsNull(verificationResult.Hmac?.HeaderScheme);
     }
 }

@@ -14,12 +14,19 @@ internal static class IServiceCollectionExtensions
     internal static IServiceCollection AddHmacManager(
         this IServiceCollection services,
         HmacManagerOptions options
-    ) => services
+    )
+    {
+        services.AddScoped<IHmacHeaderParserFactory, HmacHeaderParserFactory>(_ => 
+            new HmacHeaderParserFactory(options.IsConsolidatedHeadersEnabled));
+
+        return services
             .AddHttpContextAccessor()
             .AddPolicyCollection(options.GetPolicyCollectionOptions())
             .AddCacheCollection()
-            .AddFactory()
+            .AddFactory(options.IsConsolidatedHeadersEnabled)
+            .AddScoped<IHmacAuthenticationContextProvider, HmacAuthenticationContextProvider>()
             .AddSingleton<IAuthorizationHandler, HmacAuthorizationHandler>(); // Add AuthorizationHandler for dynamic policies
+    }
 
     internal static IServiceCollection AddPolicyCollection(
         this IServiceCollection services, 
@@ -43,13 +50,15 @@ internal static class IServiceCollectionExtensions
         services.TryAddSingleton<IMemoryCache, MemoryCache>();
         services.TryAddSingleton<IDistributedCache, MemoryDistributedCache>();
 
-        return services
-            .AddScoped<IComponentCollection<INonceCache>, NonceCacheCollection>(GetCacheCollection);
+        return services.AddScoped<IComponentCollection<INonceCache>, NonceCacheCollection>(GetCacheCollection);
     }
 
     internal static IServiceCollection AddFactory(
-        this IServiceCollection services
-    ) => services.AddScoped<IHmacManagerFactory, HmacManagerFactory>();
+        this IServiceCollection services,
+        bool isConsolidatedHeadersEnabled
+    ) => services
+        .AddScoped(_ => new HmacManagerFactoryOptions { IsConsolidatedHeadersEnabled = isConsolidatedHeadersEnabled })
+        .AddScoped<IHmacManagerFactory, HmacManagerFactory>();
 
     private static NonceCacheCollection GetCacheCollection(
         IServiceProvider serviceProvider

@@ -26,6 +26,7 @@ public class Test_HmacAuthenticationHandler_WithDelegatingHandler
                 services.AddMemoryCache();
                 services.AddAuthentication().AddHmac(options =>
                 {
+                    options.EnableConsolidatedHeaders();
                     options.AddPolicy("MyPolicy", policy =>
                     {
                         policy.UsePublicKey(Guid.Parse("eb8e9dae-08bd-4883-80fe-1d9a103b30b5"));

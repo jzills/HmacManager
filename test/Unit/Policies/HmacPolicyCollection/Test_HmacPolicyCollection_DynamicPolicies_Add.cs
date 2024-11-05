@@ -88,7 +88,7 @@ public class Test_HmacPolicyCollection_DynamicPolicies_Add : TestServiceCollecti
         var signingResult = await hmacManager.SignAsync(request);
 
         Assert.IsTrue(signingResult.IsSuccess);
-        Assert.IsTrue(signingResult.Policy == "Cool_Dynamic_Policy");
-        Assert.IsTrue(signingResult.HeaderScheme == "Cool_Dynamic_Scheme");
+        Assert.IsTrue(signingResult.Hmac?.Policy == "Cool_Dynamic_Policy");
+        Assert.IsTrue(signingResult.Hmac?.HeaderScheme == "Cool_Dynamic_Scheme");
     }
 }

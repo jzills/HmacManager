@@ -1,5 +1,4 @@
 using System.Net.Http.Headers;
-using System.Text;
 using HmacManager.Components;
 using HmacManager.Headers;
 using HmacManager.Mvc;
@@ -8,71 +7,12 @@ namespace HmacManager.Extensions;
 
 internal static class HttpRequestHeadersExtensions
 {
-    public static void AddSignature(
-        this HttpRequestHeaders headers, 
-        string signature,
-        string policy,
-        string? scheme = null
-    )
+    public static void AddRange(this HttpRequestHeaders source, IReadOnlyCollection<HeaderValue> headers)
     {
-        ArgumentException.ThrowIfNullOrEmpty(signature, nameof(signature));
-        ArgumentException.ThrowIfNullOrEmpty(policy, nameof(policy));
-
-        headers.Authorization = new AuthenticationHeaderValue(
-            HmacAuthenticationDefaults.AuthenticationScheme, 
-            signature
-        );
-
-        headers.Add(HmacAuthenticationDefaults.Headers.Policy, policy);
-
-        if (!string.IsNullOrWhiteSpace(scheme))
+        foreach (var header in headers)
         {
-            headers.Add(HmacAuthenticationDefaults.Headers.Scheme, scheme);
+            source.Add(header.Name, header.Value);
         }
-    }
-
-    public static void AddDateRequested(
-        this HttpRequestHeaders headers, 
-        DateTimeOffset dateRequested
-    )
-    {
-        headers.Add(HmacAuthenticationDefaults.Headers.DateRequested, dateRequested.ToUnixTimeMilliseconds().ToString());
-    }
-
-    public static void AddNonce(
-        this HttpRequestHeaders headers, 
-        Guid nonce
-    ) => headers.Add(HmacAuthenticationDefaults.Headers.Nonce, nonce.ToString());
-
-    public static void AddSignedHeaders(
-        this HttpRequestHeaders headers, 
-        HeaderValue[]? signedHeaders
-    )
-    {
-        if (signedHeaders is not null)
-        {
-            foreach (var signedHeader in signedHeaders)
-            {
-                headers.Add(signedHeader.Name!, signedHeader.Value);
-            }
-        }
-    }
-
-    public static void AddRequiredHeaders(
-        this HttpRequestHeaders headers, 
-        Hmac hmac,
-        string policy,
-        string? headerScheme = null
-    )
-    {
-        // Add required headers to the request
-        headers.AddNonce(hmac.Nonce);
-        headers.AddDateRequested(hmac.DateRequested);
-        headers.AddSignature(
-            hmac.Signature, 
-            policy, 
-            headerScheme
-        );
     }
 
     public static bool TryParseHeaders(
@@ -120,16 +60,26 @@ internal static class HttpRequestHeadersExtensions
         out Hmac value
     )
     {
-        var hasAuthorizationHeader  = headers.TryGetAuthorizationHeader(out var signature);
-        var hasDateRequestedHeader  = headers.TryGetDateRequestedHeader(out var dateRequested);
-        var hasNonceHeader          = headers.TryGetNonceHeader(out var nonce);
-        
+        var parser = new HmacHeaderParser(headers.ToDictionary(x => x.Key, x => x.Value.FirstOrDefault()));
+        if (headers.TryGetHmacOptionsHeader(out var hmacOptions))
+        {
+            parser = new HmacOptionsHeaderParser(headers.ToDictionary(x => x.Key, x => x.Value.FirstOrDefault()));
+        }
+
+        var signature = parser.GetAuthorization();
+        var dateRequested = parser.GetDateRequested();
+        var nonce = parser.GetNonce();
+        var policy = parser.GetPolicy();
+        var scheme = parser.GetScheme();
+
         if (dateRequested.HasValidDateRequested(maxAgeInSeconds))
         {
             if (headerScheme is null)
             {
                 value = new Hmac
                 {
+                    Policy = policy,
+                    HeaderScheme = scheme,
                     Signature = signature ?? string.Empty,
                     DateRequested = dateRequested,
                     Nonce = nonce,
@@ -140,6 +90,8 @@ internal static class HttpRequestHeadersExtensions
             {
                 value = new Hmac
                 {
+                    Policy = policy,
+                    HeaderScheme = scheme,
                     Signature = signature ?? string.Empty,
                     DateRequested = dateRequested,
                     Nonce = nonce,
@@ -156,61 +108,21 @@ internal static class HttpRequestHeadersExtensions
             value = default!;
         }
 
-        return 
-            hasAuthorizationHeader && 
-            hasDateRequestedHeader && 
-            hasNonceHeader &&
-            value is not null;
+        return value is not null;
     }
 
-    public static bool TryGetAuthorizationHeader(
+    public static bool TryGetHmacOptionsHeader(
         this HttpRequestHeaders headers, 
-        out string? signature
+        out string? value
     )
     {
-        var hasValidAuthorizationHeader = 
-            headers.Authorization is not null && 
-            headers.Authorization.Scheme.StartsWith(HmacAuthenticationDefaults.AuthenticationScheme);
-            
-        if (hasValidAuthorizationHeader)
+        if (headers.TryGetValues(HmacAuthenticationDefaults.Headers.Options, out var values))
         {
-            signature = headers.Authorization!.Parameter;
-        }
-        else
-        {
-            signature = default;
-        }
-
-        return hasValidAuthorizationHeader;
-    }
-
-    public static bool TryGetDateRequestedHeader(
-        this HttpRequestHeaders headers, 
-        out DateTimeOffset dateRequested
-    )
-    {
-        if (headers.TryGetValues(HmacAuthenticationDefaults.Headers.DateRequested, out var value) &&
-            long.TryParse(value?.FirstOrDefault(), out var unixTimeMilliseconds))
-        {
-            dateRequested = DateTimeOffset.FromUnixTimeMilliseconds(unixTimeMilliseconds);
+            value = values.First();
             return true;
         }
 
-        dateRequested = default;
-        return false;
-    }
-
-    public static bool TryGetNonceHeader(
-        this HttpRequestHeaders headers, 
-        out Guid nonce
-    )
-    {
-        if (headers.TryGetValues(HmacAuthenticationDefaults.Headers.Nonce, out var value))
-        {
-            return Guid.TryParse(value.FirstOrDefault(), out nonce);
-        }
-
-        nonce = default;
+        value = default;
         return false;
     }
 }

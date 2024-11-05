@@ -72,8 +72,8 @@ public class Test_HmacManager_SignAsync
         var verificationResult = await HmacManager.VerifyAsync(request);
         Assert.IsTrue(verificationResult.IsSuccess);
 
-        Assert.That(signingResult.Policy, Is.EqualTo(verificationResult.Policy));
-        Assert.That(signingResult.HeaderScheme, Is.EqualTo(verificationResult.HeaderScheme));
+        Assert.That(signingResult.Hmac?.Policy, Is.EqualTo(verificationResult.Hmac?.Policy));
+        Assert.That(signingResult.Hmac?.HeaderScheme, Is.EqualTo(verificationResult.Hmac?.HeaderScheme));
 
         Assert.That(signingResult.Hmac!.DateRequested, Is.EqualTo(verificationResult.Hmac!.DateRequested));
         

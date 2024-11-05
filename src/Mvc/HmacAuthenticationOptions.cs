@@ -28,8 +28,17 @@ public class HmacAuthenticationOptions : AuthenticationSchemeOptions
     /// </summary>
     public new HmacEvents Events { get; set; } = new();
 
+    /// <summary>
+    /// Enables scoped policies using the specified delegate.
+    /// </summary>
+    /// <param name="policiesAccessor">The accessor used to retrieve an <c>IHmacPolicyCollection</c> implementation.</param> 
     public void EnableScopedPolicies(Func<IServiceProvider, IHmacPolicyCollection> policiesAccessor) =>
         Options.EnableScopedPolicies(policiesAccessor);
+
+    /// <summary>
+    /// Enables scoped policies using the specified delegate.
+    /// </summary>
+    public void EnableConsolidatedHeaders() => Options.EnableConsolidatedHeaders();
 
     /// <summary>
     /// Adds an <c>HmacPolicy</c> to the <c>HmacPolicyCollection</c>

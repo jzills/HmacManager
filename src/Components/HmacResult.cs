@@ -6,18 +6,6 @@ namespace HmacManager.Components;
 public sealed class HmacResult
 {
     /// <summary>
-    /// Represents the policy used by HmacManager for signing and verification.
-    /// </summary>
-    /// <value>The name of the policy.</value>
-    public readonly string Policy;
-
-    /// <summary>
-    /// Represents the name of the <c>HeaderScheme</c> used by <c>HmacManager</c> for signing and verification.
-    /// </summary>
-    /// <value>The name of the <c>HeaderScheme</c>.</value>
-    public readonly string? HeaderScheme;
-
-    /// <summary>
     /// Represents the resulting <c>Hmac</c>.
     /// </summary>
     /// <value>The <c>Hmac</c>.</value>
@@ -35,10 +23,8 @@ public sealed class HmacResult
     /// <value>A UTC date and time.</value>
     public readonly DateTime DateGenerated = DateTime.UtcNow;
 
-    internal HmacResult(string policy, string? headerScheme, bool isSuccess, Hmac? hmac)
+    internal HmacResult(bool isSuccess, Hmac? hmac)
     {
-        Policy = policy;
-        HeaderScheme = headerScheme;
         IsSuccess = isSuccess;
         Hmac = hmac;
     }

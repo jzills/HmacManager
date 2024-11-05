@@ -7,6 +7,11 @@ using HmacManager.Policies.Extensions;
 
 namespace HmacManager.Components;
 
+public class HmacManagerFactoryOptions
+{
+    public bool IsConsolidatedHeadersEnabled { get; set; }
+}
+
 /// <summary>
 /// A class representing a <c>HmacManagerFactory</c>.
 /// </summary>
@@ -30,12 +35,16 @@ public class HmacManagerFactory : IHmacManagerFactory
     /// <returns>A <c>HmacManagerFactory</c> object.</returns>
     public HmacManagerFactory(
         IHmacPolicyCollection policies,
-        IComponentCollection<INonceCache> caches
+        IComponentCollection<INonceCache> caches,
+        HmacManagerFactoryOptions options
     )
     {
         Policies = policies;
         Caches = caches;
+        Options = options;
     }
+
+    public readonly HmacManagerFactoryOptions Options;
 
     /// <inheritdoc/>
     public IHmacManager? Create(string policy)
@@ -56,7 +65,11 @@ public class HmacManagerFactory : IHmacManagerFactory
     public IHmacManager? Create(string policy, string scheme)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(policy, nameof(policy));
-        ArgumentException.ThrowIfNullOrWhiteSpace(scheme, nameof(scheme));
+        
+        if (string.IsNullOrWhiteSpace(scheme))
+        {
+            return Create(policy);
+        }
 
         if (TryGetPolicyCache(policy, out var options, out var cache))
         {
@@ -113,7 +126,15 @@ public class HmacManagerFactory : IHmacManagerFactory
         string policy, 
         int maxAgeInSeconds, 
         HeaderScheme? scheme = null
-    ) => new HmacManagerOptions(policy) { MaxAgeInSeconds = maxAgeInSeconds, HeaderScheme = scheme };
+    ) => 
+        new HmacManagerOptions(policy) 
+        {
+            MaxAgeInSeconds = maxAgeInSeconds, 
+            HeaderScheme = scheme ,
+            HeaderBuilder = Options.IsConsolidatedHeadersEnabled ? 
+                new HmacOptionsHeaderBuilder() : 
+                new HmacHeaderBuilder()
+        };
 
     private ContentHashGenerator CreateContentHashGenerator(
         ContentHashAlgorithm contentHashAlgorithm

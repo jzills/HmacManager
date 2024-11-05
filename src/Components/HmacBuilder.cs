@@ -24,11 +24,17 @@ public class HmacBuilder
     /// </summary>
     /// <param name="request">The http request message for the basis of hmac computation.</param>
     /// <param name="headerScheme">The scheme to sign against.</param>
-    public HmacBuilder(HttpRequestMessage request, HeaderScheme? headerScheme = null)
+    public HmacBuilder(HttpRequestMessage request, string policy, HeaderScheme? headerScheme = null)
     {
+        Hmac = new Hmac { Policy = policy };
+
         if (request.Headers.TryParseHeaders(headerScheme, out var headerValues))
         {
-            Hmac = new Hmac { HeaderValues = headerValues };
+            Hmac = Hmac with 
+            { 
+                HeaderScheme = headerScheme?.Name,
+                HeaderValues = headerValues 
+            };
         }
         else
         {
@@ -47,6 +53,8 @@ public class HmacBuilder
     {
         Hmac = new Hmac 
         {
+            Policy = hmac.Policy,
+            HeaderScheme = hmac.HeaderScheme,
             DateRequested = hmac.DateRequested,
             Nonce = hmac.Nonce,
             HeaderValues = hmac.HeaderValues

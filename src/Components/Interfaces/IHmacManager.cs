@@ -7,6 +7,11 @@ namespace HmacManager.Components;
 public interface IHmacManager
 {
     /// <summary>
+    /// An instance of <c>HmacManagerOptions</c>.
+    /// </summary>
+    public HmacManagerOptions Options { get; }
+
+    /// <summary>
     /// Signs a <c>HttpRequestMessage</c> asynchronously.
     /// </summary>
     /// <param name="request"><c>HttpRequestMessage</c></param>

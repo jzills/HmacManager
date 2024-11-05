@@ -15,6 +15,7 @@ public class HmacHeaderBuilder
     /// </summary> 
     protected readonly IDictionary<string, string?> HeaderValues = new Dictionary<string, string?>
     {
+        { HmacAuthenticationDefaults.Headers.Authorization, null },
         { HmacAuthenticationDefaults.Headers.Policy, null },
         { HmacAuthenticationDefaults.Headers.Scheme, null },
         { HmacAuthenticationDefaults.Headers.Nonce, null },
@@ -25,6 +26,13 @@ public class HmacHeaderBuilder
     /// An enumerable of header values that are non empty, i.e. both keys and values are not null, empty or whitespace.
     /// </summary>
     protected IEnumerable<KeyValuePair<string, string?>> NonEmptyHeaderValues => HeaderValues.Where(element => element.NonEmpty());
+
+    /// <summary>
+    /// Creates an instance of <c>HmacHeaderBuilder</c>.
+    /// </summary>
+    public HmacHeaderBuilder()
+    {
+    }
 
     /// <summary>
     /// Creates an instance of <c>HmacHeaderBuilder</c>.
@@ -42,6 +50,24 @@ public class HmacHeaderBuilder
 
         WithNonce(hmac.Nonce);
         WithDateRequested(hmac.DateRequested);
+
+        if (string.IsNullOrWhiteSpace(hmac.Signature))
+        {
+            throw new Exception();
+        }
+
+        WithAuthorization(hmac.Signature);
+    }
+
+    /// <summary>
+    /// Adds the specified signature to the builder.
+    /// </summary>
+    /// <param name="signature">A string representing the signature.</param>
+    /// <returns>The builder.</returns>    
+    public HmacHeaderBuilder WithAuthorization(string signature)
+    {
+        HeaderValues[HmacAuthenticationDefaults.Headers.Authorization] = $"{HmacAuthenticationDefaults.AuthenticationScheme} {signature}";
+        return this;
     }
 
     /// <summary>
@@ -87,6 +113,12 @@ public class HmacHeaderBuilder
         HeaderValues[HmacAuthenticationDefaults.Headers.DateRequested] = dateRequested.ToUnixTimeMilliseconds().ToString();
         return this;
     }
+
+    /// <summary>
+    /// Creates a new instance of <c>HmacHeaderBuilder</c>.
+    /// </summary>
+    /// <returns>An instance of <c>HmacHeaderBuilder</c>.</returns>
+    public virtual HmacHeaderBuilder CreateBuilder(HmacManagerOptions options, Hmac hmac) => new HmacHeaderBuilder(options, hmac);
 
     /// <summary>
     /// Builds the collection of header values.

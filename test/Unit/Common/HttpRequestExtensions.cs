@@ -36,12 +36,12 @@ public static class HttpRequestExtensions
 
             headers.Append(
                 HmacAuthenticationDefaults.Headers.Policy, 
-                signingResult?.Policy
+                signingResult.Hmac?.Policy
             );
 
             headers.Append(
                 HmacAuthenticationDefaults.Headers.Scheme, 
-                signingResult?.HeaderScheme
+                signingResult.Hmac?.HeaderScheme
             );
 
             if (hmac.HeaderValues.Any())

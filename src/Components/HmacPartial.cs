@@ -8,6 +8,18 @@ namespace HmacManager.Components;
 public record HmacPartial
 {
     /// <summary>
+    /// Represents the policy used by HmacManager for signing and verification.
+    /// </summary>
+    /// <value>The name of the policy.</value>
+    public string Policy { get; init; }
+
+    /// <summary>
+    /// Represents the name of the <c>HeaderScheme</c> used by <c>HmacManager</c> for signing and verification.
+    /// </summary>
+    /// <value>The name of the <c>HeaderScheme</c>.</value>
+    public string? HeaderScheme { get; init; }
+    
+    /// <summary>
     /// Represents the date a request is made.
     /// </summary>
     /// <value>Defaults to the current utc time.</value>

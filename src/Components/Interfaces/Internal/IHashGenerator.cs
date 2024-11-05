@@ -1,5 +1,8 @@
 namespace HmacManager.Components;
 
+/// <summary>
+/// Defines an interface for generating hash values.
+/// </summary>
 internal interface IHashGenerator
 {
     /// <summary>

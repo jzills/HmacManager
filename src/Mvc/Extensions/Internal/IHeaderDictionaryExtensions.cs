@@ -33,8 +33,21 @@ internal static class IHeaderDictionaryExtensions
         out HmacPolicy? hmacPolicy
     )
     {
-        var hasConfiguredPolicy = headers.TryGetNonEmptyValue(HmacAuthenticationDefaults.Headers.Policy, out var policy);
-        var hasConfiguredScheme = headers.TryGetNonEmptyValue(HmacAuthenticationDefaults.Headers.Scheme, out var scheme);
+        var hasConfiguredPolicy = false;
+        var hasConfiguredScheme = false;
+
+        string? policy = null;
+        string? scheme = null;
+
+        if (false/*hmacManagerFactory.Options.IsConsolidatedHeadersEnabled*/)
+        {
+            
+        }
+        else
+        {
+            hasConfiguredPolicy = headers.TryGetNonEmptyValue(HmacAuthenticationDefaults.Headers.Policy, out policy);
+            hasConfiguredScheme = headers.TryGetNonEmptyValue(HmacAuthenticationDefaults.Headers.Scheme, out scheme);
+        }
 
         hmacManager = (hasConfiguredPolicy, hasConfiguredScheme) switch
         {

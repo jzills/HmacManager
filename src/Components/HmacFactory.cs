@@ -22,13 +22,14 @@ public class HmacFactory : IHmacFactory
     /// Creates an hmac from a http request, optionally based on a specified header scheme.
     /// </summary>
     /// <param name="request">A http request message.</param>
+    /// <param name="policy">A policy.</param> 
     /// <param name="headerScheme">An optional header scheme.</param>
     /// <returns></returns>
-    public Task<Hmac?> CreateAsync(HttpRequestMessage request, HeaderScheme? headerScheme = null)
+    public Task<Hmac?> CreateAsync(HttpRequestMessage request, string policy, HeaderScheme? headerScheme = null)
     {
         ArgumentNullException.ThrowIfNull(request, nameof(request));
 
-        return CreateInstance(new HmacBuilder(request, headerScheme));
+        return CreateInstance(new HmacBuilder(request, policy, headerScheme));
     }
 
     /// <summary>

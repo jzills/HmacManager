@@ -9,10 +9,8 @@ namespace HmacManager.Components;
 /// </summary>
 public class HmacManager : IHmacManager
 {
-    /// <summary>
-    /// An instance of <c>HmacManagerOptions</c>.
-    /// </summary>
-    protected readonly HmacManagerOptions Options;
+    /// <inheritdoc/>
+    public HmacManagerOptions Options { get; }
 
     /// <summary>
     /// An implementation of <c>IHmacFactory</c> for creating <c>Hmac</c> objects. 
@@ -78,13 +76,11 @@ public class HmacManager : IHmacManager
     /// <inheritdoc/>
     public async Task<HmacResult> SignAsync(HttpRequestMessage request)
     {
-        var hmac = await Factory.CreateAsync(request, Options.HeaderScheme);
+        var hmac = await Factory.CreateAsync(request, Options.Policy, Options.HeaderScheme);
         if (hmac is not null)
         {
-            request.Headers.AddRequiredHeaders(hmac, 
-                Options.Policy, 
-                Options.HeaderScheme?.Name
-            );
+            var headers = Options.HeaderBuilder.CreateBuilder(Options, hmac).Build();
+            request.Headers.AddRange(headers);
             
             return ResultFactory.Success(hmac);
         }
