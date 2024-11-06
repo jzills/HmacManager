@@ -30,6 +30,9 @@ public class HmacOptionsHeaderParser : HmacHeaderParser
     {
     }
 
+    /// <inheritdoc/>
+    public override IHmacHeaderParser CreateParser(IDictionary<string, string> headers) => new HmacOptionsHeaderParser(headers);
+
     private static IDictionary<string, string> Process(IDictionary<string, string> headers)
     {
         if (headers.TryGetValue(HmacAuthenticationDefaults.Headers.Options, out var options))

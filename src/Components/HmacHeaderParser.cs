@@ -132,6 +132,9 @@ public class HmacHeaderParser : IHmacHeaderParser
         }
     }
 
+    /// <inheritdoc/>
+    public virtual IHmacHeaderParser CreateParser(IDictionary<string, string> headers) => new HmacHeaderParser(headers);
+
     /// <summary>
     /// Parses the headers and creates an <c>Hmac</c> object if all required values are present.
     /// </summary>

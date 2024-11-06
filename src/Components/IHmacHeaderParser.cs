@@ -36,6 +36,13 @@ public interface IHmacHeaderParser
     DateTimeOffset GetDateRequested();
 
     /// <summary>
+    /// Creates and returns a new instance of an <see cref="IHmacHeaderParser"/> attached to the specified headers.
+    /// </summary>
+    /// <param name="headers">The incoming HTTP request headers.</param>
+    /// <returns>An <see cref="IHmacHeaderParser"/> with the specified headers.</returns>
+    IHmacHeaderParser CreateParser(IDictionary<string, string> headers);
+
+    /// <summary>
     /// Parses the HMAC headers and returns an instance of <see cref="HmacPartial"/>.
     /// </summary>
     /// <param name="signature">Output parameter that will contain the signature value.</param>
