@@ -16,6 +16,9 @@ public class HmacPolicy
     [JsonInclude]
     public string? Name { get; init; }
 
+    /// <summary>
+    /// Creates an instance of <c>HmacPolicy</c>.
+    /// </summary> 
     internal HmacPolicy() { }
 
     /// <summary>

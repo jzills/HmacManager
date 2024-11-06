@@ -8,7 +8,7 @@ namespace HmacManager.Components;
 /// <summary>
 /// A class representing a builder to create required hmac headers to be added to a request.
 /// </summary> 
-public class HmacHeaderBuilder
+public class HmacHeaderBuilder : IHmacHeaderBuilder
 {
     /// <summary>
     /// A dictionary of <see cref="HmacAuthenticationDefaults.Headers"/> defaulting to null.
@@ -64,7 +64,7 @@ public class HmacHeaderBuilder
     /// </summary>
     /// <param name="signature">A string representing the signature.</param>
     /// <returns>The builder.</returns>    
-    public HmacHeaderBuilder WithAuthorization(string signature)
+    public IHmacHeaderBuilder WithAuthorization(string signature)
     {
         HeaderValues[HmacAuthenticationDefaults.Headers.Authorization] = $"{HmacAuthenticationDefaults.AuthenticationScheme} {signature}";
         return this;
@@ -75,7 +75,7 @@ public class HmacHeaderBuilder
     /// </summary>
     /// <param name="policy">A string representing the policy.</param>
     /// <returns>The builder.</returns>    
-    public HmacHeaderBuilder WithPolicy(string policy)
+    public IHmacHeaderBuilder WithPolicy(string policy)
     {
         HeaderValues[HmacAuthenticationDefaults.Headers.Policy] = policy;
         return this;
@@ -86,7 +86,7 @@ public class HmacHeaderBuilder
     /// </summary>
     /// <param name="scheme">A string representing the scheme.</param>
     /// <returns>The builder.</returns> 
-    public HmacHeaderBuilder WithScheme(string scheme)
+    public IHmacHeaderBuilder WithScheme(string scheme)
     {
         HeaderValues[HmacAuthenticationDefaults.Headers.Scheme] = scheme;
         return this;
@@ -97,7 +97,7 @@ public class HmacHeaderBuilder
     /// </summary>
     /// <param name="nonce">The nonce represented by a guid.</param>
     /// <returns>The builder.</returns> 
-    public HmacHeaderBuilder WithNonce(Guid nonce)
+    public IHmacHeaderBuilder WithNonce(Guid nonce)
     {
         HeaderValues[HmacAuthenticationDefaults.Headers.Nonce] = nonce.ToString();
         return this;
@@ -108,7 +108,7 @@ public class HmacHeaderBuilder
     /// </summary>
     /// <param name="dateRequested">The date requested.</param>
     /// <returns>The builder.</returns>
-    public HmacHeaderBuilder WithDateRequested(DateTimeOffset dateRequested)
+    public IHmacHeaderBuilder WithDateRequested(DateTimeOffset dateRequested)
     {
         HeaderValues[HmacAuthenticationDefaults.Headers.DateRequested] = dateRequested.ToUnixTimeMilliseconds().ToString();
         return this;
@@ -118,7 +118,7 @@ public class HmacHeaderBuilder
     /// Creates a new instance of <c>HmacHeaderBuilder</c>.
     /// </summary>
     /// <returns>An instance of <c>HmacHeaderBuilder</c>.</returns>
-    public virtual HmacHeaderBuilder CreateBuilder(HmacManagerOptions options, Hmac hmac) => new HmacHeaderBuilder(options, hmac);
+    public virtual IHmacHeaderBuilder CreateBuilder(HmacManagerOptions options, Hmac hmac) => new HmacHeaderBuilder(options, hmac);
 
     /// <summary>
     /// Builds the collection of header values.

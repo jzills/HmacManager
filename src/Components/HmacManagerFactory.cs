@@ -133,7 +133,10 @@ public class HmacManagerFactory : IHmacManagerFactory
             HeaderScheme = scheme ,
             HeaderBuilder = Options.IsConsolidatedHeadersEnabled ? 
                 new HmacOptionsHeaderBuilder() : 
-                new HmacHeaderBuilder()
+                new HmacHeaderBuilder(),
+            HeaderParser = Options.IsConsolidatedHeadersEnabled ?
+                new HmacOptionsHeaderParser() :
+                new HmacHeaderParser()
         };
 
     private ContentHashGenerator CreateContentHashGenerator(

@@ -30,7 +30,12 @@ public class HmacManagerOptions
     public int MaxAgeInSeconds { get; init; } = 30;
 
     /// <summary>
-    /// Gets or sets the <see cref="HmacHeaderBuilder"/> used to build headers.
+    /// Gets or sets the <see cref="IHmacHeaderBuilder"/> used to build headers.
     /// </summary>
-    public HmacHeaderBuilder HeaderBuilder { get; init; } = new();
+    public IHmacHeaderBuilder HeaderBuilder { get; init; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="IHmacHeaderParser"/> used to build headers.
+    /// </summary>
+    public IHmacHeaderParser HeaderParser { get; init; }
 }

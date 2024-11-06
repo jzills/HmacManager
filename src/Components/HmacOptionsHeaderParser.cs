@@ -7,6 +7,24 @@ namespace HmacManager.Components;
 /// <inheritdoc/>
 public class HmacOptionsHeaderParser : HmacHeaderParser
 {
+    /// <summary>
+    /// A static dictionary mapping header names to their respective prefix values.
+    /// Used for parsing and identifying headers within a collection of split header strings.
+    /// </summary>
+    protected static readonly IDictionary<string, string> HeaderMappings = new Dictionary<string, string>
+    {
+        { HmacAuthenticationDefaults.Headers.Authorization, $"{HmacAuthenticationDefaults.Headers.Authorization}=" },
+        { HmacAuthenticationDefaults.Headers.Policy, $"{HmacAuthenticationDefaults.Headers.Policy}=" },
+        { HmacAuthenticationDefaults.Headers.Scheme, $"{HmacAuthenticationDefaults.Headers.Scheme}=" },
+        { HmacAuthenticationDefaults.Headers.Nonce, $"{HmacAuthenticationDefaults.Headers.Nonce}=" },
+        { HmacAuthenticationDefaults.Headers.DateRequested, $"{HmacAuthenticationDefaults.Headers.DateRequested}=" }
+    };
+
+    /// <inheritdoc/>
+    public HmacOptionsHeaderParser() : base()
+    {
+    }
+
     /// <inheritdoc/>
     public HmacOptionsHeaderParser(IDictionary<string, string> headers) : base(Process(headers))
     {
@@ -41,14 +59,20 @@ public class HmacOptionsHeaderParser : HmacHeaderParser
         var splitValues = value.Split("&");
         if (splitValues.Length > 0)
         {
-            // TODO: This fails because signature can end in equals resulting in 3 entries
-            // Need a better way, like including the HmacAuthenticationDefaults.Headers
-            // for each split, i.e. "Authorization=", "Hmac-Policy=", etc..
-            var splitKeyValues = splitValues.Select(splitValue => splitValue.Split("="));
-            return splitKeyValues.ToDictionary(
-                chunk => chunk.First(), 
-                chunk => chunk.Last()
-            );
+            var result = new Dictionary<string, string>();
+            foreach (var splitValue in splitValues)
+            {
+                foreach (var header in HeaderMappings)
+                {
+                    if (splitValue.StartsWith(header.Value))
+                    {
+                        result[header.Key] = splitValue.Substring(header.Value.Length);
+                        break;
+                    }
+                }
+            }
+
+            return result;
         }
         else
         {

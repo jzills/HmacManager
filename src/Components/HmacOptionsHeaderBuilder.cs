@@ -32,7 +32,11 @@ public class HmacOptionsHeaderBuilder : HmacHeaderBuilder
         {
             var headerOptionsValueFormatted = string.Join("&", NonEmptyHeaderValues.Select(element => element.FormatAsEquality()));
             var headerOptionsValue = Convert.ToBase64String(Encoding.UTF8.GetBytes(headerOptionsValueFormatted));
-            return [new HeaderValue(HmacAuthenticationDefaults.Headers.Options, headerOptionsValue)];
+            return [
+                new HeaderValue(HmacAuthenticationDefaults.Headers.Options, headerOptionsValue),
+                new HeaderValue(HmacAuthenticationDefaults.Headers.Authorization, 
+                    HeaderValues[HmacAuthenticationDefaults.Headers.Authorization])
+            ];
         }
         else
         {

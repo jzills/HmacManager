@@ -42,7 +42,9 @@ public class Test_HmacManager_SignAsync
         HmacManagerOptions = new HmacManagerOptions("Policy")
         {
             MaxAgeInSeconds = 60,
-            HeaderScheme = new HeaderScheme("Scheme")
+            HeaderScheme = new HeaderScheme("Scheme"),
+            HeaderBuilder = new HmacHeaderBuilder(),
+            HeaderParser = new HmacHeaderParser()
         };
 
         HmacManager = new HmacManager.Components.HmacManager(

@@ -6,12 +6,28 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace HmacManager.Mvc;
 
+/// <summary>
+/// An attribute that enforces HMAC (Hash-based Message Authentication Code) authentication on a class or method.
+/// Implements <see cref="IAuthorizationRequirement"/> and <see cref="IAsyncAuthorizationFilter"/> 
+/// to provide asynchronous authorization handling based on a specified policy and optional scheme.
+/// </summary>
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
 public class HmacAuthenticateAttribute : Attribute, IAuthorizationRequirement, IAsyncAuthorizationFilter
 {
+    /// <summary>
+    /// Gets or sets the policy required for authorization.
+    /// </summary>
     public required string Policy { get; init; }
-    public string? Scheme { get; init; } 
 
+    /// <summary>
+    /// Gets or sets the optional scheme used in HMAC authentication.
+    /// </summary>
+    public string? Scheme { get; init; }
+
+    /// <summary>
+    /// Asynchronously handles the authorization for the specified context.
+    /// </summary>
+    /// <param name="context">The authorization filter context containing HTTP context and request details.</param>
     public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
     {
         if (context.HttpContext is not null)
@@ -39,6 +55,14 @@ public class HmacAuthenticateAttribute : Attribute, IAuthorizationRequirement, I
         }
     }
 
+    /// <summary>
+    /// Checks if the provided policy and scheme match the required values.
+    /// </summary>
+    /// <param name="policy">The policy retrieved from the authentication result.</param>
+    /// <param name="scheme">The scheme retrieved from the authentication result.</param>
+    /// <returns>
+    /// <see langword="true"/> if the policy and scheme match the required values; otherwise, <see langword="false"/>.
+    /// </returns>
     internal bool IsMatch(string? policy, string? scheme) =>
         (Policy, Scheme) switch
         {

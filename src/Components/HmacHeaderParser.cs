@@ -8,7 +8,18 @@ namespace HmacManager.Components;
 /// </summary>
 public class HmacHeaderParser : IHmacHeaderParser
 {
+    /// <summary>
+    /// A dictionary of headers and their corresponding values.
+    /// </summary>
     protected readonly IDictionary<string, string> Headers;
+
+    /// <summary>
+    /// Creates an instance of <c>HmacHeaderParser</c>.
+    /// </summary>
+    public HmacHeaderParser()
+    {
+        Headers = new Dictionary<string, string>();
+    }
 
     /// <summary>
     /// Initializes a new instance of the <c>HmacHeaderParser</c> class with the specified headers.

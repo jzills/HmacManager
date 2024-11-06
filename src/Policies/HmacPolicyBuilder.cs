@@ -9,10 +9,29 @@ namespace HmacManager.Policies;
 /// </summary>
 public class HmacPolicyBuilder
 {
+    /// <summary>
+    /// Stores the credentials required for key-based authentication.
+    /// </summary>
     internal readonly KeyCredentials Keys = new();
+
+    /// <summary>
+    /// Contains supported cryptographic algorithms for signing and verification.
+    /// </summary>
     internal readonly Algorithms Algorithms = new();
+
+    /// <summary>
+    /// Manages unique nonce values to prevent replay attacks.
+    /// </summary>
     internal readonly Nonce Nonce = new();
+
+    /// <summary>
+    /// Holds a collection of header schemes used in the HMAC authentication process.
+    /// </summary>
     internal readonly HeaderSchemeCollection HeaderSchemes = new();
+
+    /// <summary>
+    /// Builds the content used for signing in HMAC authentication requests.
+    /// </summary>
     internal SigningContentBuilder SigningContentBuilder = new();
 
     /// <summary>
