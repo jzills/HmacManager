@@ -1,6 +1,8 @@
+using System.Net.Http.Headers;
 using HmacManager.Caching;
 using HmacManager.Caching.Extensions;
 using HmacManager.Extensions;
+using HmacManager.Headers;
 
 namespace HmacManager.Components;
 
@@ -51,19 +53,12 @@ public class HmacManager : IHmacManager
     /// <inheritdoc/>
     public async Task<HmacResult> VerifyAsync(HttpRequestMessage request)
     {
-        if (request.Headers.TryParseHmac(
-                Options.HeaderScheme, 
-                Options.MaxAgeInSeconds, 
-                out var incomingHmac
-        ))
+        if (TryParseHmac(request.Headers, out var incomingHmac))
         {
-            if (await Cache.IsValidNonceAsync(
-                    incomingHmac.Nonce, 
-                    incomingHmac.DateRequested
-            ))
+            if (await IsValidAsync(incomingHmac))
             {   
                 var hmacVerification = await Factory.CreateAsync(request, incomingHmac);
-                if (hmacVerification is not null && hmacVerification.IsVerified(incomingHmac))
+                if (hmacVerification.IsVerified(incomingHmac))
                 {
                     return ResultFactory.Success(hmacVerification);
                 }
@@ -87,6 +82,83 @@ public class HmacManager : IHmacManager
         else
         {
             return ResultFactory.Failure();
+        }
+    }
+
+    private async Task<bool> IsValidAsync(HmacPartial? incomingHmac) =>
+        incomingHmac is not null && 
+        incomingHmac.DateRequested.HasValidDateRequested(Options.MaxAgeInSeconds) &&
+            await Cache.IsValidNonceAsync(
+                incomingHmac.Nonce,
+                incomingHmac.DateRequested
+            );
+
+    private bool TryParseHmac(HttpRequestHeaders headers, out Hmac? value)
+    {
+        var hmacPartial = Options.HeaderParser.CreateParser(headers).Parse(out var signature);
+        if (Options.HeaderScheme is null)
+        {
+            value = new Hmac
+            {
+                Policy = hmacPartial.Policy,
+                HeaderScheme = hmacPartial.HeaderScheme,
+                Signature = signature ?? string.Empty,
+                DateRequested = hmacPartial.DateRequested,
+                Nonce = hmacPartial.Nonce,
+                HeaderValues = []
+            };
+        }
+        else if (TryParseHeaders(headers, Options.HeaderScheme, out var headerValues))
+        {
+            value = new Hmac
+            {
+                Policy = hmacPartial.Policy,
+                HeaderScheme = hmacPartial.HeaderScheme,
+                Signature = signature ?? string.Empty,
+                DateRequested = hmacPartial.DateRequested,
+                Nonce = hmacPartial.Nonce,
+                HeaderValues = headerValues.ToArray()
+            };
+        }
+        else
+        {
+            value = null;
+        }
+
+        return value is not null;
+    }
+
+    private bool TryParseHeaders(HttpRequestHeaders headers, HeaderScheme? headerScheme, out IReadOnlyCollection<HeaderValue> headerValues)
+    {
+        if (headerScheme is null)
+        {
+            headerValues = new List<HeaderValue>().AsReadOnly();
+            return true;
+        }
+        else
+        {
+            var schemeHeaders = headerScheme.Headers;
+            var schemeHeaderValues = new List<HeaderValue>(schemeHeaders.Count);
+            foreach (var schemeHeader in schemeHeaders)
+            {
+                if (headers.TryGetValues(schemeHeader.Name, out var values))
+                {
+                    var schemeHeaderValue = values.First();
+                    schemeHeaderValues.Add(new HeaderValue(
+                        schemeHeader.Name, 
+                        schemeHeader.ClaimType, 
+                        schemeHeaderValue
+                    ));
+                }
+                else
+                {
+                    headerValues = new List<HeaderValue>().AsReadOnly();
+                    return false;
+                }
+            }
+
+            headerValues = schemeHeaderValues.AsReadOnly();
+            return true;
         }
     }
 }

@@ -12,10 +12,23 @@ using HmacManager.Features;
 
 namespace HmacManager.Mvc;
 
+/// <summary>
+/// Handles HMAC-based authentication by verifying requests and generating authentication results.
+/// </summary>
 internal class HmacAuthenticationHandler : AuthenticationHandler<HmacAuthenticationOptions>
 {
+    /// <summary>
+    /// Provides access to the HMAC authentication context for request verification.
+    /// </summary>
     protected readonly IHmacAuthenticationContextProvider ContextProvider;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="HmacAuthenticationHandler"/> class with the specified context provider, options, logger, and URL encoder.
+    /// </summary>
+    /// <param name="contextProvider">The provider for HMAC authentication context information.</param>
+    /// <param name="options">The options monitor for <see cref="HmacAuthenticationOptions"/>.</param>
+    /// <param name="logger">The logger factory.</param>
+    /// <param name="encoder">The URL encoder.</param>
     public HmacAuthenticationHandler(
         IHmacAuthenticationContextProvider contextProvider,
         IOptionsMonitor<HmacAuthenticationOptions> options, 
@@ -26,6 +39,11 @@ internal class HmacAuthenticationHandler : AuthenticationHandler<HmacAuthenticat
         ContextProvider = contextProvider;
     }
 
+    /// <summary>
+    /// Attempts to authenticate the request using HMAC authentication. 
+    /// Returns a success result if authentication succeeds, or a failure result otherwise.
+    /// </summary>
+    /// <returns>A <see cref="Task{AuthenticateResult}"/> representing the authentication outcome.</returns>
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
         if (ContextProvider.TryGetAuthenticationContext(Request.Headers, out var hmacAuthenticationContext))
@@ -59,6 +77,11 @@ internal class HmacAuthenticationHandler : AuthenticationHandler<HmacAuthenticat
         }
     }
 
+    /// <summary>
+    /// Creates a collection of claims based on the HMAC result and any additional claims from success events.
+    /// </summary>
+    /// <param name="hmacResult">The result of the HMAC verification.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the collection of claims.</returns>
     private async Task<IEnumerable<Claim>> CreateClaimsAsync(HmacResult hmacResult)
     {
         var claims = new List<Claim>();
@@ -79,14 +102,19 @@ internal class HmacAuthenticationHandler : AuthenticationHandler<HmacAuthenticat
             }
         }
 
-        // Add policy and header claim to support 
-        // IAuthorizationRequirement for dynamic authorization policies.
+        // Adds policy and header claims to support dynamic authorization policies.
         claims.Add(new Claim(HmacAuthenticationDefaults.Properties.PolicyProperty, hmacResult.Hmac.Policy));
         claims.Add(new Claim(HmacAuthenticationDefaults.Properties.SchemeProperty, hmacResult.Hmac.HeaderScheme));
 
         return claims;
     }
 
+    /// <summary>
+    /// Creates an <see cref="AuthenticationTicket"/> representing a successful authentication.
+    /// </summary>
+    /// <param name="claims">The collection of claims generated for the user.</param>
+    /// <param name="result">The HMAC result containing policy and scheme information.</param>
+    /// <returns>The authentication ticket for the authenticated user.</returns>
     private AuthenticationTicket CreateSuccessTicket( 
         IEnumerable<Claim> claims, 
         HmacResult result
@@ -102,6 +130,9 @@ internal class HmacAuthenticationHandler : AuthenticationHandler<HmacAuthenticat
             HmacAuthenticationDefaults.AuthenticationScheme
         );
 
+    /// <summary>
+    /// Enables buffering for the request body if content exists, allowing it to be read multiple times.
+    /// </summary>
     private void EnableBufferingIfContentExists()
     {
         if (Request.HasContent())
@@ -110,6 +141,9 @@ internal class HmacAuthenticationHandler : AuthenticationHandler<HmacAuthenticat
         }
     }
 
+    /// <summary>
+    /// Rewinds the request body stream if content exists, resetting the position to the beginning.
+    /// </summary>
     private void RewindIfContentExists()
     {
         if (Request.HasContent())
@@ -118,6 +152,11 @@ internal class HmacAuthenticationHandler : AuthenticationHandler<HmacAuthenticat
         }
     }
 
+    /// <summary>
+    /// Verifies the HMAC authentication result for the given context.
+    /// </summary>
+    /// <param name="context">The HMAC authentication context containing request information.</param>
+    /// <returns>A task that represents the asynchronous operation, containing the HMAC verification result.</returns>
     private Task<HmacResult> GetResultAsync(HmacAuthenticationContext context) => 
         context.HmacManager.VerifyAsync(
             Request.HttpContext.GetHttpRequestMessage()

@@ -29,7 +29,7 @@ public class Test_HmacManagerFactory_Create_Policy
                 new NonceCacheOptions())
         );
 
-        HmacManagerFactory = new HmacManagerFactory(policies, caches, new HmacManagerFactoryOptions());
+        HmacManagerFactory = new HmacManagerFactory(policies, caches, new HmacHeaderParserFactory(false), new HmacHeaderBuilderFactory(false));
     }
 
     [TestCaseSource(nameof(GetTestCaseData))]

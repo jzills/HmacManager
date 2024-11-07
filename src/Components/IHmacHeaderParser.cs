@@ -1,3 +1,5 @@
+using System.Net.Http.Headers;
+
 namespace HmacManager.Components;
 
 /// <summary>
@@ -41,6 +43,13 @@ public interface IHmacHeaderParser
     /// <param name="headers">The incoming HTTP request headers.</param>
     /// <returns>An <see cref="IHmacHeaderParser"/> with the specified headers.</returns>
     IHmacHeaderParser CreateParser(IDictionary<string, string> headers);
+
+    /// <summary>
+    /// Creates and returns a new instance of an <see cref="IHmacHeaderParser"/> attached to the specified headers.
+    /// </summary>
+    /// <param name="headers">The incoming HTTP request headers.</param>
+    /// <returns>An <see cref="IHmacHeaderParser"/> with the specified headers.</returns>
+    IHmacHeaderParser CreateParser(HttpRequestHeaders headers);
 
     /// <summary>
     /// Parses the HMAC headers and returns an instance of <see cref="HmacPartial"/>.

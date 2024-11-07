@@ -7,25 +7,30 @@ using HmacManager.Policies.Extensions;
 
 namespace HmacManager.Components;
 
-public class HmacManagerFactoryOptions
-{
-    public bool IsConsolidatedHeadersEnabled { get; set; }
-}
-
 /// <summary>
 /// A class representing a <c>HmacManagerFactory</c>.
 /// </summary>
 public class HmacManagerFactory : IHmacManagerFactory
 {
     /// <summary>
-    /// An <c>IComponentCollection</c> of <c>HmacPolicy</c> objects.
+    /// Manages the set of HMAC policies applied during request validation.
     /// </summary>
     protected readonly IHmacPolicyCollection Policies;
 
     /// <summary>
-    /// An <c>IComponentCollection</c> of <c>INonceCache</c> objects.
+    /// Tracks nonces to prevent replay attacks.
     /// </summary>
     protected readonly IComponentCollection<INonceCache> Caches;
+
+    /// <summary>
+    /// Factory for creating instances of <c>IHmacHeaderParser</c> to parse HMAC headers from requests.
+    /// </summary>
+    protected readonly IHmacHeaderParserFactory HeaderParserFactory;
+
+    /// <summary>
+    /// Factory for creating instances of <c>IHmacHeaderBuilder</c> to construct HMAC headers for requests.
+    /// </summary>
+    protected readonly IHmacHeaderBuilderFactory HeaderBuilderFactory;
 
     /// <summary>
     /// Creates a <c>HmacManagerFactory</c> object.
@@ -36,15 +41,15 @@ public class HmacManagerFactory : IHmacManagerFactory
     public HmacManagerFactory(
         IHmacPolicyCollection policies,
         IComponentCollection<INonceCache> caches,
-        HmacManagerFactoryOptions options
+        IHmacHeaderParserFactory headerParserFactory,
+        IHmacHeaderBuilderFactory headerBuilderFactory
     )
     {
         Policies = policies;
         Caches = caches;
-        Options = options;
+        HeaderParserFactory = headerParserFactory;
+        HeaderBuilderFactory = headerBuilderFactory;
     }
-
-    public readonly HmacManagerFactoryOptions Options;
 
     /// <inheritdoc/>
     public IHmacManager? Create(string policy)
@@ -131,12 +136,8 @@ public class HmacManagerFactory : IHmacManagerFactory
         {
             MaxAgeInSeconds = maxAgeInSeconds, 
             HeaderScheme = scheme ,
-            HeaderBuilder = Options.IsConsolidatedHeadersEnabled ? 
-                new HmacOptionsHeaderBuilder() : 
-                new HmacHeaderBuilder(),
-            HeaderParser = Options.IsConsolidatedHeadersEnabled ?
-                new HmacOptionsHeaderParser() :
-                new HmacHeaderParser()
+            HeaderBuilder = HeaderBuilderFactory.Create(),
+            HeaderParser = HeaderParserFactory.Create()
         };
 
     private ContentHashGenerator CreateContentHashGenerator(

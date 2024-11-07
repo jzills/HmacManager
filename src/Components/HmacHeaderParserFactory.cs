@@ -17,11 +17,13 @@ public class HmacHeaderParserFactory : IHmacHeaderParserFactory
     public HmacHeaderParserFactory(bool isConsolidatedHeadersEnabled) =>
         IsConsolidatedHeadersEnabled = isConsolidatedHeadersEnabled;
 
-    /// <summary>
-    /// Creates an <see cref="IHmacHeaderParser"/> instance based on the consolidated headers setting.
-    /// </summary>
-    /// <param name="headers">A dictionary of headers to parse.</param>
-    /// <returns>An <see cref="IHmacHeaderParser"/> instance.</returns>
+    /// <inheritdoc/>
+    public IHmacHeaderParser Create() =>
+        IsConsolidatedHeadersEnabled
+            ? new HmacOptionsHeaderParser()
+            : new HmacHeaderParser();
+
+    /// <inheritdoc/>
     public IHmacHeaderParser Create(IDictionary<string, string> headers) =>
         IsConsolidatedHeadersEnabled
             ? new HmacOptionsHeaderParser(headers)

@@ -1,3 +1,4 @@
+using System.Net.Http.Headers;
 using HmacManager.Exceptions;
 using HmacManager.Mvc;
 
@@ -26,6 +27,18 @@ public class HmacHeaderParser : IHmacHeaderParser
     /// </summary>
     /// <param name="headers">A dictionary of headers to parse.</param>
     public HmacHeaderParser(IDictionary<string, string> headers) => Headers = headers;
+
+    /// <summary>
+    /// Initializes a new instance of the <c>HmacHeaderParser</c> class with the specified headers.
+    /// </summary>
+    /// <param name="headers">An instance of <c>HttpRequestHeaders</c>.</param>
+    public HmacHeaderParser(HttpRequestHeaders headers) 
+        : this(headers.ToDictionary(
+            header => header.Key,
+            header => header.Value.FirstOrDefault() ?? string.Empty
+        ))
+    {
+    }
 
     /// <summary>
     /// Gets the policy from the headers.
@@ -134,6 +147,9 @@ public class HmacHeaderParser : IHmacHeaderParser
 
     /// <inheritdoc/>
     public virtual IHmacHeaderParser CreateParser(IDictionary<string, string> headers) => new HmacHeaderParser(headers);
+
+    /// <inheritdoc/>
+    public virtual IHmacHeaderParser CreateParser(HttpRequestHeaders headers) => new HmacHeaderParser(headers);
 
     /// <summary>
     /// Parses the headers and creates an <c>Hmac</c> object if all required values are present.

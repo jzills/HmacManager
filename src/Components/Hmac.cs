@@ -48,5 +48,5 @@ public record Hmac : HmacPartial
     /// </summary>
     /// <param name="otherHmac">The other hmac to check equality against.</param>
     /// <returns>True if the two hmac objects are equal, otherwise false.</returns>
-    internal bool IsVerified(Hmac otherHmac) => Signature == otherHmac.Signature;
+    internal bool IsVerified(Hmac? otherHmac) => Signature == otherHmac?.Signature;
 }

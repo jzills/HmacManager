@@ -1,3 +1,4 @@
+using System.Net.Http.Headers;
 using System.Text;
 using HmacManager.Exceptions;
 using HmacManager.Mvc;
@@ -32,6 +33,13 @@ public class HmacOptionsHeaderParser : HmacHeaderParser
 
     /// <inheritdoc/>
     public override IHmacHeaderParser CreateParser(IDictionary<string, string> headers) => new HmacOptionsHeaderParser(headers);
+
+    /// <inheritdoc/>
+    public override IHmacHeaderParser CreateParser(HttpRequestHeaders headers) => 
+        new HmacOptionsHeaderParser(headers.ToDictionary(
+            header => header.Key, 
+            header => header.Value.FirstOrDefault() ?? string.Empty
+        ));
 
     private static IDictionary<string, string> Process(IDictionary<string, string> headers)
     {

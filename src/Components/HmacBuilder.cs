@@ -23,6 +23,7 @@ public class HmacBuilder
     /// Creates a builder based on an incoming request and scheme.
     /// </summary>
     /// <param name="request">The http request message for the basis of hmac computation.</param>
+    /// <param name="policy">The policy to sign against.</param>
     /// <param name="headerScheme">The scheme to sign against.</param>
     public HmacBuilder(HttpRequestMessage request, string policy, HeaderScheme? headerScheme = null)
     {
@@ -68,7 +69,7 @@ public class HmacBuilder
     /// </summary>
     /// <param name="provider">The signature provider responsible for computations on signing content and signatures.</param>
     /// <returns>A constructed hmac.</returns>
-    public async Task<Hmac?> BuildAsync(IHmacSignatureProvider provider)
+    public async Task<Hmac> BuildAsync(IHmacSignatureProvider provider)
     {
         var signingContent = await provider.ComputeSigningContentAsync(Request, 
             Hmac.DateRequested, 

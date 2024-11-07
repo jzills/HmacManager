@@ -25,7 +25,7 @@ public class HmacFactory : IHmacFactory
     /// <param name="policy">A policy.</param> 
     /// <param name="headerScheme">An optional header scheme.</param>
     /// <returns></returns>
-    public Task<Hmac?> CreateAsync(HttpRequestMessage request, string policy, HeaderScheme? headerScheme = null)
+    public Task<Hmac> CreateAsync(HttpRequestMessage request, string policy, HeaderScheme? headerScheme = null)
     {
         ArgumentNullException.ThrowIfNull(request, nameof(request));
 
@@ -38,7 +38,7 @@ public class HmacFactory : IHmacFactory
     /// <param name="request">A http request message.</param>
     /// <param name="hmac">A partial hmac.</param>
     /// <returns></returns>
-    public Task<Hmac?> CreateAsync(HttpRequestMessage request, HmacPartial? hmac)
+    public Task<Hmac> CreateAsync(HttpRequestMessage request, HmacPartial? hmac)
     {
         ArgumentNullException.ThrowIfNull(hmac, nameof(hmac));
         ArgumentNullException.ThrowIfNull(request, nameof(request));
@@ -46,5 +46,5 @@ public class HmacFactory : IHmacFactory
         return CreateInstance(new HmacBuilder(request, hmac));
     }
 
-    private Task<Hmac?> CreateInstance(HmacBuilder builder) => builder.BuildAsync(Provider);
+    private Task<Hmac> CreateInstance(HmacBuilder builder) => builder.BuildAsync(Provider);
 }
