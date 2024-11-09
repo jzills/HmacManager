@@ -2,6 +2,16 @@
  * Represents the HMAC data used for signing requests.
  */
 export type Hmac = {
+    /** 
+     * The policy used for generating the HMAC.
+     */
+    policy: string;
+
+    /** 
+     * The scheme used for generating the HMAC, or null if not applicable.
+     */
+    scheme: string | null;
+
     /** The date and time when the request was created. */
     dateRequested: Date;
     

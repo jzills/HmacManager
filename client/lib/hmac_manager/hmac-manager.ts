@@ -30,13 +30,10 @@ export class HmacManager {
         this.provider = new HmacSignatureProvider(
             this.policy.publicKey,
             this.policy.privateKey,
-            this.scheme?.headers
+            this.scheme?.headers ?? []
         );
 
-        this.resultFactory = new HmacResultFactory(
-            this.policy.name,
-            this.scheme?.name ?? null
-        );
+        this.resultFactory = new HmacResultFactory();
     }
 
     /**
@@ -54,6 +51,8 @@ export class HmacManager {
             } = await this.computeSignature(request);
 
             const hmac = {
+                policy: this.policy.name,
+                scheme: this.scheme?.name ?? null,
                 dateRequested,
                 nonce,
                 signingContent,
@@ -100,6 +99,6 @@ export class HmacManager {
 
         headers.append(HmacAuthenticationDefaults.Headers.DateRequested, `${hmac.dateRequested.getTime()}`);
         headers.append(HmacAuthenticationDefaults.Headers.Nonce, `${hmac.nonce}`);
-        headers.append("Authorization", `${HmacAuthenticationDefaults.AuthenticationScheme} ${hmac.signature}`);
+        headers.append(HmacAuthenticationDefaults.Headers.Authorization, `${HmacAuthenticationDefaults.AuthenticationScheme} ${hmac.signature}`);
     }
 }

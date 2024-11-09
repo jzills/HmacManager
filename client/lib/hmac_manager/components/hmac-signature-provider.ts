@@ -1,5 +1,6 @@
 import { SignatureBuilder } from "../builders/signature-builder.js"
 import { SigningContentBuilder } from "../builders/signing-content-builder.js"
+import { HashAlgorithm } from "../hash-algorithm.js";
 import { computeContentHash } from "../utilities/hmac-utilities.js";
 import { HmacSignature } from "./hmac-signature.js";
 
@@ -10,8 +11,8 @@ export class HmacSignatureProvider {
     private readonly publicKey: string;
     private readonly privateKey: string;
     private readonly signedHeaders: string[] = [];
-    private readonly contentHashAlgorithm: string = "sha-256";
-    private readonly signatureHashAlgorithm: string = "sha-256";
+    private readonly contentHashAlgorithm: HashAlgorithm = HashAlgorithm.SHA256;
+    private readonly signatureHashAlgorithm: HashAlgorithm = HashAlgorithm.SHA256;
 
     /**
      * Initializes a new instance of HmacSignatureProvider.
@@ -25,8 +26,8 @@ export class HmacSignatureProvider {
         publicKey: string,
         privateKey: string,
         signedHeaders: string[] = [],
-        contentHashAlgorithm: string = "sha-256",
-        signatureHashAlgorithm: string = "sha-256"
+        contentHashAlgorithm: HashAlgorithm = HashAlgorithm.SHA256,
+        signatureHashAlgorithm: HashAlgorithm = HashAlgorithm.SHA256
     ) {
         this.publicKey = publicKey;
         this.privateKey = privateKey;
