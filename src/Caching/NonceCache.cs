@@ -36,12 +36,12 @@ internal abstract class NonceCache : INonceCache
     /// </summary>
     /// <param name="nonce">The nonce for which to create a cache key.</param>
     /// <returns>A string representing the cache key for the specified nonce.</returns>
-    protected string Key(Guid nonce) => Options.CreateKey(nonce);
+    protected string GetKey(Guid nonce) => Options.CreateKey(nonce);
 
     /// <summary>
     /// Calculates the absolute expiration date and time for a nonce based on the specified date.
     /// </summary>
     /// <param name="dateRequested">The date and time the nonce was requested.</param>
     /// <returns>The absolute expiration date and time for the nonce.</returns>
-    protected DateTimeOffset AbsoluteExpiration(DateTimeOffset dateRequested) => dateRequested.AddSeconds(Options.MaxAgeInSeconds);
+    protected DateTimeOffset GetAbsoluteExpiration(DateTimeOffset dateRequested) => dateRequested.AddSeconds(Options.MaxAgeInSeconds);
 }

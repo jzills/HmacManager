@@ -28,10 +28,10 @@ internal class NonceDistributedCache : NonceCache
     /// <returns>A task representing the asynchronous operation.</returns>
     public override Task SetAsync(Guid nonce, DateTimeOffset dateRequested) =>
         Cache.SetStringAsync(
-            Key(nonce), 
+            GetKey(nonce), 
             dateRequested.ToString(), 
             new DistributedCacheEntryOptions 
-                { AbsoluteExpiration = AbsoluteExpiration(dateRequested) }
+                { AbsoluteExpiration = GetAbsoluteExpiration(dateRequested) }
         );
 
     /// <summary>
@@ -41,7 +41,7 @@ internal class NonceDistributedCache : NonceCache
     /// <returns>A task that represents the asynchronous operation. The task result contains <c>true</c> if the nonce exists; otherwise, <c>false</c>.</returns>
     public override async Task<bool> ContainsAsync(Guid nonce)
     {
-        var value = await Cache.GetAsync(Key(nonce));
+        var value = await Cache.GetAsync(GetKey(nonce));
         return value is not null;
     }
 }

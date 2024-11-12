@@ -29,10 +29,10 @@ internal class NonceMemoryCache : NonceCache
     public override Task SetAsync(Guid nonce, DateTimeOffset dateRequested)
     {
         Cache.Set(
-            Key(nonce),
+            GetKey(nonce),
             dateRequested, 
             new MemoryCacheEntryOptions
-                { AbsoluteExpiration = AbsoluteExpiration(dateRequested) }
+                { AbsoluteExpiration = GetAbsoluteExpiration(dateRequested) }
         );
 
         return Task.CompletedTask;
@@ -45,7 +45,7 @@ internal class NonceMemoryCache : NonceCache
     /// <returns>A task that represents the asynchronous operation. The task result contains <c>true</c> if the nonce exists; otherwise, <c>false</c>.</returns>
     public override Task<bool> ContainsAsync(Guid nonce)
     {
-        var value = Cache.Get(Key(nonce));
+        var value = Cache.Get(GetKey(nonce));
         return Task.FromResult(value is not null);
     }
 }
