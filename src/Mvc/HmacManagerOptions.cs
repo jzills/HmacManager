@@ -23,6 +23,10 @@ public class HmacManagerOptions
     /// </summary>
     public HmacManagerOptions() { }
 
+    /// <summary>
+    /// Creates an options instance with the specified policies.
+    /// </summary>
+    /// <param name="policies">A collection of policies.</param>
     internal HmacManagerOptions(IHmacPolicyCollection policies) => PolicyCollectionOptions.Policies = policies;
 
     /// <summary>
@@ -56,5 +60,9 @@ public class HmacManagerOptions
         PolicyCollectionOptions.Policies.Add(policy);
     }
 
+    /// <summary>
+    /// Gets the options for this policy collection.
+    /// </summary>
+    /// <returns>The options.</returns> 
     internal HmacPolicyCollectionOptions GetPolicyCollectionOptions() => PolicyCollectionOptions;
 }

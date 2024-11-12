@@ -2,8 +2,16 @@ using HmacManager.Policies;
 
 namespace HmacManager.Headers;
 
+/// <summary>
+/// Validates instances of <see cref="HeaderScheme"/>.
+/// </summary>
 public class HeaderSchemeValidator : IValidator<HeaderScheme>
 {
+    /// <summary>
+    /// Validates a <see cref="HeaderScheme"/> object.
+    /// </summary>
+    /// <param name="validatable">The <see cref="HeaderScheme"/> instance to validate.</param>
+    /// <returns>A <see cref="ValidationResult"/> indicating whether the validation was successful or not.</returns>
     public ValidationResult Validate(HeaderScheme validatable)
     {
         if (string.IsNullOrWhiteSpace(validatable.Name))

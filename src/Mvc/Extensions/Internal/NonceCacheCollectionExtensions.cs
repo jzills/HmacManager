@@ -7,8 +7,17 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace HmacManager.Mvc.Extensions.Internal;
 
+/// <summary>
+/// Provides extension methods for <see cref="NonceCacheCollection"/> to add default caches (memory and distributed) to the collection.
+/// </summary>
 internal static class NonceCacheCollectionExtensions
 {
+    /// <summary>
+    /// A function that returns default options for a given <see cref="NonceCacheType"/>.
+    /// </summary>
+    /// <remarks>
+    /// By default, the max age for a nonce cache is set to 30 seconds.
+    /// </remarks>
     public static Func<NonceCacheType, NonceCacheOptions> DefaultOptionsAccessor = 
         cacheType => new NonceCacheOptions
         {
@@ -16,6 +25,15 @@ internal static class NonceCacheCollectionExtensions
             MaxAgeInSeconds = 30
         };
 
+    /// <summary>
+    /// Adds the default memory and distributed caches to the <see cref="NonceCacheCollection"/>.
+    /// </summary>
+    /// <param name="source">The <see cref="NonceCacheCollection"/> to add caches to.</param>
+    /// <param name="serviceProvider">The <see cref="IServiceProvider"/> used to retrieve cache-related services.</param>
+    /// <returns>The <see cref="NonceCacheCollection"/> with the added caches.</returns>
+    /// <remarks>
+    /// This method adds both in-memory and distributed caches for storing nonces.
+    /// </remarks>
     public static NonceCacheCollection AddDefaultCaches(
         this NonceCacheCollection source, 
         IServiceProvider serviceProvider
@@ -23,6 +41,12 @@ internal static class NonceCacheCollectionExtensions
             .AddDefaultMemoryCache(serviceProvider)
             .AddDefaultDistributedCache(serviceProvider);
 
+    /// <summary>
+    /// Adds a default memory cache to the <see cref="NonceCacheCollection"/>.
+    /// </summary>
+    /// <param name="source">The <see cref="NonceCacheCollection"/> to add the memory cache to.</param>
+    /// <param name="serviceProvider">The <see cref="IServiceProvider"/> used to retrieve the <see cref="IMemoryCache"/> service.</param>
+    /// <returns>The <see cref="NonceCacheCollection"/> with the added memory cache.</returns>
     private static NonceCacheCollection AddDefaultMemoryCache(
         this NonceCacheCollection source, 
         IServiceProvider serviceProvider
@@ -37,6 +61,12 @@ internal static class NonceCacheCollectionExtensions
         return source;
     }
 
+    /// <summary>
+    /// Adds a default distributed cache to the <see cref="NonceCacheCollection"/>.
+    /// </summary>
+    /// <param name="source">The <see cref="NonceCacheCollection"/> to add the distributed cache to.</param>
+    /// <param name="serviceProvider">The <see cref="IServiceProvider"/> used to retrieve the <see cref="IDistributedCache"/> service.</param>
+    /// <returns>The <see cref="NonceCacheCollection"/> with the added distributed cache.</returns>
     private static NonceCacheCollection AddDefaultDistributedCache(
         this NonceCacheCollection source, 
         IServiceProvider serviceProvider

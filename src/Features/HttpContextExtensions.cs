@@ -2,9 +2,18 @@ using Microsoft.AspNetCore.Http;
 
 namespace HmacManager.Features;
 
-public static class HttpContextExtensions
+/// <summary>
+/// Provides extension methods for <see cref="HttpContext"/> to simplify retrieving HTTP request-related features.
+/// </summary>
+internal static class HttpContextExtensions
 {
-    public static HttpRequestMessage GetHttpRequestMessage(this HttpContext httpContext)
+    /// <summary>
+    /// Retrieves the <see cref="HttpRequestMessage"/> associated with the current <see cref="HttpContext"/>.
+    /// If it doesn't exist, a new instance is created and added to the context's features.
+    /// </summary>
+    /// <param name="httpContext">The <see cref="HttpContext"/> from which to retrieve the <see cref="HttpRequestMessage"/>.</param>
+    /// <returns>The <see cref="HttpRequestMessage"/> associated with the <see cref="HttpContext"/>.</returns>
+    internal static HttpRequestMessage GetHttpRequestMessage(this HttpContext httpContext)
     {
         var feature = httpContext.Features.Get<IHttpRequestMessageFeature>();
         if (feature == null)

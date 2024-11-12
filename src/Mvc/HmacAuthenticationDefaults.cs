@@ -58,9 +58,20 @@ public static class HmacAuthenticationDefaults
         public const string Options = $"{AuthenticationScheme}-{nameof(Options)}";
     }
 
+    /// <summary>
+    /// A class that defines constants representing property names for HMAC-related data in authentication properties.
+    /// These constants are used to store and retrieve the HMAC policy and scheme values.
+    /// </summary>
     internal class Properties
     {
+        /// <summary>
+        /// The constant representing the key for the HMAC policy in authentication properties.
+        /// </summary>
         internal const string PolicyProperty = $"{nameof(HmacManager)}.Policy";
+        
+        /// <summary>
+        /// The constant representing the key for the HMAC scheme in authentication properties.
+        /// </summary>
         internal const string SchemeProperty = $"{nameof(HmacManager)}.Scheme";
     }
 }

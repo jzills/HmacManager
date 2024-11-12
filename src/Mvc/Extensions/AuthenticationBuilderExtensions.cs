@@ -76,6 +76,15 @@ public static class AuthenticationBuilderExtensions
         return builder;
     }
 
+    /// <summary>
+    /// Adds an HMAC authentication scheme to the <see cref="AuthenticationBuilder"/>.
+    /// </summary>
+    /// <param name="builder">The authentication builder to which the scheme will be added.</param>
+    /// <param name="configureOptions">A callback to configure the <see cref="HmacAuthenticationOptions"/>.</param>
+    /// <remarks>
+    /// This method adds a custom HMAC authentication scheme to the authentication system, allowing the use of
+    /// HMAC (Hash-based Message Authentication Code) for secure authentication.
+    /// </remarks>
     internal static void AddHmacScheme(
         this AuthenticationBuilder builder,
         Action<HmacAuthenticationOptions> configureOptions
@@ -85,6 +94,17 @@ public static class AuthenticationBuilderExtensions
             configureOptions
         );
 
+    /// <summary>
+    /// Adds an HMAC authentication scheme with a specific set of policies to the <see cref="AuthenticationBuilder"/>.
+    /// </summary>
+    /// <param name="builder">The authentication builder to which the scheme will be added.</param>
+    /// <param name="policies">The set of HMAC policies that will be applied to the scheme.</param>
+    /// <param name="events">Optional events for the HMAC authentication scheme.</param>
+    /// <remarks>
+    /// This method adds an HMAC authentication scheme with a pre-configured set of policies and events.
+    /// It allows users to specify custom HMAC policies and authentication events for more control over
+    /// the authentication process.
+    /// </remarks>
     internal static void AddHmacScheme(
         this AuthenticationBuilder builder,
         IHmacPolicyCollection policies,

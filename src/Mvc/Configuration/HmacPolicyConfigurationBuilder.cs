@@ -4,8 +4,18 @@ using HmacManager.Policies;
 
 namespace HmacManager.Mvc.Configuration;
 
+/// <summary>
+/// Builds and configures an HMAC policy using the provided <see cref="HmacPolicyConfigurationSection"/>.
+/// </summary>
 internal class HmacPolicyConfigurationBuilder : HmacPolicyBuilder
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="HmacPolicyConfigurationBuilder"/> class.
+    /// </summary>
+    /// <param name="policy">The <see cref="HmacPolicyConfigurationSection"/> containing the policy configuration.</param>
+    /// <exception cref="ArgumentException">Thrown if the <paramref name="policy"/> contains invalid values such as null or empty strings.</exception>
+    /// <exception cref="ArgumentNullException">Thrown if any required property in <paramref name="policy"/> is null.</exception>
+    /// <exception cref="NonceCacheTypeNotSupportedException">Thrown if an unsupported <see cref="NonceCacheType"/> is specified.</exception>
     public HmacPolicyConfigurationBuilder(HmacPolicyConfigurationSection policy)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(policy.Name, nameof(policy.Name));
@@ -13,11 +23,15 @@ internal class HmacPolicyConfigurationBuilder : HmacPolicyBuilder
         ArgumentNullException.ThrowIfNull(policy.Keys, nameof(policy.Keys));
         ArgumentNullException.ThrowIfNull(policy.Nonce, nameof(policy.Nonce));
 
+        // Configure the public and private keys for HMAC policy
         UsePublicKey(policy.Keys.PublicKey);
         UsePrivateKey(policy.Keys.PrivateKey);
+        
+        // Set the content hash and signing hash algorithms for the policy
         UseContentHashAlgorithm(policy.Algorithms.ContentHashAlgorithm);
         UseSigningHashAlgorithm(policy.Algorithms.SigningHashAlgorithm);
 
+        // Configure nonce caching based on the specified cache type
         switch (policy.Nonce.CacheType)
         {
             case NonceCacheType.Memory:
@@ -30,6 +44,7 @@ internal class HmacPolicyConfigurationBuilder : HmacPolicyBuilder
                 throw new NonceCacheTypeNotSupportedException($"The specified \"CacheType\" of {Enum.GetName(policy.Nonce.CacheType)} is not supported.");
         }
  
+        // Add header schemes if provided
         if (policy.HeaderSchemes?.Any() ?? false)
         {
             foreach (var headerScheme in policy.HeaderSchemes)

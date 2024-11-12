@@ -4,8 +4,18 @@ using HmacManager.Extensions;
 
 namespace HmacManager.Headers;
 
+/// <summary>
+/// A custom JSON converter for serializing and deserializing <see cref="HeaderSchemeCollection"/>.
+/// </summary>
 public class HeaderSchemeCollectionJsonConverter : JsonConverter<HeaderSchemeCollection>
 {
+    /// <summary>
+    /// Reads and deserializes a <see cref="HeaderSchemeCollection"/> from the provided JSON.
+    /// </summary>
+    /// <param name="reader">The <see cref="Utf8JsonReader"/> to read from.</param>
+    /// <param name="typeToConvert">The target type to convert to.</param>
+    /// <param name="options">The <see cref="JsonSerializerOptions"/> used during deserialization.</param>
+    /// <returns>The deserialized <see cref="HeaderSchemeCollection"/>.</returns>
     public override HeaderSchemeCollection? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         var headerSchemeCollection = new HeaderSchemeCollection();
@@ -48,10 +58,16 @@ public class HeaderSchemeCollectionJsonConverter : JsonConverter<HeaderSchemeCol
         {
             // Error
         }
-  
+
         return headerSchemeCollection;
     }
 
+    /// <summary>
+    /// Writes a <see cref="HeaderSchemeCollection"/> to JSON.
+    /// </summary>
+    /// <param name="writer">The <see cref="Utf8JsonWriter"/> to write the JSON to.</param>
+    /// <param name="value">The <see cref="HeaderSchemeCollection"/> to serialize.</param>
+    /// <param name="options">The <see cref="JsonSerializerOptions"/> used during serialization.</param>
     public override void Write(Utf8JsonWriter writer, HeaderSchemeCollection value, JsonSerializerOptions options)
     {
         writer.WriteStartArray();

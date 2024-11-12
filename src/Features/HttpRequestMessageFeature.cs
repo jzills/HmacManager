@@ -3,11 +3,20 @@ using HmacManager.Mvc.Extensions.Internal;
 
 namespace HmacManager.Features;
 
-public class HttpRequestMessageFeature : IHttpRequestMessageFeature
+/// <summary>
+/// Implements the <see cref="IHttpRequestMessageFeature"/> interface, providing access to an <see cref="HttpRequestMessage"/> 
+/// in the context of an HTTP request.
+/// </summary>
+internal class HttpRequestMessageFeature : IHttpRequestMessageFeature
 {
     private readonly HttpContext _httpContext;
     private HttpRequestMessage _httpRequestMessage;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="HttpRequestMessageFeature"/> class.
+    /// </summary>
+    /// <param name="httpContext">The <see cref="HttpContext"/> associated with the HTTP request.</param>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="httpContext"/> is <c>null</c>.</exception>
     public HttpRequestMessageFeature(HttpContext httpContext)
     {
         if (httpContext == null)
@@ -18,6 +27,12 @@ public class HttpRequestMessageFeature : IHttpRequestMessageFeature
         _httpContext = httpContext;
     }
 
+    /// <summary>
+    /// Gets or sets the <see cref="HttpRequestMessage"/> associated with the HTTP context.
+    /// </summary>
+    /// <remarks>
+    /// If the <see cref="HttpRequestMessage"/> has not been created yet, it will be lazily created the first time this property is accessed.
+    /// </remarks>
     public HttpRequestMessage HttpRequestMessage
     {
         get
@@ -33,6 +48,11 @@ public class HttpRequestMessageFeature : IHttpRequestMessageFeature
         set => _httpRequestMessage = value;
     }
 
+    /// <summary>
+    /// Creates an <see cref="HttpRequestMessage"/> from the given <see cref="HttpContext"/>.
+    /// </summary>
+    /// <param name="httpContext">The <see cref="HttpContext"/> to create the <see cref="HttpRequestMessage"/> from.</param>
+    /// <returns>A new <see cref="HttpRequestMessage"/>.</returns>
     private static HttpRequestMessage CreateHttpRequestMessage(HttpContext httpContext)
     {
         var httpRequest = httpContext.Request;

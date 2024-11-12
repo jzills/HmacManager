@@ -36,7 +36,9 @@ public class HmacAuthenticationOptions : AuthenticationSchemeOptions
         Options.EnableScopedPolicies(policiesAccessor);
 
     /// <summary>
-    /// Enables scoped policies using the specified delegate.
+    /// Enables consolidated base64 encoded hmac headers. Instead of having a header for each
+    /// hmac header value, i.e. Hmac-Policy, Hmac-Scheme, Hmac-DateRequested and so on, they will be
+    /// rolled up into a single header.  
     /// </summary>
     public void EnableConsolidatedHeaders() => Options.EnableConsolidatedHeaders();
 
@@ -49,5 +51,9 @@ public class HmacAuthenticationOptions : AuthenticationSchemeOptions
     public void AddPolicy(string name, Action<HmacPolicyBuilder> configurePolicy) => 
         Options.AddPolicy(name, configurePolicy);
 
+    /// <summary>
+    /// Gets the options for this authentication.
+    /// </summary>
+    /// <returns>The options.</returns> 
     internal HmacManagerOptions GetOptions() => Options;
 }
