@@ -83,7 +83,7 @@ def hmac_policy_generator():
             "CacheType": generate_cache_type(),
             "MaxAgeInSeconds": random.randint(10, 500)
         },
-        "HeaderSchemes": [
+        "Schemes": [
             {
                 "Name": generate_non_empty_string(),
                 "Headers": generate_headers()

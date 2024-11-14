@@ -14,10 +14,10 @@ public record HmacPartial
     public string Policy { get; init; }
 
     /// <summary>
-    /// Represents the name of the <c>HeaderScheme</c> used by <c>HmacManager</c> for signing and verification.
+    /// Represents the name of the <c>Scheme</c> used by <c>HmacManager</c> for signing and verification.
     /// </summary>
-    /// <value>The name of the <c>HeaderScheme</c>.</value>
-    public string? HeaderScheme { get; init; }
+    /// <value>The name of the <c>Scheme</c>.</value>
+    public string? Scheme { get; init; }
     
     /// <summary>
     /// Represents the date a request is made.

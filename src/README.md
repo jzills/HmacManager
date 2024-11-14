@@ -134,7 +134,7 @@ Both `AddHmacManager` and `AddHmac` have an overload which accepts an `IConfigur
                 "CacheType": "Memory",
                 "MaxAgeInSeconds": 100
             },
-            "HeaderSchemes": [
+            "Schemes": [
                 {
                     "Name": "Some_Scheme",
                     "Headers": [

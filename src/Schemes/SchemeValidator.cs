@@ -1,18 +1,18 @@
 using HmacManager.Policies;
 
-namespace HmacManager.Headers;
+namespace HmacManager.Schemes;
 
 /// <summary>
-/// Validates instances of <see cref="HeaderScheme"/>.
+/// Validates instances of <see cref="Scheme"/>.
 /// </summary>
-public class HeaderSchemeValidator : IValidator<HeaderScheme>
+public class SchemeValidator : IValidator<Scheme>
 {
     /// <summary>
-    /// Validates a <see cref="HeaderScheme"/> object.
+    /// Validates a <see cref="Scheme"/> object.
     /// </summary>
-    /// <param name="validatable">The <see cref="HeaderScheme"/> instance to validate.</param>
+    /// <param name="validatable">The <see cref="Scheme"/> instance to validate.</param>
     /// <returns>A <see cref="ValidationResult"/> indicating whether the validation was successful or not.</returns>
-    public ValidationResult Validate(HeaderScheme validatable)
+    public ValidationResult Validate(Scheme validatable)
     {
         if (string.IsNullOrWhiteSpace(validatable.Name))
         {
@@ -20,7 +20,7 @@ public class HeaderSchemeValidator : IValidator<HeaderScheme>
                 new ArgumentException("The \"Name\" property cannot be null, empty or whitespace."));
         }
         
-        if (validatable.Headers.Count == 0)
+        if (validatable.Headers.GetAll().Count == 0)
         {
             return new ValidationResult(isValid: false, 
                 new ArgumentException("The \"Headers\" property cannot be an empty collection."));

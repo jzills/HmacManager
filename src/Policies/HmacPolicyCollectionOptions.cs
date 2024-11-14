@@ -1,6 +1,4 @@
-using HmacManager.Policies;
-
-namespace HmacManager.Mvc;
+namespace HmacManager.Policies;
 
 /// <summary>
 /// A class representing an instance of <c>HmacPolicyCollectionOptions</c>.

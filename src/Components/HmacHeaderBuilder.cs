@@ -43,9 +43,9 @@ public class HmacHeaderBuilder : IHmacHeaderBuilder
     {
         WithPolicy(options.Policy);
         
-        if (!string.IsNullOrWhiteSpace(options.HeaderScheme?.Name))
+        if (!string.IsNullOrWhiteSpace(options.Scheme?.Name))
         {
-            WithScheme(options.HeaderScheme.Name);
+            WithScheme(options.Scheme.Name);
         }
 
         WithNonce(hmac.Nonce);

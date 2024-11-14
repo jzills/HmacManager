@@ -163,7 +163,7 @@ public class HmacHeaderParser : IHmacHeaderParser
         return new HmacPartial
         {
             Policy = GetPolicy(),
-            HeaderScheme = GetScheme(),
+            Scheme = GetScheme(),
             Nonce = GetNonce(),
             DateRequested = GetDateRequested()
         };

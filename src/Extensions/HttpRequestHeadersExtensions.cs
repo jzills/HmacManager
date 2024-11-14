@@ -1,5 +1,6 @@
 using System.Net.Http.Headers;
 using HmacManager.Headers;
+using HmacManager.Schemes;
 
 namespace HmacManager.Extensions;
 
@@ -17,35 +18,39 @@ internal static class HttpRequestHeadersExtensions
     {
         foreach (var header in headers)
         {
+#pragma warning disable CS8604
             source.Add(header.Name, header.Value);
+#pragma warning restore CS8604
         }
     }
 
     /// <summary>
-    /// Tries to parse the headers based on the provided <see cref="HeaderScheme"/>.
+    /// Tries to parse the headers based on the provided <see cref="Scheme"/>.
     /// </summary>
     /// <param name="headers">The <see cref="HttpRequestHeaders"/> to be parsed.</param>
-    /// <param name="headerScheme">The <see cref="HeaderScheme"/> used to define which headers to look for.</param>
+    /// <param name="scheme">The <see cref="Scheme"/> used to define which headers to look for.</param>
     /// <param name="headerValues">The parsed <see cref="IReadOnlyCollection{HeaderValue}"/> containing the header values, if successful.</param>
     /// <returns><c>true</c> if the headers were successfully parsed according to the scheme; otherwise, <c>false</c>.</returns>
     internal static bool TryParseHeaders(
         this HttpRequestHeaders headers,
-        HeaderScheme? headerScheme,
+        Scheme? scheme,
         out IReadOnlyCollection<HeaderValue> headerValues
     )
     {
-        if (headerScheme is null)
+        if (scheme is null)
         {
             headerValues = new List<HeaderValue>().AsReadOnly();
             return true;
         }
         else
         {
-            var schemeHeaders = headerScheme.Headers;
+            var schemeHeaders = scheme.Headers.GetAll();
             var schemeHeaderValues = new List<HeaderValue>(schemeHeaders.Count);
             foreach (var schemeHeader in schemeHeaders)
             {
+#pragma warning disable CS8604
                 if (headers.TryGetValues(schemeHeader.Name, out var values))
+#pragma warning restore CS8604
                 {
                     var schemeHeaderValue = values.First();
                     schemeHeaderValues.Add(new HeaderValue(

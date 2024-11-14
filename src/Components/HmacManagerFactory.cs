@@ -4,6 +4,7 @@ using HmacManager.Common.Extensions;
 using HmacManager.Headers;
 using HmacManager.Policies;
 using HmacManager.Policies.Extensions;
+using HmacManager.Schemes;
 
 namespace HmacManager.Components;
 
@@ -99,7 +100,7 @@ public class HmacManagerFactory : IHmacManagerFactory
             CreateOptions(
                 options.Name!, 
                 options.Nonce.MaxAgeInSeconds, 
-                options.HeaderSchemes.Get(scheme)
+                options.Schemes.Get(scheme)
             ),
             CreateFactory(options.Keys, options.Algorithms, options.SigningContentBuilder),
             CreateResultFactory(options.Name!, scheme),
@@ -130,12 +131,12 @@ public class HmacManagerFactory : IHmacManagerFactory
     private HmacManagerOptions CreateOptions(
         string policy, 
         int maxAgeInSeconds, 
-        HeaderScheme? scheme = null
+        Scheme? scheme = null
     ) => 
         new HmacManagerOptions(policy) 
         {
             MaxAgeInSeconds = maxAgeInSeconds, 
-            HeaderScheme = scheme ,
+            Scheme = scheme ,
             HeaderBuilder = HeaderBuilderFactory.Create(),
             HeaderParser = HeaderParserFactory.Create()
         };

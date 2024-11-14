@@ -11,13 +11,13 @@ public class Test_Distributed_ReplayAttack : TestServiceCollection
         Assert.IsTrue(signingResult.IsSuccess);
         Assert.IsTrue(signingResult.Hmac?.Policy == "Policy_Distributed");
         Assert.IsTrue(signingResult.Hmac?.HeaderValues?.Count() == 0);
-        Assert.IsNull(signingResult.Hmac?.HeaderScheme);
+        Assert.IsNull(signingResult.Hmac?.Scheme);
 
         var verificationResult = await hmacManager.VerifyAsync(request);
         Assert.IsTrue(verificationResult.IsSuccess);
         Assert.IsTrue(verificationResult.Hmac?.Policy == "Policy_Distributed");
         Assert.IsTrue(verificationResult.Hmac?.HeaderValues?.Count() == 0);
-        Assert.IsNull(verificationResult.Hmac?.HeaderScheme);
+        Assert.IsNull(verificationResult.Hmac?.Scheme);
 
         var replayVerificationResult = await hmacManager.VerifyAsync(request);
         Assert.IsFalse(replayVerificationResult.IsSuccess);

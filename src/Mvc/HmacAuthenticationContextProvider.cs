@@ -58,7 +58,7 @@ public class HmacAuthenticationContextProvider : IHmacAuthenticationContextProvi
             if (authorizationHeader.StartsWith(HmacAuthenticationDefaults.AuthenticationScheme))
             {
                 var hmacPartial = HeaderParserFactory.Create(headers).Parse(out var signature);
-                var hmacManager = Factory.Create(hmacPartial.Policy, hmacPartial.HeaderScheme);
+                var hmacManager = Factory.Create(hmacPartial.Policy, hmacPartial.Scheme);
 
                 if (Policies.TryGetValue(hmacPartial.Policy, out var hmacPolicy))
                 {

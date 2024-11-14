@@ -2,7 +2,6 @@ using System.Net.Http.Headers;
 using HmacManager.Caching;
 using HmacManager.Caching.Extensions;
 using HmacManager.Extensions;
-using HmacManager.Headers;
 
 namespace HmacManager.Components;
 
@@ -71,7 +70,7 @@ public class HmacManager : IHmacManager
     /// <inheritdoc/>
     public async Task<HmacResult> SignAsync(HttpRequestMessage request)
     {
-        var hmac = await Factory.CreateAsync(request, Options.Policy, Options.HeaderScheme);
+        var hmac = await Factory.CreateAsync(request, Options.Policy, Options.Scheme);
         if (hmac is not null)
         {
             var headers = Options.HeaderBuilder.CreateBuilder(Options, hmac).Build();
@@ -96,24 +95,24 @@ public class HmacManager : IHmacManager
     private bool TryParseHmac(HttpRequestHeaders headers, out Hmac? value)
     {
         var hmacPartial = Options.HeaderParser.CreateParser(headers).Parse(out var signature);
-        if (Options.HeaderScheme is null)
+        if (Options.Scheme is null)
         {
             value = new Hmac
             {
                 Policy = hmacPartial.Policy,
-                HeaderScheme = hmacPartial.HeaderScheme,
+                Scheme = hmacPartial.Scheme,
                 Signature = signature ?? string.Empty,
                 DateRequested = hmacPartial.DateRequested,
                 Nonce = hmacPartial.Nonce,
                 HeaderValues = []
             };
         }
-        else if (TryParseHeaders(headers, Options.HeaderScheme, out var headerValues))
+        else if (headers.TryParseHeaders(Options.Scheme, out var headerValues))
         {
             value = new Hmac
             {
                 Policy = hmacPartial.Policy,
-                HeaderScheme = hmacPartial.HeaderScheme,
+                Scheme = hmacPartial.Scheme,
                 Signature = signature ?? string.Empty,
                 DateRequested = hmacPartial.DateRequested,
                 Nonce = hmacPartial.Nonce,
@@ -126,39 +125,5 @@ public class HmacManager : IHmacManager
         }
 
         return value is not null;
-    }
-
-    private bool TryParseHeaders(HttpRequestHeaders headers, HeaderScheme? headerScheme, out IReadOnlyCollection<HeaderValue> headerValues)
-    {
-        if (headerScheme is null)
-        {
-            headerValues = new List<HeaderValue>().AsReadOnly();
-            return true;
-        }
-        else
-        {
-            var schemeHeaders = headerScheme.Headers;
-            var schemeHeaderValues = new List<HeaderValue>(schemeHeaders.Count);
-            foreach (var schemeHeader in schemeHeaders)
-            {
-                if (headers.TryGetValues(schemeHeader.Name, out var values))
-                {
-                    var schemeHeaderValue = values.First();
-                    schemeHeaderValues.Add(new HeaderValue(
-                        schemeHeader.Name, 
-                        schemeHeader.ClaimType, 
-                        schemeHeaderValue
-                    ));
-                }
-                else
-                {
-                    headerValues = new List<HeaderValue>().AsReadOnly();
-                    return false;
-                }
-            }
-
-            headerValues = schemeHeaderValues.AsReadOnly();
-            return true;
-        }
     }
 }

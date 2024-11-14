@@ -1,6 +1,7 @@
 using HmacManager.Exceptions;
 using HmacManager.Extensions;
 using HmacManager.Headers;
+using HmacManager.Schemes;
 
 namespace HmacManager.Components;
 
@@ -24,16 +25,16 @@ public class HmacBuilder
     /// </summary>
     /// <param name="request">The http request message for the basis of hmac computation.</param>
     /// <param name="policy">The policy to sign against.</param>
-    /// <param name="headerScheme">The scheme to sign against.</param>
-    public HmacBuilder(HttpRequestMessage request, string policy, HeaderScheme? headerScheme = null)
+    /// <param name="scheme">The scheme to sign against.</param>
+    public HmacBuilder(HttpRequestMessage request, string policy, Scheme? scheme = null)
     {
         Hmac = new Hmac { Policy = policy };
 
-        if (request.Headers.TryParseHeaders(headerScheme, out var headerValues))
+        if (request.Headers.TryParseHeaders(scheme, out var headerValues))
         {
             Hmac = Hmac with 
             { 
-                HeaderScheme = headerScheme?.Name,
+                Scheme = scheme?.Name,
                 HeaderValues = headerValues 
             };
         }
@@ -55,7 +56,7 @@ public class HmacBuilder
         Hmac = new Hmac 
         {
             Policy = hmac.Policy,
-            HeaderScheme = hmac.HeaderScheme,
+            Scheme = hmac.Scheme,
             DateRequested = hmac.DateRequested,
             Nonce = hmac.Nonce,
             HeaderValues = hmac.HeaderValues

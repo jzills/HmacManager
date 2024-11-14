@@ -5,6 +5,7 @@ using HmacManager.Components;
 using HmacManager.Headers;
 using HmacManager.Policies;
 using HmacManager.Policies.Extensions;
+using HmacManager.Schemes;
 
 namespace Unit.Tests.Policies;
 
@@ -15,10 +16,10 @@ public class Test_HmacPolicyCollection_DynamicPolicies_Add : TestServiceCollecti
     public void Test_AddPolicy_VerifyThrough_HmacPolicyCollection()
     {
         var policies = ServiceProvider.GetRequiredService<IHmacPolicyCollection>();
-        var headerSchemes = new HeaderSchemeCollection();
-        var headerScheme = new HeaderScheme("Cool_Dynamic_Scheme");
-        headerScheme.AddHeader("Cool_Dynamic_Header", "Cool_Dynamic_ClaimType");
-        headerSchemes.Add(headerScheme);
+        var schemes = new SchemeCollection();
+        var builder = new SchemeBuilder("Cool_Dynamic_Scheme");
+        builder.AddHeader("Cool_Dynamic_Header", "Cool_Dynamic_ClaimType");
+        schemes.Add(builder.Build());
 
         policies.Add(new HmacPolicy
         {
@@ -38,7 +39,7 @@ public class Test_HmacPolicyCollection_DynamicPolicies_Add : TestServiceCollecti
                 CacheType = NonceCacheType.Memory,
                 MaxAgeInSeconds = 30
             },
-            HeaderSchemes = headerSchemes
+            Schemes = schemes
         });
 
         policies = ServiceProvider.GetRequiredService<IHmacPolicyCollection>();
@@ -51,10 +52,10 @@ public class Test_HmacPolicyCollection_DynamicPolicies_Add : TestServiceCollecti
     public async Task Test_AddPolicy_VerifyThrough_HmacManagerFactory()
     {
         var policies = ServiceProvider.GetRequiredService<IHmacPolicyCollection>();
-        var headerSchemes = new HeaderSchemeCollection();
-        var headerScheme = new HeaderScheme("Cool_Dynamic_Scheme");
-        headerScheme.AddHeader("Cool_Dynamic_Header", "Cool_Dynamic_ClaimType");
-        headerSchemes.Add(headerScheme);
+        var schemes = new SchemeCollection();
+        var builder = new SchemeBuilder("Cool_Dynamic_Scheme");
+        builder.AddHeader("Cool_Dynamic_Header", "Cool_Dynamic_ClaimType");
+        schemes.Add(builder.Build());
 
         policies.Add(new HmacPolicy
         {
@@ -74,7 +75,7 @@ public class Test_HmacPolicyCollection_DynamicPolicies_Add : TestServiceCollecti
                 CacheType = NonceCacheType.Memory,
                 MaxAgeInSeconds = 30
             },
-            HeaderSchemes = headerSchemes
+            Schemes = schemes
         });
 
         var hmacManagerFactory = ServiceProvider.GetRequiredService<IHmacManagerFactory>();
@@ -89,6 +90,6 @@ public class Test_HmacPolicyCollection_DynamicPolicies_Add : TestServiceCollecti
 
         Assert.IsTrue(signingResult.IsSuccess);
         Assert.IsTrue(signingResult.Hmac?.Policy == "Cool_Dynamic_Policy");
-        Assert.IsTrue(signingResult.Hmac?.HeaderScheme == "Cool_Dynamic_Scheme");
+        Assert.IsTrue(signingResult.Hmac?.Scheme == "Cool_Dynamic_Scheme");
     }
 }

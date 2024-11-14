@@ -104,7 +104,7 @@ internal class HmacAuthenticationHandler : AuthenticationHandler<HmacAuthenticat
 
         // Adds policy and header claims to support dynamic authorization policies.
         claims.Add(new Claim(HmacAuthenticationDefaults.Properties.PolicyProperty, hmacResult.Hmac.Policy));
-        claims.Add(new Claim(HmacAuthenticationDefaults.Properties.SchemeProperty, hmacResult.Hmac.HeaderScheme));
+        claims.Add(new Claim(HmacAuthenticationDefaults.Properties.SchemeProperty, hmacResult.Hmac.Scheme));
 
         return claims;
     }
@@ -125,7 +125,7 @@ internal class HmacAuthenticationHandler : AuthenticationHandler<HmacAuthenticat
             new AuthenticationProperties(new Dictionary<string, string?>
             {
                 { HmacAuthenticationDefaults.Properties.PolicyProperty, result.Hmac.Policy },
-                { HmacAuthenticationDefaults.Properties.SchemeProperty, result.Hmac.HeaderScheme }
+                { HmacAuthenticationDefaults.Properties.SchemeProperty, result.Hmac.Scheme }
             }),
             HmacAuthenticationDefaults.AuthenticationScheme
         );

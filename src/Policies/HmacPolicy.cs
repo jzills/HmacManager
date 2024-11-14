@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
 using HmacManager.Caching;
 using HmacManager.Components;
-using HmacManager.Headers;
+using HmacManager.Schemes;
 
 namespace HmacManager.Policies;
 
@@ -45,9 +45,9 @@ public class HmacPolicy
     public Nonce Nonce { get; set; } = new();
 
     /// <summary>
-    /// A collection of <c>HeaderScheme</c> objects for this policy.
+    /// A collection of <c>Scheme</c> objects for this policy.
     /// </summary>
-    public HeaderSchemeCollection HeaderSchemes { get; set; } = new();
+    public SchemeCollection Schemes { get; set; } = new();
 
     /// <summary>
     /// The <c>SigningContentBuilder</c> used to construct signing content.

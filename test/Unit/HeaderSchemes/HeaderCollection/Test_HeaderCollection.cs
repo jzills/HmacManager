@@ -1,6 +1,6 @@
 using HmacManager.Headers;
 
-namespace Unit.Tests.HeaderSchemes;
+namespace Unit.Tests.Schemes;
 
 [TestFixture]
 public class Test_HeaderCollection

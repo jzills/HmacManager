@@ -1,6 +1,6 @@
 using HmacManager.Caching;
 using HmacManager.Components;
-using HmacManager.Headers;
+using HmacManager.Schemes;
 
 namespace HmacManager.Policies;
 
@@ -27,7 +27,7 @@ public class HmacPolicyBuilder
     /// <summary>
     /// Holds a collection of header schemes used in the HMAC authentication process.
     /// </summary>
-    internal readonly HeaderSchemeCollection HeaderSchemes = new();
+    internal readonly SchemeCollection Schemes = new();
 
     /// <summary>
     /// Builds the content used for signing in HMAC authentication requests.
@@ -114,17 +114,17 @@ public class HmacPolicyBuilder
     }
 
     /// <summary>
-    /// Adds a specified scheme to the <c>HeaderSchemeCollection</c>. This can later be used
+    /// Adds a specified scheme to the <c>SchemeCollection</c>. This can later be used
     /// to authenticate signatures.
     /// </summary>
-    /// <param name="name">The name of the <c>HeaderScheme</c>.</param>
-    /// <param name="configureScheme">The configuration action for <c>HeaderScheme</c>.</param>
+    /// <param name="name">The name of the <c>Scheme</c>.</param>
+    /// <param name="configureScheme">The configuration action for <c>Scheme</c>.</param>
     /// <returns>A <c>HmacPolicyBuilder</c> that can be used to further configure a policy.</returns>
-    public HmacPolicyBuilder AddScheme(string name, Action<HeaderScheme> configureScheme)
+    public HmacPolicyBuilder AddScheme(string name, Action<SchemeBuilder> configureScheme)
     {
-        var header = new HeaderScheme(name);
-        configureScheme.Invoke(header);
-        HeaderSchemes.Add(header);   
+        var builder = new SchemeBuilder(name);
+        configureScheme.Invoke(builder);
+        Schemes.Add(builder.Build());   
         return this;
     }
 
@@ -138,7 +138,7 @@ public class HmacPolicyBuilder
             Algorithms = Algorithms,
             Keys = Keys,
             Nonce = Nonce,
-            HeaderSchemes = HeaderSchemes,
+            Schemes = Schemes,
             SigningContentBuilder = SigningContentBuilder
         };
 }

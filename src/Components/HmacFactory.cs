@@ -1,4 +1,5 @@
 using HmacManager.Headers;
+using HmacManager.Schemes;
 
 namespace HmacManager.Components;
 
@@ -23,13 +24,13 @@ public class HmacFactory : IHmacFactory
     /// </summary>
     /// <param name="request">A http request message.</param>
     /// <param name="policy">A policy.</param> 
-    /// <param name="headerScheme">An optional header scheme.</param>
+    /// <param name="scheme">An optional header scheme.</param>
     /// <returns></returns>
-    public Task<Hmac> CreateAsync(HttpRequestMessage request, string policy, HeaderScheme? headerScheme = null)
+    public Task<Hmac> CreateAsync(HttpRequestMessage request, string policy, Scheme? scheme = null)
     {
         ArgumentNullException.ThrowIfNull(request, nameof(request));
 
-        return CreateInstance(new HmacBuilder(request, policy, headerScheme));
+        return CreateInstance(new HmacBuilder(request, policy, scheme));
     }
 
     /// <summary>

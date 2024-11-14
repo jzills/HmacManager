@@ -8,7 +8,7 @@
             "PublicKey": "e2ed1878-7c4e-4e78-899d-25446b5fd900",
             "PrivateKey": "fLe+bOrpSxOLObbYrAVtAw=="
         },
-        "HeaderSchemes": [
+        "Schemes": [
             {
                 "Name": "L9S54sTQ3NhxP1",
                 "Headers": [
@@ -47,7 +47,7 @@
             "PublicKey": "9e91c20c-2c62-424e-9be0-40592e4c1463",
             "PrivateKey": "Ptfjb1OXQBuvemxMHxgOrA=="
         },
-        "HeaderSchemes": [
+        "Schemes": [
             {
                 "Name": "ymemvWRbvv93Q",
                 "Headers": [
@@ -97,7 +97,7 @@
             "ContentHashAlgorithm": "SHA512",
             "SigningHashAlgorithm": "HMACSHA512"
         },
-        "HeaderSchemes": [
+        "Schemes": [
             {
                 "Name": "IrNSSSdTctEwo_3",
                 "Headers": [
@@ -122,7 +122,7 @@
         ]
     },
     {
-        "HeaderSchemes": [
+        "Schemes": [
             {
                 "Name": "ZLldVRC9",
                 "Headers": [
@@ -152,7 +152,7 @@
         }
     },
     {
-        "HeaderSchemes": [
+        "Schemes": [
             {
                 "Name": "mDfJjWRs3",
                 "Headers": [
@@ -186,7 +186,7 @@
         }
     },
     {
-        "HeaderSchemes": [
+        "Schemes": [
             {
                 "Name": "WtGStES",
                 "Headers": [
@@ -212,7 +212,7 @@
         }
     },
     {
-        "HeaderSchemes": [
+        "Schemes": [
             {
                 "Name": "Y7n5I",
                 "Headers": [
@@ -267,7 +267,7 @@
             "PublicKey": "24b06d7e-834e-41d9-b491-42855f2c8859",
             "PrivateKey": "JToYB+bJTrCEpIfKWL+w3A=="
         },
-        "HeaderSchemes": [
+        "Schemes": [
             {
                 "Name": "peEI5eVwXcL7Bx",
                 "Headers": [
@@ -292,7 +292,7 @@
             "PublicKey": "4c150a02-7902-475d-bbb2-7ca4874dc85e",
             "PrivateKey": "wrEyNWMJREKxW3Q/8X+J2Q=="
         },
-        "HeaderSchemes": [
+        "Schemes": [
             {
                 "Name": "tzcXhzBwHh",
                 "Headers": [
@@ -339,7 +339,7 @@
             "PrivateKey": "CI00nIhnTOS6ODTuXSIl4g=="
         },
         "Name": "Ji2OeDX63lRg",
-        "HeaderSchemes": [
+        "Schemes": [
             {
                 "Name": "Df36-",
                 "Headers": [

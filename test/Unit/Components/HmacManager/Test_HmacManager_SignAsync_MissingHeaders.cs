@@ -2,9 +2,9 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using HmacManager.Caching.Memory;
 using HmacManager.Components;
-using HmacManager.Headers;
 using HmacManager.Policies;
 using HmacManager.Exceptions;
+using HmacManager.Schemes;
 
 namespace Unit.Tests.Components;
 
@@ -33,18 +33,19 @@ public class Test_HmacManager_SignAsync_MissingHeaders
             SignatureHashGenerator = new SignatureHashGenerator("xCy0Ucg3YEKlmiK23Zph+g==", SigningHashAlgorithm.HMACSHA1)
         };
 
+        var builder = new SchemeBuilder("Scheme");
+        builder.AddHeader("X-Required-Header");
+        
         HmacManagerOptions = new HmacManagerOptions("Policy")
         {
             MaxAgeInSeconds = 60,
-            HeaderScheme = new HeaderScheme("Scheme")
+            Scheme = builder.Build()
         };
-
-        HmacManagerOptions.HeaderScheme.AddHeader("X-Required-Header");
 
         HmacManager = new HmacManager.Components.HmacManager(
             HmacManagerOptions, 
             new HmacFactory(new HmacSignatureProvider(HmacSignatureProviderOptions)), 
-            new HmacResultFactory(HmacManagerOptions.Policy, HmacManagerOptions.HeaderScheme.Name),
+            new HmacResultFactory(HmacManagerOptions.Policy, HmacManagerOptions.Scheme.Name),
             new NonceMemoryCache(
                 new MemoryCache(Options.Create(new MemoryCacheOptions())), 
                 new HmacManager.Caching.NonceCacheOptions()

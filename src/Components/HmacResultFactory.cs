@@ -13,17 +13,17 @@ internal class HmacResultFactory : IHmacResultFactory
     /// <summary>
     /// Gets the optional header scheme associated with the HMAC result.
     /// </summary>
-    protected readonly string? HeaderScheme;
+    protected readonly string? Scheme;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="HmacResultFactory"/> class with the specified policy and optional header scheme.
     /// </summary>
     /// <param name="policy">The policy to associate with the HMAC result.</param>
-    /// <param name="headerScheme">The optional header scheme to associate with the HMAC result.</param>
-    internal HmacResultFactory(string policy, string? headerScheme = null)
+    /// <param name="scheme">The optional header scheme to associate with the HMAC result.</param>
+    internal HmacResultFactory(string policy, string? scheme = null)
     {
         Policy = policy;
-        HeaderScheme = headerScheme;
+        Scheme = scheme;
     }
 
     /// <summary>

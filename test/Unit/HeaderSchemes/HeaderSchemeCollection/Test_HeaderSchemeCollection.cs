@@ -1,21 +1,23 @@
 using HmacManager.Headers;
+using HmacManager.Schemes;
 
-namespace Unit.Tests.HeaderSchemes;
+namespace Unit.Tests.Schemes;
 
 [TestFixture]
-public class Test_HeaderSchemeCollection
+public class Test_SchemeCollection
 {
     [Test]
     public void Test()
     {
-        var schemes = new HeaderSchemeCollection();
-        var scheme = new HeaderScheme("Scheme_1");
-        scheme.AddHeader("Header_1", string.Empty);
-        scheme.AddHeader("Header_2", "          ");
-        scheme.AddHeader("Header_3", default!);
-        scheme.AddHeader("Header_4", null!);
+        var schemes = new SchemeCollection();
+        var builder = new SchemeBuilder("Scheme_1");
+        builder.AddHeader("Header_1", string.Empty);
+        builder.AddHeader("Header_2", "          ");
+        builder.AddHeader("Header_3", default!);
+        builder.AddHeader("Header_4", null!);
+        var scheme = builder.Build();
 
-        var hasEmptyClaimTypes = scheme.Headers.Any(header => string.IsNullOrWhiteSpace(header.ClaimType));
+        var hasEmptyClaimTypes = scheme.Headers.GetAll().Any(header => string.IsNullOrWhiteSpace(header.ClaimType));
         Assert.IsFalse(hasEmptyClaimTypes);
     }
 }

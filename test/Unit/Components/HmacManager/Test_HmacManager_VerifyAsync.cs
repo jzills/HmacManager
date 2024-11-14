@@ -2,9 +2,9 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using HmacManager.Caching.Memory;
 using HmacManager.Components;
-using HmacManager.Headers;
 using HmacManager.Policies;
 using System.Net.Http.Headers;
+using HmacManager.Schemes;
 
 namespace Unit.Tests.Components;
 
@@ -43,7 +43,7 @@ public class Test_HmacManager_VerifyAsync
         HmacManagerOptions = new HmacManagerOptions("Policy")
         {
             MaxAgeInSeconds = 60,
-            HeaderScheme = new HeaderScheme("Scheme"),
+            Scheme = new Scheme("Scheme"),
             HeaderBuilder = new HmacHeaderBuilder(),
             HeaderParser = new HmacHeaderParser()
         };
@@ -51,7 +51,7 @@ public class Test_HmacManager_VerifyAsync
         HmacManager = new HmacManager.Components.HmacManager(
             HmacManagerOptions, 
             new HmacFactory(new HmacSignatureProvider(HmacSignatureProviderOptions)), 
-            new HmacResultFactory(HmacManagerOptions.Policy, HmacManagerOptions.HeaderScheme.Name),
+            new HmacResultFactory(HmacManagerOptions.Policy, HmacManagerOptions.Scheme.Name),
             new NonceMemoryCache(
                 new MemoryCache(Options.Create(new MemoryCacheOptions())), 
                 new HmacManager.Caching.NonceCacheOptions()
@@ -85,7 +85,7 @@ public class Test_HmacManager_VerifyAsync
     //     Assert.IsTrue(verificationResult.IsSuccess);
 
     //     Assert.That(signingResult.Policy, Is.EqualTo(verificationResult.Policy));
-    //     Assert.That(signingResult.HeaderScheme, Is.EqualTo(verificationResult.HeaderScheme));
+    //     Assert.That(signingResult.Scheme, Is.EqualTo(verificationResult.Scheme));
 
     //     Assert.That(signingResult.Hmac!.DateRequested, Is.EqualTo(verificationResult.Hmac!.DateRequested));
         

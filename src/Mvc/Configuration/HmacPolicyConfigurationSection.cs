@@ -12,7 +12,7 @@ internal class HmacPolicyConfigurationSection : HmacPolicy
     /// Gets or sets the collection of header schemes that are part of the HMAC policy configuration.
     /// </summary>
     /// <value>
-    /// A list of <see cref="HeaderSchemeConfigurationSection"/> representing the header schemes to be used.
+    /// A list of <see cref="SchemeConfigurationSection"/> representing the header schemes to be used.
     /// </value>
-    public new IReadOnlyList<HeaderSchemeConfigurationSection>? HeaderSchemes { get; set; }
+    public new IReadOnlyList<SchemeConfigurationSection>? Schemes { get; set; }
 }

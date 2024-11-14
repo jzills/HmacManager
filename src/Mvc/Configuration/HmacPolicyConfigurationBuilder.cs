@@ -45,19 +45,19 @@ internal class HmacPolicyConfigurationBuilder : HmacPolicyBuilder
         }
  
         // Add header schemes if provided
-        if (policy.HeaderSchemes?.Any() ?? false)
+        if (policy.Schemes?.Any() ?? false)
         {
-            foreach (var headerScheme in policy.HeaderSchemes)
+            foreach (var scheme in policy.Schemes)
             {
-                ArgumentException.ThrowIfNullOrWhiteSpace(headerScheme.Name, nameof(headerScheme.Name));
+                ArgumentException.ThrowIfNullOrWhiteSpace(scheme.Name, nameof(scheme.Name));
                 
-                if (headerScheme.Headers?.Count > 0)
+                if (scheme.Headers?.Count > 0)
                 {
-                    AddScheme(headerScheme.Name, scheme =>
+                    AddScheme(scheme.Name, builder =>
                     {
-                        foreach (var header in headerScheme?.Headers ?? [])
+                        foreach (var header in scheme?.Headers ?? [])
                         {
-                            scheme.AddHeader(header.Name, header.ClaimType);
+                            builder.AddHeader(header.Name, header.ClaimType);
                         }
                     });
                 }

@@ -9,8 +9,8 @@
 //     [Test]
 //     public async Task Test()
 //     {
-//         var headerScheme = new HeaderScheme(PolicySchemeType.Policy_Memory_Scheme_1.Scheme);
-//         headerScheme.AddHeader("Scheme_Header_1");
+//         var scheme = new Scheme(PolicySchemeType.Policy_Memory_Scheme_1.Scheme);
+//         scheme.AddHeader("Scheme_Header_1");
 
 //         var request = new HttpRequestMessage(HttpMethod.Get, "/api/something");
 //         request.Headers.Add("Scheme_Header_1", "Value");
@@ -19,7 +19,7 @@
 //             .Create(PolicySchemeType.Policy_Memory_Scheme_1.Policy, PolicySchemeType.Policy_Memory_Scheme_1.Scheme)!
 //             .SignAsync(request);
 
-//         var hasHeaderValues = request.Headers.TryParseHmac(headerScheme, 30, out var hmac);
+//         var hasHeaderValues = request.Headers.TryParseHmac(scheme, 30, out var hmac);
 //         Assert.IsTrue(hasHeaderValues);
 //         Assert.That(signingResult.Hmac!.HeaderValues.Count, Is.EqualTo(hmac.HeaderValues.Count));
 

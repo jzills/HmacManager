@@ -1,4 +1,4 @@
-using HmacManager.Headers;
+using HmacManager.Schemes;
 
 namespace HmacManager.Components;
 
@@ -21,7 +21,7 @@ public class HmacManagerOptions
     /// <summary>
     /// Gets or sets the header scheme for authentication.
     /// </summary>
-    public HeaderScheme? HeaderScheme { get; init; }
+    public Scheme? Scheme { get; init; }
 
     /// <summary>
     /// Gets or sets the maximum allowable age of the signature in seconds.
