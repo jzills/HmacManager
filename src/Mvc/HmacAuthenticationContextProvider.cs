@@ -51,7 +51,7 @@ public class HmacAuthenticationContextProvider : IHmacAuthenticationContextProvi
     /// <param name="context">The retrieved <see cref="HmacAuthenticationContext"/> if successful, otherwise <see langword="null"/>.</param>
     /// <returns><see langword="true"/> if the context was successfully retrieved; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="HmacPolicyNotFoundException">Thrown when the specified HMAC policy is not found.</exception>
-    public bool TryGetAuthenticationContext(IDictionary<string, string?> headers, out HmacAuthenticationContext context)
+    public bool TryGetAuthenticationContext(IDictionary<string, string> headers, out HmacAuthenticationContext context)
     {
         if (headers.TryGetValue(HmacAuthenticationDefaults.Headers.Authorization, out var authorizationHeader))
         {

@@ -19,7 +19,7 @@
     <PackageProjectUrl>https://github.com/jzills/HmacManager</PackageProjectUrl>
     <RepositoryUrl>https://github.com/jzills/HmacManager.git</RepositoryUrl> 
     <RepositoryType>git</RepositoryType> 
-    <PackageIcon>icon.png</PackageIcon>
+    <PackageIcon>Icon.jpg</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="../resources/icon.png" Pack="true" PackagePath="" />
+    <None Include="../resources/Icon.jpg" Pack="true" PackagePath="" />
   </ItemGroup>
 
   <ItemGroup>

@@ -52,7 +52,7 @@ public static class IHttpClientBuilderExtensions
     /// <param name="scheme">The optional scheme to be used for signing the requests.</param>
     /// <returns>A <c>DelegatingHandler</c> that will sign outgoing HTTP requests with the specified policy and scheme.</returns>
     /// <exception cref="ArgumentException">Thrown when the <paramref name="policy"/> is null or whitespace.</exception>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="hmacManager"/> is null.</exception>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="policy"/> and <paramref name="scheme"/> configuration results in a null <see cref="HmacManager"/> instance.</exception>
     internal static DelegatingHandler GetDelegatingHandler(
         IServiceProvider serviceProvider,
         string policy,

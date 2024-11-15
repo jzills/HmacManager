@@ -11,7 +11,7 @@ public record HmacPartial
     /// Represents the policy used by HmacManager for signing and verification.
     /// </summary>
     /// <value>The name of the policy.</value>
-    public string Policy { get; init; }
+    public required string Policy { get; init; }
 
     /// <summary>
     /// Represents the name of the <c>Scheme</c> used by <c>HmacManager</c> for signing and verification.

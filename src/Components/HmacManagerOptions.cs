@@ -32,10 +32,10 @@ public class HmacManagerOptions
     /// <summary>
     /// Gets or sets the <see cref="IHmacHeaderBuilder"/> used to build headers.
     /// </summary>
-    public IHmacHeaderBuilder HeaderBuilder { get; init; }
+    public required IHmacHeaderBuilder HeaderBuilder { get; init; }
 
     /// <summary>
     /// Gets or sets the <see cref="IHmacHeaderParser"/> used to build headers.
     /// </summary>
-    public IHmacHeaderParser HeaderParser { get; init; }
+    public required IHmacHeaderParser HeaderParser { get; init; }
 }
