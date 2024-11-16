@@ -6,8 +6,8 @@
 export const getUnicodeForm = (signatureBytes: ArrayBuffer): string => {
     const bytes = new Uint8Array(signatureBytes);
     const bytesSplit = bytes.toString().split(",");
-    const unicodeForm = bytesSplit.map(element => String.fromCharCode(parseInt(element))).join("");
-    return unicodeForm;
+    const unicode = bytesSplit.map(element => String.fromCharCode(parseInt(element))).join("");
+    return unicode;
 }
 
 /**

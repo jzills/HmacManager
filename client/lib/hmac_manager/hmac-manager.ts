@@ -4,7 +4,7 @@ import { Hmac } from "./components/hmac.js"
 import { HmacPolicy } from "./components/hmac-policy.js"
 import { HmacScheme } from "./components/hmac-scheme.js"
 import { HmacResultFactory } from "./components/hmac-result-factory.js"
-import { HmacAuthenticationDefaults } from "./hmac-authentication-defaults.js"
+import HmacHeaderBuilder from "./builders/hmac-header-builder.js"
 
 /**
  * HmacManager is responsible for handling HMAC signing of requests.
@@ -90,15 +90,16 @@ export class HmacManager {
      * @param hmac - The HMAC object containing the signature data.
      */
     private addRequiredHeaders(headers: Headers, hmac: Hmac): void {
-        headers.append(HmacAuthenticationDefaults.Headers.Policy, `${this.policy.name}`);
+        const builder = new HmacHeaderBuilder()
+            .withAuthorization(hmac.signature)
+            .withPolicy(hmac.policy)
+            .withScheme(hmac.scheme)
+            .withNonce(hmac.nonce)
+            .withDateRequested(hmac.dateRequested);
         
-        if (this.scheme?.name) {
-            // TODO: Error if headers are not present from the scheme
-            headers.append(HmacAuthenticationDefaults.Headers.Scheme, `${this.scheme.name}`);
+        const hmacHeaders = builder.build();
+        for (const [name, value] of Object.entries(hmacHeaders)) {
+            headers.append(name, value as string);
         }
-
-        headers.append(HmacAuthenticationDefaults.Headers.DateRequested, `${hmac.dateRequested.getTime()}`);
-        headers.append(HmacAuthenticationDefaults.Headers.Nonce, `${hmac.nonce}`);
-        headers.append(HmacAuthenticationDefaults.Headers.Authorization, `${HmacAuthenticationDefaults.AuthenticationScheme} ${hmac.signature}`);
     }
 }

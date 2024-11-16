@@ -12,11 +12,6 @@ public static class HmacAuthenticationDefaults
     public const string AuthenticationScheme = "Hmac";
 
     /// <summary>
-    /// The name of the <c>DefaultPolicy</c>. This is always set to "Default".
-    /// </summary>
-    public const string DefaultPolicy = "Default";
-
-    /// <summary>
     /// A class representing <c>Headers</c>. These are the minimum required
     /// headers that are automatically added to requests signed with an <c>IHmacManager</c> implementation.
     /// </summary>

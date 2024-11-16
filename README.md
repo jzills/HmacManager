@@ -18,9 +18,10 @@ Integrate hmac authentication seamlessly into your ASP.NET Core applications, fo
 ## Features
 
 - Facilitates detailed policy configuration, enabling applications to sign and verify Hmacs against multiple policy criteria.
-- Each policy can define specific schemes, outlining the required header values for a request.
-    - This includes automatic claims mapping from header values defined in a scheme.
-- Supports policy creation and deletion at runtime.
+- Each policy can optionally define specific schemes, outlining the required header values for a request.
+    - Including automatic claims mapping from header values defined in a scheme.
+- Supports policy modification at runtime.
+    - Including both an option to use a singleton or the preferred approach to use an accessor that can pull policies dynamically from a database or some other data store.
 - Incorporates automatic nonce management to protect against replay attacks.
 - Integrates with ASP.NET Core authorization mechanisms.
 

@@ -18,7 +18,7 @@ export class HmacPolicyCollection {
             this.policyCollection[policy.name] = policy;
 
             for (const scheme of policy.schemes) {
-                this.schemeCollection[`${policy.name}:${scheme.name}`] = scheme;
+                this.schemeCollection[this.concat(policy.name, scheme.name)] = scheme;
             }
         }
     }
@@ -32,7 +32,12 @@ export class HmacPolicyCollection {
      */
     get(policy: string, scheme: string | null = null): [HmacPolicy | null, HmacScheme | null] {
         const matchingPolicy = this.policyCollection[policy];
-        const matchingScheme = this.schemeCollection[`${policy}:${scheme}`];
+        const matchingScheme = this.schemeCollection[this.concat(policy, scheme)];
         return [matchingPolicy, matchingScheme];
     }
+
+    private concat = (
+        policy: string,
+        scheme: string | null = null
+    ): string => `${policy}:${scheme}`;
 }
