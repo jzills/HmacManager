@@ -13,6 +13,7 @@ import HmacHeaderBuilder from "./builders/hmac-header-builder.js"
 export class HmacManager {
     private readonly policy: HmacPolicy;
     private readonly scheme: HmacScheme | null;
+    private readonly headerBuilder: HmacHeaderBuilder;
     private readonly provider: HmacSignatureProvider;
     private readonly resultFactory: HmacResultFactory;
 
@@ -23,10 +24,12 @@ export class HmacManager {
      */
     constructor(
         policy: HmacPolicy,
-        scheme: HmacScheme | null = null
+        scheme: HmacScheme | null = null,
+        headerBuilder: HmacHeaderBuilder
     ) {
         this.policy = policy;
         this.scheme = scheme;
+        this.headerBuilder = headerBuilder;
         this.provider = new HmacSignatureProvider(
             this.policy.publicKey,
             this.policy.privateKey,
@@ -90,7 +93,7 @@ export class HmacManager {
      * @param hmac - The HMAC object containing the signature data.
      */
     private addRequiredHeaders(headers: Headers, hmac: Hmac): void {
-        const builder = new HmacHeaderBuilder()
+        const builder = this.headerBuilder.createBuilder()
             .withAuthorization(hmac.signature)
             .withPolicy(hmac.policy)
             .withScheme(hmac.scheme)

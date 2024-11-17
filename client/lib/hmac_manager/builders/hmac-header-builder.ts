@@ -105,6 +105,15 @@ export default class HmacHeaderBuilder {
     }
 
     /**
+     * Creates and returns a new instance of the `HmacHeaderBuilder`.
+     * This builder is used to construct HMAC header options with specific values for 
+     * authentication headers.
+     * 
+     * @returns A new instance of the `HmacHeaderBuilder` class.
+     */
+    createBuilder = () => new HmacHeaderBuilder();
+
+    /**
      * Builds and returns the final header collection, excluding any headers with `null` values.
      * 
      * @returns A collection of headers with only non-null values.

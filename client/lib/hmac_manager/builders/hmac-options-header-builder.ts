@@ -1,6 +1,10 @@
 import { HmacAuthenticationDefaults } from "../hmac-authentication-defaults.js";
 import HmacHeaderBuilder from "./hmac-header-builder.js";
 
+export type HmacHeaderCollection = { 
+    [key in HmacAuthenticationDefaults.Headers]?: string | null;
+};
+
 /**
  * A subclass of `HmacHeaderBuilder` that adds functionality for constructing
  * the HMAC authentication headers specifically for the options header.
@@ -19,11 +23,16 @@ import HmacHeaderBuilder from "./hmac-header-builder.js";
  *     .build();
  * ```
  */
-export type HmacHeaderCollection = { 
-    [key in HmacAuthenticationDefaults.Headers]?: string | null;
-};
-
 export default class HmacOptionsHeaderBuilder extends HmacHeaderBuilder {
+
+    /**
+     * Creates and returns a new instance of the `HmacOptionsHeaderBuilder`.
+     * This builder is used to construct HMAC header options with specific values for 
+     * authentication headers.
+     * 
+     * @returns A new instance of the `HmacOptionsHeaderBuilder` class.
+     */
+    createBuilder = () => new HmacOptionsHeaderBuilder();
 
     /**
      * Builds the HMAC header collection specifically for options, which includes the `Options`
