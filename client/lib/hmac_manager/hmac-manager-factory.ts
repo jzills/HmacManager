@@ -1,20 +1,30 @@
 import { HmacManager } from "./hmac-manager.js";
 import { HmacPolicy } from "./components/hmac-policy.js";
 import { HmacPolicyCollection } from "./components/hmac-policy-collection.js";
+import HmacHeaderBuilderFactory from "./builders/hmac-header-builder-factory.js";
 
 /**
  * A factory class for creating instances of HmacManager based on
  * specified policies and schemes.
  */
 export class HmacManagerFactory {
+    /**
+     * A collection of HMAC policies used for authentication.
+     */
     private readonly policies: HmacPolicyCollection;
+
+    /**
+     * Factory responsible for creating instances of HMAC header builders.
+     */
+    private readonly headerBuilderFactory: HmacHeaderBuilderFactory;
 
     /**
      * Initializes the factory with a collection of HmacPolicy objects.
      * @param policies - Array of HmacPolicy objects to manage and retrieve.
      */
-    constructor(policies: HmacPolicy[]) {
+    constructor(policies: HmacPolicy[], isConsolidatedHeadersEnabled: boolean = false) {
         this.policies = new HmacPolicyCollection(policies);
+        this.headerBuilderFactory = new HmacHeaderBuilderFactory(isConsolidatedHeadersEnabled);
     }
 
     /**
@@ -26,7 +36,8 @@ export class HmacManagerFactory {
     create(policy: string, scheme: string | null = null): HmacManager | null {
         const [matchingPolicy, matchingScheme] = this.policies.get(policy, scheme);
         if (matchingPolicy) {
-            return new HmacManager(matchingPolicy, matchingScheme);
+            return new HmacManager(matchingPolicy, matchingScheme,
+                this.headerBuilderFactory.create());
         } else {
             return null;
         }

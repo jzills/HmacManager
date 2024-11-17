@@ -11,10 +11,29 @@ import HmacHeaderBuilder from "./builders/hmac-header-builder.js"
  * Initializes the required policy, scheme, provider, and result factory to generate signed requests.
  */
 export class HmacManager {
+    /** 
+     * The policy configuration for HMAC, containing rules and constraints.
+     */
     private readonly policy: HmacPolicy;
+
+    /** 
+     * The specific HMAC scheme in use; may be null if no scheme is defined.
+     */
     private readonly scheme: HmacScheme | null;
+
+    /** 
+     * A builder used to construct headers required for HMAC authentication.
+     */
     private readonly headerBuilder: HmacHeaderBuilder;
+
+    /** 
+     * Responsible for generating and verifying HMAC signatures.
+     */
     private readonly provider: HmacSignatureProvider;
+
+    /** 
+     * Produces results from HMAC operations, such as success or failure outcomes.
+     */
     private readonly resultFactory: HmacResultFactory;
 
     /**

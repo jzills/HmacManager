@@ -2,7 +2,10 @@
  * Builder for constructing the signing content used in HMAC authentication.
  */
 export class SigningContentBuilder {
-    private readonly content: any[] = [];
+    /**
+     * Stores the collection of content items to be processed.
+     */
+    private readonly content: (string | null)[] = [];
 
     /** 
      * Adds the public key to the signing content.
@@ -68,7 +71,7 @@ export class SigningContentBuilder {
      * @returns The instance of the builder for method chaining.
      */
     withDateRequested = (requestedOn: Date) => {
-        this.content.push(requestedOn.getTime());
+        this.content.push(requestedOn.getTime().toString());
         return this;
     }
 

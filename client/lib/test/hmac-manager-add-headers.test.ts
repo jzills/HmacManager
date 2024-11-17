@@ -2,6 +2,7 @@ import { assert, test } from "vitest";
 import { HmacManager } from "../hmac_manager/hmac-manager.js";
 import { HashAlgorithm } from "../hmac_manager/hash-algorithm.js";
 import { HmacAuthenticationDefaults } from "../hmac_manager/hmac-authentication-defaults.js";
+import HmacHeaderBuilder from "../hmac_manager/builders/hmac-header-builder.js";
 
 test("HmacManager_Sign_Adds_Authorization_Header", async () => {
     const request = new Request("https://localhost:7216/api/weatherforecast");
@@ -12,7 +13,7 @@ test("HmacManager_Sign_Adds_Authorization_Header", async () => {
         contentHashAlgorithm: HashAlgorithm.SHA256,
         signatureHashAlgorithm: HashAlgorithm.SHA256,
         schemes: []
-    });
+    }, null, new HmacHeaderBuilder());
 
     const signingResult = await hmacManager.sign(request);
     const authorizationHeader = request.headers.get(HmacAuthenticationDefaults.Headers.Authorization);
@@ -29,7 +30,7 @@ test("HmacManager_Sign_Adds_DateRequested_Header", async () => {
         contentHashAlgorithm: HashAlgorithm.SHA256,
         signatureHashAlgorithm: HashAlgorithm.SHA256,
         schemes: []
-    });
+    }, null, new HmacHeaderBuilder());
 
     const signingResult = await hmacManager.sign(request)
     const dateRequestedHeader = request.headers.get(HmacAuthenticationDefaults.Headers.DateRequested);
@@ -45,7 +46,7 @@ test("HmacManager_Sign_Adds_Nonce_Header", async () => {
         contentHashAlgorithm: HashAlgorithm.SHA256,
         signatureHashAlgorithm: HashAlgorithm.SHA256,
         schemes: []
-    });
+    }, null, new HmacHeaderBuilder());
 
     const signingResult = await hmacManager.sign(request)
     const nonceHeader = request.headers.get(HmacAuthenticationDefaults.Headers.Nonce);

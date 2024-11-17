@@ -6,8 +6,19 @@ import { HashAlgorithm } from "../hash-algorithm.js";
  * Class responsible for building a signature using HMAC.
  */
 export class SignatureBuilder {
+    /**
+     * Represents the private key used for HMAC signature generation.
+     */
     private readonly privateKey: string;
+
+    /**
+     * The content to be signed during the HMAC signature process.
+     */
     private readonly signingContent: string;
+
+    /**
+     * The hashing algorithm used for signing, such as SHA1, SHA256, or SHA512.
+     */
     private readonly algorithm: Algorithm;
 
     /**
@@ -37,6 +48,6 @@ export class SignatureBuilder {
         );
 
         const unicodeForm = getUnicodeForm(signatureBytes);
-        return btoa(unicodeForm); // Convert to base64
+        return btoa(unicodeForm);
     }
 }
