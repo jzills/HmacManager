@@ -1,6 +1,7 @@
-import { getByteArray, getKeyBytes, getSignature, getUnicodeForm } from "../utilities/hmac-utilities.js";
+import { getByteArray, getKeyBytes, getSignature, getUnicode } from "../utilities/hmac-utilities.js";
 import { Algorithm } from "../components/algorithm.js";
 import { HashAlgorithm } from "../hash-algorithm.js";
+import { HmacAuthenticationDefaults } from "../hmac-authentication-defaults.js";
 
 /**
  * Class responsible for building a signature using HMAC.
@@ -34,7 +35,7 @@ export class SignatureBuilder {
     ) {
         this.privateKey = privateKey;
         this.signingContent = signingContent;
-        this.algorithm = { name: "HMAC", hash: signatureHashAlgorithm };
+        this.algorithm = { name: HmacAuthenticationDefaults.AuthenticationScheme, hash: signatureHashAlgorithm };
     }
 
     /**
@@ -47,7 +48,7 @@ export class SignatureBuilder {
             getByteArray(this.signingContent)
         );
 
-        const unicodeForm = getUnicodeForm(signatureBytes);
-        return btoa(unicodeForm);
+        const unicode = getUnicode(signatureBytes);
+        return btoa(unicode);
     }
 }

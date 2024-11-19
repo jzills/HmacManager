@@ -3,7 +3,7 @@
  * @param signatureBytes - The ArrayBuffer containing byte data.
  * @returns A string representation in Unicode form.
  */
-export const getUnicodeForm = (signatureBytes: ArrayBuffer): string => {
+export const getUnicode = (signatureBytes: ArrayBuffer): string => {
     const bytes = new Uint8Array(signatureBytes);
     const bytesSplit = bytes.toString().split(",");
     const unicode = bytesSplit.map(element => String.fromCharCode(parseInt(element))).join("");
@@ -21,8 +21,8 @@ export const computeContentHash = async (body: ReadableStream<Uint8Array> | null
         var streamResult = await body.getReader().read();
         if (streamResult.value) {
             const value = await crypto.subtle.digest(algorithm, streamResult.value);
-            const unicodeForm = getUnicodeForm(value);
-            return btoa(unicodeForm);
+            const unicode = getUnicode(value);
+            return btoa(unicode);
         }
     }
 
@@ -35,8 +35,7 @@ export const computeContentHash = async (body: ReadableStream<Uint8Array> | null
  * @returns Uint8Array of byte values from the string.
  */
 export const getByteArray = (content: string): Uint8Array =>
-    Uint8Array.from(content,
-        element => element.charCodeAt(0));
+    Uint8Array.from(content, element => element.charCodeAt(0));
 
 /**
  * Converts a base64 private key string to a CryptoKey object for signing.

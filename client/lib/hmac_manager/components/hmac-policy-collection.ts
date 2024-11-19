@@ -5,8 +5,15 @@ import { HmacScheme } from "./hmac-scheme.js";
  * Represents a collection of HMAC policies and their associated schemes.
  */
 export class HmacPolicyCollection {
-    private readonly policyCollection: { [key: string]: HmacPolicy } = {};
-    private readonly schemeCollection: { [key: string]: HmacScheme } = {};
+    /** 
+     * A collection of HMAC policies, where the key is a unique identifier and the value is the corresponding HmacPolicy.
+     */
+    private readonly policies: { [key: string]: HmacPolicy } = {};
+
+    /** 
+     * A collection of HMAC schemes, where the key is a unique identifier and the value is the corresponding HmacScheme.
+     */
+    private readonly schemes: { [key: string]: HmacScheme } = {};
 
     /**
      * Creates an instance of HmacPolicyCollection.
@@ -15,10 +22,10 @@ export class HmacPolicyCollection {
      */
     constructor(policies: HmacPolicy[]) {
         for (const policy of policies) {
-            this.policyCollection[policy.name] = policy;
+            this.policies[policy.name] = policy;
 
             for (const scheme of policy.schemes) {
-                this.schemeCollection[this.concat(policy.name, scheme.name)] = scheme;
+                this.schemes[this.concat(policy.name, scheme.name)] = scheme;
             }
         }
     }
@@ -31,8 +38,8 @@ export class HmacPolicyCollection {
      * @returns A tuple containing the matching HMAC policy and scheme, or null if not found.
      */
     get(policy: string, scheme: string | null = null): [HmacPolicy | null, HmacScheme | null] {
-        const matchingPolicy = this.policyCollection[policy];
-        const matchingScheme = this.schemeCollection[this.concat(policy, scheme)];
+        const matchingPolicy = this.policies[policy];
+        const matchingScheme = this.schemes[this.concat(policy, scheme)];
         return [matchingPolicy, matchingScheme];
     }
 

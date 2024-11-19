@@ -8,11 +8,35 @@ import { HmacSignature } from "./hmac-signature.js";
  * Provides functionality to create an HMAC signature for request authentication.
  */
 export class HmacSignatureProvider {
+    /** 
+     * The public key used in the HMAC signing process.
+     */
     private readonly publicKey: string;
+
+    /** 
+     * The private key used for signing the content in the HMAC process.
+     */
     private readonly privateKey: string;
+
+    /** 
+     * A list of headers that are included in the HMAC signature.
+     * Each string in the array represents a header that has been included.
+     */
     private readonly signedHeaders: string[] = [];
+
+    /** 
+     * The hashing algorithm used to compute the content hash. 
+     * Default is SHA-256.
+     */
     private readonly contentHashAlgorithm: HashAlgorithm = HashAlgorithm.SHA256;
+
+    /** 
+     * The hashing algorithm used to compute the signature hash. 
+     * Default is SHA-256.
+     */
     private readonly signatureHashAlgorithm: HashAlgorithm = HashAlgorithm.SHA256;
+
+    private readonly signingContentBuilder: SigningContentBuilder;
 
     /**
      * Initializes a new instance of HmacSignatureProvider.
@@ -27,13 +51,15 @@ export class HmacSignatureProvider {
         privateKey: string,
         signedHeaders: string[] = [],
         contentHashAlgorithm: HashAlgorithm = HashAlgorithm.SHA256,
-        signatureHashAlgorithm: HashAlgorithm = HashAlgorithm.SHA256
+        signatureHashAlgorithm: HashAlgorithm = HashAlgorithm.SHA256,
+        signingContentBuilder: SigningContentBuilder = new SigningContentBuilder()
     ) {
         this.publicKey = publicKey;
         this.privateKey = privateKey;
         this.signedHeaders = signedHeaders;
         this.contentHashAlgorithm = contentHashAlgorithm;
         this.signatureHashAlgorithm = signatureHashAlgorithm;
+        this.signingContentBuilder = signingContentBuilder;
     }
 
     /**
@@ -45,23 +71,18 @@ export class HmacSignatureProvider {
      */
     compute = async (request: Request, dateRequested: Date, nonce: string): Promise<HmacSignature> => {
         // Clone the request since we need to read the body if it exists
-        const { method, body, headers, url } = request.clone();
-        const { search, host, pathname } = new URL(url);
-
+        const { body } = request.clone();
         const contentHash = await computeContentHash(body, this.contentHashAlgorithm);
-
-        const signingContent = new SigningContentBuilder()
-            .withMethod(method)
-            .withPathAndQuery(`${pathname}${search}`)
-            .withDateRequested(dateRequested)
+        const signingContentBuilder = this.signingContentBuilder.createBuilder()
+            .withRequest(request)
             .withPublicKey(this.publicKey)
+            .withDateRequested(dateRequested)
             .withContentHash(contentHash)
-            .withSignedHeaders(this.signedHeaders, headers)
-            .withNonce(nonce)
-            .build();
+            .withSignedHeaders(this.signedHeaders)
+            .withNonce(nonce);
 
-        const signatureBuilder = new SignatureBuilder(
-            this.privateKey,
+        const signingContent = await signingContentBuilder.build();
+        const signatureBuilder = new SignatureBuilder(this.privateKey,
             signingContent,
             this.signatureHashAlgorithm
         );

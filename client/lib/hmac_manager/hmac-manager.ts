@@ -5,6 +5,8 @@ import { HmacPolicy } from "./components/hmac-policy.js"
 import { HmacScheme } from "./components/hmac-scheme.js"
 import { HmacResultFactory } from "./components/hmac-result-factory.js"
 import HmacHeaderBuilder from "./builders/hmac-header-builder.js"
+import { SigningContentBuilder } from "./builders/signing-content-builder.js"
+import { SigningContentBuilderAccessor } from "./builders/signing-content-builder-accessor.js"
 
 /**
  * HmacManager is responsible for handling HMAC signing of requests.
@@ -49,10 +51,18 @@ export class HmacManager {
         this.policy = policy;
         this.scheme = scheme;
         this.headerBuilder = headerBuilder;
+
+        const signingContentBuilder = this.policy.signingContentAccessor ? 
+            new SigningContentBuilderAccessor(this.policy.signingContentAccessor) :
+            new SigningContentBuilder();
+        
         this.provider = new HmacSignatureProvider(
             this.policy.publicKey,
             this.policy.privateKey,
-            this.scheme?.headers ?? []
+            this.scheme?.headers ?? [],
+            this.policy.contentHashAlgorithm,
+            this.policy.signatureHashAlgorithm,
+            signingContentBuilder
         );
 
         this.resultFactory = new HmacResultFactory();

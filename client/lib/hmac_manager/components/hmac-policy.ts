@@ -1,3 +1,5 @@
+import { SigningContentAccessor } from "../builders/signing-content-builder-accessor.js";
+import { HashAlgorithm } from "../hash-algorithm.js";
 import { HmacScheme } from "./hmac-scheme.js";
 
 /**
@@ -14,11 +16,13 @@ export type HmacPolicy = {
     privateKey: string;
 
     /** The algorithm used to compute the content hash. */
-    contentHashAlgorithm: string;
+    contentHashAlgorithm: HashAlgorithm;
 
     /** The algorithm used to compute the signature hash. */
-    signatureHashAlgorithm: string;
+    signatureHashAlgorithm: HashAlgorithm;
 
     /** The schemes associated with this HMAC policy. */
     schemes: HmacScheme[];
+
+    signingContentAccessor?: SigningContentAccessor;
 };
