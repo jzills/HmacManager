@@ -10,7 +10,7 @@ public record Header
     /// </summary>
     /// <param name="name">The name of the header.</param>
     /// <param name="claimType">The claim type associated with the header. If null or whitespace, this will default to the value of <paramref name="name"/>.</param>
-    public Header(string? name, string? claimType)
+    public Header(string? name, string? claimType = null)
     {
         Name = name;
         ClaimType = string.IsNullOrWhiteSpace(claimType) ? name : claimType;

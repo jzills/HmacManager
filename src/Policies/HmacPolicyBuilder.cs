@@ -35,6 +35,23 @@ public class HmacPolicyBuilder
     internal SigningContentBuilder SigningContentBuilder = new();
 
     /// <summary>
+    /// The name of the policy.
+    /// </summary> 
+    internal string? Name;
+
+    /// <summary>
+    /// Creates an instance of this builder.
+    /// </summary>
+    internal HmacPolicyBuilder()
+    {   
+    }
+
+    /// <summary>
+    /// Creates an instance of this builder using the specified name.
+    /// </summary>
+    public HmacPolicyBuilder(string name) => Name = name;
+
+    /// <summary>
     /// Uses the specified <c>Guid</c> as the public key for this <c>HmacPolicy</c>.
     /// </summary>
     /// <param name="key">The public key.</param>
@@ -131,8 +148,14 @@ public class HmacPolicyBuilder
     /// <summary>
     /// Builds an instance of the configured <c>HmacPolicy</c>.
     /// </summary>
-    /// <returns>A <c>HmacPolicyBuilder</c> that can be used to further configure a policy.</returns>
-    public HmacPolicy Build(string? name = null) => 
+    /// <returns>The created policy.</returns>
+    public HmacPolicy Build() => Build(Name);
+
+    /// <summary>
+    /// Builds an instance of the configured <c>HmacPolicy</c>.
+    /// </summary>
+    /// <returns>The created policy.</returns>
+    internal HmacPolicy Build(string? name = null) => 
         new HmacPolicy(name)
         {
             Algorithms = Algorithms,

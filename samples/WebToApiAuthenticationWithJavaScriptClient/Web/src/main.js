@@ -22,8 +22,8 @@ const hmacManagerFactory = new HmacManagerFactory([{
 // Create an instance of HmacManager.
 const hmacManager = hmacManagerFactory.create("MyPolicy", "RequireAccountAndEmail");
 
-//const request = samplePostRequest();
-const request = sampleGetRequest();
+const request = samplePostRequest();
+//const request = sampleGetRequest();
 
 // Sign the request, this will automatically add the authorization
 // header including any other additional headers used by authentication.

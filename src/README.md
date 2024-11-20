@@ -9,10 +9,10 @@
     * [Register with an `IConfigurationSection`](#register-with-an-iconfigurationsection)
     * [Register HttpClient with `HmacHttpMessageHandler`](#register-httpclient-with-hmachttpmessagehandler)
 - [In-Depth Tutorial](#in-depth-tutorial)
-    * The `HmacManager` object
-    * The `HmacManagerFactory` object
     * [Event handling with the `HmacEvents` object](#event-handling-with-the-hmacevents-object)
     * [Dynamic policies with `IHmacPolicyCollection`](#dynamic-policies-with-ihmacpolicycollection)
+    * [Dynamic policies with a scoped `IHmacPolicyCollection`](#dynamic-policies-with-a-scoped-ihmacpolicycollection)
+    * [Enable consolidated headers](#enable-consolidated-headers)
     * [Custom signing content for `Hmac`](#custom-signing-content-for-an-hmac)
 
 # Quickstart
@@ -178,9 +178,9 @@ One or more event handlers can be defined within the `AuthenticationBuilder` ext
 
     options.Events = new HmacEvents
     {
-        OnValidateKeys = (context, keys) => {...},
-        OnAuthenticationSuccess = (context, hmacResult) => {...},
-        OnAuthenticationFailure = (context, hmacResult) => {...}
+        OnValidateKeysAsync = (context, keys) => {...},
+        OnAuthenticationSuccessAsync = (context, hmacResult) => {...},
+        OnAuthenticationFailureAsync = (context, hmacResult) => {...}
     };
 
 If using the `IConfigurationSection` overload of `AddHmac` then there is
@@ -189,21 +189,21 @@ an optional second parameter for `HmacEvents`.
     builder.Services.AddAuthentication()
         .AddHmac(configurationSection, new HmacEvents
         {
-            OnValidateKeys = (context, keys) => {...},
-            OnAuthenticationSuccess = (context, hmacResult) => {...},
-            OnAuthenticationFailure = (context, hmacResult) => {...}
+            OnValidateKeysAsync = (context, keys) => {...},
+            OnAuthenticationSuccessAsync = (context, hmacResult) => {...},
+            OnAuthenticationFailureAsync = (context, hmacResult) => {...}
         });
 
 Events are executed through user defined delegates at different points within the `HmacAuthenticationHandler` flow. 
 
 | Event | Path | Return |
 | -------- | ------ | ------ |
-| OnValidateKeys | Executes after a signature has been parsed from an incoming request but before any attempts at verification | `bool`
-| OnAuthenticationSuccess | Executes upon a successful signature verification | `Claim[]`
-| OnAuthenticationFailure | Executes upon a failed signature verification | `Exception`
+| OnValidateKeysAsync | Executes after a signature has been parsed from an incoming request but before any attempts at verification | `bool`
+| OnAuthenticationSuccessAsync | Executes upon a successful signature verification | `Claim[]`
+| OnAuthenticationFailureAsync | Executes upon a failed signature verification | `Exception`
 
 > [!NOTE]
-> The default values for `HmacEvents` return pass through values, i.e. *OnValidateKeys* returns `true`, *OnAuthenticationSuccess* returns an empty `Claim[]` and *OnAuthenticationFailure* returns a `HmacAuthenticationException`.
+> The default values for `HmacEvents` return pass through values, i.e. *OnValidateKeysAsync* returns a `Task` with the value `true`, *OnAuthenticationSuccessAsync* returns a `Task` with an empty `Claim[]` and *OnAuthenticationFailureAsync* returns a `Task` with an `HmacAuthenticationException`.
 
 ## Dynamic Policies with `IHmacPolicyCollection`
 
@@ -219,6 +219,59 @@ An implementation of `IHmacPolicyCollection` can be requested through the DI con
 - A policy can be removed by specifying the name of the policy to remove.
 
         Policies.Remove("Some Policy");
+
+> [!CAUTION]
+> Since `IHmacPolicyCollection` is a singleton, any changes to the collection will not 
+persist across application restarts. Any backing store will need to be handled manually with the above approach. See below for the preferred approach to dynamic policies.
+
+## Dynamic policies with a scoped `IHmacPolicyCollection`
+
+Scoped policies can be enabled through both `AddHmac` and `AddHmacManager` extension methods. If scoped policies are enabled, all other policy configurations are disregarded. The `IServiceProvider` is available so that policies can be pulled from a database (or anywhere, really) if the ability to add and remove policies on a per request basis is required.
+
+    services.AddHmacManager(options =>
+    {
+        options.EnableScopedPolicies(serviceProvider =>
+        {
+            var policies = new HmacPolicyCollection();
+
+            // Create one or more policies
+            var builder = new HmacPolicyBuilder(...);
+
+            builder.UsePublicKey(...);
+            builder.UsePrivateKey(...);
+
+            // Continue policy configurations
+
+            // Add policy to the collection
+            policies.Add(builder.Build());
+
+            return policies;
+        });
+    });
+
+> [!NOTE]
+> There is an additional overhead added since every authentication request will now use this delegate to access the current state of policies. If these are stored in a database, an additional hit will be incurred. There is currently no built support for a short lived caching mechanism. 
+
+## Enable consolidated headers
+
+By default, `HmacManager` adds the following headers in order to verify a signature.
+
+| Header | Description | Value |
+| ------ | ----------- | ----- |
+| Hmac-Policy | Name of the policy | `string` |
+| Hmac-Scheme | Name of the optional scheme | `string` |
+| Hmac-Nonce | Nonce value | `Guid` |
+| Hmac-DateRequested | Date the request was made in unix time milliseconds | `long` |
+
+These can be configured to be consolidated into a single header with the name **Hmac-Options** and the value as a Base64 encoded concatenation of the headers described in the table above. 
+
+> [!NOTE]
+> Consolidated headers must be either enabled or disabled for both client and server otherwise authentication will fail.
+
+    .AddHmacManager(options =>
+    {
+        options.EnableConsolidatedHeaders();
+    });
 
 ## Custom Signing Content for an `Hmac`
 
