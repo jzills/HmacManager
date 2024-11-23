@@ -84,6 +84,13 @@ public class HmacManager : IHmacManager
         }
     }
 
+    /// <summary>
+    /// Validates the provided HMAC partial object asynchronously to ensure it meets the criteria specified in the options.
+    /// </summary>
+    /// <param name="incomingHmac">The incoming <see cref="HmacPartial"/> to validate.</param>
+    /// <returns>
+    /// A <see cref="Task{TResult}"/> representing the asynchronous operation, with a result of <c>true</c> if the HMAC is valid; otherwise, <c>false</c>.
+    /// </returns>
     private async Task<bool> IsValidAsync(HmacPartial? incomingHmac) =>
         incomingHmac is not null && 
         incomingHmac.DateRequested.HasValidDateRequested(Options.MaxAgeInSeconds) &&
@@ -92,6 +99,17 @@ public class HmacManager : IHmacManager
                 incomingHmac.DateRequested
             );
 
+    /// <summary>
+    /// Attempts to parse the provided HTTP request headers into an <see cref="Hmac"/> object.
+    /// </summary>
+    /// <param name="headers">The <see cref="HttpRequestHeaders"/> to parse.</param>
+    /// <param name="value">
+    /// When this method returns, contains the parsed <see cref="Hmac"/> object if parsing was successful;
+    /// otherwise, <c>null</c>.
+    /// </param>
+    /// <returns>
+    /// <c>true</c> if parsing was successful and a valid <see cref="Hmac"/> object was created; otherwise, <c>false</c>.
+    /// </returns>
     private bool TryParseHmac(HttpRequestHeaders headers, out Hmac? value)
     {
         var hmacPartial = Options.HeaderParser.CreateParser(headers).Parse(out var signature);

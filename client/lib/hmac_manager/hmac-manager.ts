@@ -1,10 +1,10 @@
+import HmacHeaderBuilder from "./builders/hmac-header-builder.js"
 import { HmacResult } from "./components/hmac-result.js"
 import { HmacSignatureProvider } from "./components/hmac-signature-provider.js"
 import { Hmac } from "./components/hmac.js"
 import { HmacPolicy } from "./components/hmac-policy.js"
 import { HmacScheme } from "./components/hmac-scheme.js"
 import { HmacResultFactory } from "./components/hmac-result-factory.js"
-import HmacHeaderBuilder from "./builders/hmac-header-builder.js"
 import { SigningContentBuilder } from "./builders/signing-content-builder.js"
 import { SigningContentBuilderAccessor } from "./builders/signing-content-builder-accessor.js"
 
@@ -31,7 +31,7 @@ export class HmacManager {
     /** 
      * Responsible for generating and verifying HMAC signatures.
      */
-    private readonly provider: HmacSignatureProvider;
+    private readonly signatureProvider: HmacSignatureProvider;
 
     /** 
      * Produces results from HMAC operations, such as success or failure outcomes.
@@ -56,7 +56,7 @@ export class HmacManager {
             new SigningContentBuilderAccessor(this.policy.signingContentAccessor) :
             new SigningContentBuilder();
         
-        this.provider = new HmacSignatureProvider(
+        this.signatureProvider = new HmacSignatureProvider(
             this.policy.publicKey,
             this.policy.privateKey,
             this.scheme?.headers ?? [],
@@ -92,7 +92,7 @@ export class HmacManager {
                 signedHeaders: this.scheme?.headers ?? null
             };
             
-            this.addRequiredHeaders(request.headers, hmac);
+            this.addHeaders(request.headers, hmac);
 
             return this.resultFactory.success(hmac);
         } catch (error: unknown) {
@@ -108,7 +108,7 @@ export class HmacManager {
     private computeSignature = async (request: Request) => {
         const dateRequested = new Date();
         const nonce = crypto.randomUUID();
-        const { signingContent, signature } = await this.provider.compute(request,
+        const { signingContent, signature } = await this.signatureProvider.compute(request,
             dateRequested,
             nonce
         );
@@ -121,7 +121,7 @@ export class HmacManager {
      * @param headers - The headers of the HTTP request.
      * @param hmac - The HMAC object containing the signature data.
      */
-    private addRequiredHeaders(headers: Headers, hmac: Hmac): void {
+    private addHeaders(headers: Headers, hmac: Hmac): void {
         const builder = this.headerBuilder.createBuilder()
             .withAuthorization(hmac.signature)
             .withPolicy(hmac.policy)
