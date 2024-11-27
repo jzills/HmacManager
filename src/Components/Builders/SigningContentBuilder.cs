@@ -81,6 +81,8 @@ public class SigningContentBuilder : ISigningContentBuilder
     /// <returns>The <see cref="SigningContentBuilder"/> instance.</returns>
     internal SigningContentBuilder WithHeaderValues(IReadOnlyCollection<HeaderValue> headerValues)
     {
+        ArgumentNullException.ThrowIfNull(headerValues, nameof(headerValues));
+        
         Context.HeaderValues = headerValues;
         return this;
     }
@@ -108,6 +110,8 @@ public class SigningContentBuilder : ISigningContentBuilder
     /// <returns>The signing content as a string.</returns>
     public virtual string Build()
     {
+        ArgumentNullException.ThrowIfNull(Context.Request, nameof(Context.Request));
+
         Builder.Append($"{Context.Request.Method}");
 
         if (Context.Request.RequestUri is not null)
@@ -147,7 +151,7 @@ public class SigningContentBuilder : ISigningContentBuilder
             Builder.Append($":{Context.ContentHash}");
         }
 
-        if (Context.HeaderValues?.Any() ?? false)
+        if (Context.HeaderValues.Any())
         {
             Builder.Append(":");
             Builder.AppendJoin(":", Context.HeaderValues.Select(element => element.Value));

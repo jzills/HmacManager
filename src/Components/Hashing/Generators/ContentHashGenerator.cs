@@ -1,4 +1,5 @@
 using System.Security.Cryptography;
+using HmacManager.Exceptions;
 
 namespace HmacManager.Components;
 
@@ -7,6 +8,9 @@ namespace HmacManager.Components;
 /// </summary>
 public class ContentHashGenerator : IHashGenerator
 {
+    /// <summary>
+    /// Specifies the algorithm used for computing content hashes.
+    /// </summary>
     private readonly ContentHashAlgorithm _contentHashAlgorithm;
 
     /// <summary>
@@ -24,7 +28,7 @@ public class ContentHashGenerator : IHashGenerator
             ContentHashAlgorithm.SHA1   => SHA1  .Create(),
             ContentHashAlgorithm.SHA256 => SHA256.Create(),
             ContentHashAlgorithm.SHA512 => SHA512.Create(),
-            _                           => SHA256.Create()
+            _                           => throw new HashAlgorithmNotSupportedException(_contentHashAlgorithm)
         };
 
         return new HashExecutor(hashAlgorithm).ExecuteAsync(content);

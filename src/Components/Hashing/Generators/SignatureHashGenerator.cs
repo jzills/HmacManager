@@ -1,4 +1,5 @@
 using System.Security.Cryptography;
+using HmacManager.Exceptions;
 
 namespace HmacManager.Components;
 
@@ -7,7 +8,14 @@ namespace HmacManager.Components;
 /// </summary>
 public class SignatureHashGenerator : IHashGenerator
 {
-    private readonly string? _privateKey;
+    /// <summary>
+    /// Stores the private key used for signing operations. This value may be <c>null</c>.
+    /// </summary>
+    private readonly string _privateKey;
+
+    /// <summary>
+    /// Specifies the algorithm used for signing hashes.
+    /// </summary>
     private readonly SigningHashAlgorithm _signingHashAlgorithm;
 
     /// <summary>
@@ -17,7 +25,7 @@ public class SignatureHashGenerator : IHashGenerator
     /// <param name="signingHashAlgorithm"><c>SigningHashAlgorithm</c></param>
     /// <returns>A <c>SignatureHashGenerator</c> object.</returns>
     public SignatureHashGenerator(
-        string? privateKey, 
+        string privateKey, 
         SigningHashAlgorithm signingHashAlgorithm
     ) => (_privateKey, _signingHashAlgorithm) = (privateKey, signingHashAlgorithm);
 
@@ -30,7 +38,7 @@ public class SignatureHashGenerator : IHashGenerator
             SigningHashAlgorithm.HMACSHA1   => new HMACSHA1  (keyBytes),
             SigningHashAlgorithm.HMACSHA256 => new HMACSHA256(keyBytes),
             SigningHashAlgorithm.HMACSHA512 => new HMACSHA512(keyBytes),
-            _                               => new HMACSHA256(keyBytes)
+            _                               => throw new HashAlgorithmNotSupportedException(_signingHashAlgorithm)
         };
 
         return new HashExecutor(hashAlgorithm).ExecuteAsync(content);

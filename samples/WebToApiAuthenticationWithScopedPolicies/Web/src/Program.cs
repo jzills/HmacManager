@@ -1,5 +1,6 @@
 using System.Text;
 using HmacManager.Mvc.Extensions;
+using HmacManager.Policies;
 using Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,28 +25,41 @@ builder.Services
 builder.Services
     .AddHmacManager(options =>
     {
-        options.AddPolicy("HmacPolicy_1", policy =>
+        options.EnableScopedPolicies(serviceProvider =>
         {
-            policy.UsePublicKey(Guid.Parse("eb8e9dae-08bd-4883-80fe-1d9a103b30b5"));
-            policy.UsePrivateKey(Convert.ToBase64String(Encoding.UTF8.GetBytes("thisIsMySuperCoolHmacPolicy_1PrivateKey")));
-            policy.UseMemoryCache(30);
-            policy.AddScheme("HmacScheme_1", scheme =>
-            {
-                scheme.AddHeader("X-Scheme_1");
-                scheme.AddHeader("X-Scheme_2");
-            });
-        });
+            // Create policy collection
+            var policies = new HmacPolicyCollection();
 
-        options.AddPolicy("HmacPolicy_2", policy =>
-        {
-            policy.UsePublicKey(Guid.Parse("ac2f1dae-08bd-4883-80fe-1d9a103b30b5"));
-            policy.UsePrivateKey(Convert.ToBase64String(Encoding.UTF8.GetBytes("thisIsMySuperCoolHmacPolicy_2PrivateKey")));
-            policy.UseMemoryCache(30);
-            policy.AddScheme("HmacScheme_2", scheme =>
+            // Create policies
+            var builder = new HmacPolicyBuilder("HmacPolicy_1");
+            builder.UsePublicKey(Guid.Parse("eb8e9dae-08bd-4883-80fe-1d9a103b30b5"));
+            builder.UsePrivateKey(Convert.ToBase64String(Encoding.UTF8.GetBytes("thisIsMySuperCoolHmacPolicy_1PrivateKey")));
+            builder.UseMemoryCache(30);
+            builder.AddScheme("HmacScheme_1", scheme =>
             {
                 scheme.AddHeader("X-Scheme_1");
                 scheme.AddHeader("X-Scheme_2");
             });
+            
+            // Add policy to the collection
+            policies.Add(builder.Build());
+
+            // Create policies
+            builder = new HmacPolicyBuilder("HmacPolicy_2");
+            builder.UsePublicKey(Guid.Parse("ac2f1dae-08bd-4883-80fe-1d9a103b30b5"));
+            builder.UsePrivateKey(Convert.ToBase64String(Encoding.UTF8.GetBytes("thisIsMySuperCoolHmacPolicy_2PrivateKey")));
+            builder.UseMemoryCache(30);
+            builder.AddScheme("HmacScheme_2", scheme =>
+            {
+                scheme.AddHeader("X-Scheme_1");
+                scheme.AddHeader("X-Scheme_2");
+            });
+            
+            // Add policy to the collection
+            policies.Add(builder.Build());
+
+            // Return the collection
+            return policies;
         });
     });
 

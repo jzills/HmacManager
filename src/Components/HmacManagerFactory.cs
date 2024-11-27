@@ -185,7 +185,7 @@ public class HmacManagerFactory : IHmacManagerFactory
     /// <param name="signingHashAlgorithm">The signing hash algorithm to use.</param>
     /// <returns>A <see cref="SignatureHashGenerator"/> instance.</returns>
     private SignatureHashGenerator CreateSignatureHashGenerator(
-        string? privateKey, 
+        string privateKey, 
         SigningHashAlgorithm signingHashAlgorithm
     )
     {
