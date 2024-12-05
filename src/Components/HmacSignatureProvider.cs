@@ -29,6 +29,7 @@ public class HmacSignatureProvider : IHmacSignatureProvider
     public Task<string> ComputeSignatureAsync(string signingContent)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(signingContent);
+        
         return Options.SignatureHashGenerator.HashAsync(signingContent);
     }
 

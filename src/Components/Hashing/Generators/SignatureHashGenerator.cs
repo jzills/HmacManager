@@ -6,7 +6,7 @@ namespace HmacManager.Components;
 /// <summary>
 /// A class representing a <c>SignatureHashGenerator</c>.
 /// </summary>
-public class SignatureHashGenerator : IHashGenerator
+public sealed class SignatureHashGenerator : HashGeneratorBase, IHashGenerator
 {
     /// <summary>
     /// Stores the private key used for signing operations. This value may be <c>null</c>.
@@ -41,6 +41,6 @@ public class SignatureHashGenerator : IHashGenerator
             _                               => throw new HashAlgorithmNotSupportedException(_signingHashAlgorithm)
         };
 
-        return new HashExecutor(hashAlgorithm).ExecuteAsync(content);
+        return ExecuteAsync(hashAlgorithm, content);
     }
 }

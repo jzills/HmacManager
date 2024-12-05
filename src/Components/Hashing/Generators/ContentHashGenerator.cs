@@ -6,7 +6,7 @@ namespace HmacManager.Components;
 /// <summary>
 /// A class representing a <c>ContentHashGenerator</c>.
 /// </summary>
-public class ContentHashGenerator : IHashGenerator
+public sealed class ContentHashGenerator : HashGeneratorBase, IHashGenerator
 {
     /// <summary>
     /// Specifies the algorithm used for computing content hashes.
@@ -31,6 +31,6 @@ public class ContentHashGenerator : IHashGenerator
             _                           => throw new HashAlgorithmNotSupportedException(_contentHashAlgorithm)
         };
 
-        return new HashExecutor(hashAlgorithm).ExecuteAsync(content);
+        return ExecuteAsync(hashAlgorithm, content);
     }
 }
