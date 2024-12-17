@@ -1,6 +1,6 @@
-import { SigningContentAccessor } from "../builders/signing-content-builder-accessor.js";
-import { HashAlgorithm } from "../hash-algorithm.js";
-import { HmacScheme } from "./hmac-scheme.js";
+import { SigningContentAccessor } from "../builders/signing-content-builder-accessor";
+import { HashAlgorithm } from "../hash-algorithm";
+import { HmacScheme } from "./hmac-scheme";
 
 /**
  * Represents an HMAC policy configuration.

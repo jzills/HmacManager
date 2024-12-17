@@ -1,8 +1,12 @@
 {
     "name": "hmac-manager",
-    "version": "2.5.1",
+    "version": "2.5.2",
     "author": "Joshua Zillwood",
     "license": "MIT",
+    "keywords": [
+        "hmac",
+        "authentication"
+    ],
     "type": "module",
     "repository": {
         "type": "git",
@@ -11,21 +15,24 @@
     "files": [
         "dist"
     ],
-    "main": "./dist/hmac-manager.umd.cjs",
-    "module": "./dist/hmac-manager.js",
+    "main": "./dist/hmac-manager.js",
+	"types": "./dist/hmac-manager.d.ts",
     "exports": {
-        ".": {
-            "import": "./dist/hmac-manager.js",
-            "require": "./dist/hmac-manager.umd.cjs"
-        }
-    },
+		".": {
+			"import": "./dist/hmac-manager.js",
+			"require": "./dist/hmac-manager.cjs"
+		}
+	},
     "scripts": {
         "test": "vitest"
     },
-    "dependencies": {
+    "devDependencies": {
         "@types/node": "^20.14.11",
-        "node-fetch": "^3.3.1",
         "vite": "^5.3.4",
+        "vite-plugin-dts": "^4.3.0",
         "vitest": "^2.0.3"
+    },
+    "dependencies": {
+        "node-fetch": "^3.3.1"
     }
 }

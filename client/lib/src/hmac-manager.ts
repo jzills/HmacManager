@@ -1,12 +1,12 @@
-import HmacHeaderBuilder from "./builders/hmac-header-builder.js"
-import { HmacResult } from "./components/hmac-result.js"
-import { HmacSignatureProvider } from "./components/hmac-signature-provider.js"
-import { Hmac } from "./components/hmac.js"
-import { HmacPolicy } from "./components/hmac-policy.js"
-import { HmacScheme } from "./components/hmac-scheme.js"
-import { HmacResultFactory } from "./components/hmac-result-factory.js"
-import { SigningContentBuilder } from "./builders/signing-content-builder.js"
-import { SigningContentBuilderAccessor } from "./builders/signing-content-builder-accessor.js"
+import { HmacHeaderBuilder } from "./builders/hmac-header-builder";
+import { HmacResultFactory } from "./components/hmac-result-factory";
+import { HmacSignatureProvider } from "./components/hmac-signature-provider";
+import { HmacResult } from "./components/hmac-result";
+import { Hmac } from "./components/hmac";
+import { HmacPolicy } from "./components/hmac-policy";
+import { HmacScheme } from "./components/hmac-scheme";
+import { SigningContentBuilder } from "./builders/signing-content-builder";
+import { SigningContentBuilderAccessor } from "./builders/signing-content-builder-accessor";
 
 /**
  * HmacManager is responsible for handling HMAC signing of requests.

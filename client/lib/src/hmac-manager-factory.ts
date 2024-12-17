@@ -1,7 +1,7 @@
-import { HmacManager } from "./hmac-manager.js";
-import { HmacPolicy } from "./components/hmac-policy.js";
-import { HmacPolicyCollection } from "./components/hmac-policy-collection.js";
-import HmacHeaderBuilderFactory from "./builders/hmac-header-builder-factory.js";
+import { HmacManager } from "./hmac-manager";
+import { HmacPolicy } from "./components/hmac-policy";
+import { HmacPolicyCollection } from "./components/hmac-policy-collection";
+import { HmacHeaderBuilderFactory } from "./builders/hmac-header-builder-factory";
 
 /**
  * A factory class for creating instances of HmacManager based on

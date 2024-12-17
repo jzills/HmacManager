@@ -1,8 +1,8 @@
-import { SignatureBuilder } from "../builders/signature-builder.js"
-import { SigningContentBuilder } from "../builders/signing-content-builder.js"
-import { HashAlgorithm } from "../hash-algorithm.js";
-import { computeContentHash } from "../utilities/hmac-utilities.js";
-import { HmacSignature } from "./hmac-signature.js";
+import { SignatureBuilder } from "../builders/signature-builder"
+import { SigningContentBuilder } from "../builders/signing-content-builder"
+import { HashAlgorithm } from "../hash-algorithm";
+import { computeContentHash } from "../utilities/hmac-utilities";
+import { HmacSignature } from "./hmac-signature";
 
 /**
  * Provides functionality to create an HMAC signature for request authentication.

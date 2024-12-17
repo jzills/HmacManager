@@ -1,7 +1,20 @@
 {
-    "compilerOptions": {
-        "module": "NodeNext",
-        "outDir": "dist",
-        "strict": true
-    }
+	"compilerOptions": {
+		"target": "ESNext", 
+		"module": "ESNext", 
+		"declaration": true, 
+		"outDir": "dist", 
+		"moduleResolution": "Node", 
+		"strict": true,
+		"esModuleInterop": true, 
+        "allowSyntheticDefaultImports": true,
+		"skipLibCheck": true, 
+		"forceConsistentCasingInFileNames": true
+	},
+	"include": [
+		"src/**/*"
+	], 
+	"exclude": [
+		"node_modules"
+	]
 }

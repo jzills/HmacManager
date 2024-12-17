@@ -1,5 +1,5 @@
-import { HmacAuthenticationDefaults } from "../hmac-authentication-defaults.js";
-import { HmacHeaderCollection } from "./hmac-options-header-builder.js";
+import { HmacAuthenticationDefaults } from "../hmac-authentication-defaults";
+import { HmacHeaderCollection } from "./hmac-options-header-builder";
 
 /**
  * A builder class to facilitate the construction of HMAC authentication headers.
@@ -18,7 +18,7 @@ import { HmacHeaderCollection } from "./hmac-options-header-builder.js";
  *     .build();
  * ```
  */
-export default class HmacHeaderBuilder {
+export class HmacHeaderBuilder {
     /**
      * The collection of header values used in HMAC authentication.
      * These values are initially set to `null` and can be updated via the

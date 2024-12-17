@@ -1,5 +1,5 @@
 import { assert, test } from "vitest";
-import { SigningContentBuilder } from "../hmac_manager/builders/signing-content-builder.js";
+import { SigningContentBuilder } from "../src/builders/signing-content-builder";
 
 test("SigningContentBuilder", async () => {
     const dateRequested = new Date();

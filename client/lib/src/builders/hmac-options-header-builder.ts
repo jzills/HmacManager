@@ -1,5 +1,5 @@
-import { HmacAuthenticationDefaults } from "../hmac-authentication-defaults.js";
-import HmacHeaderBuilder from "./hmac-header-builder.js";
+import { HmacAuthenticationDefaults } from "../hmac-authentication-defaults";
+import { HmacHeaderBuilder } from "./hmac-header-builder";
 
 /**
  * Represents a collection of HMAC headers where each header key is optional 

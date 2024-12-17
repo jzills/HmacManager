@@ -1,7 +1,7 @@
-import { getByteArray, getKeyBytes, getSignature, getUnicode } from "../utilities/hmac-utilities.js";
-import { Algorithm } from "../components/algorithm.js";
-import { HashAlgorithm } from "../hash-algorithm.js";
-import { HmacAuthenticationDefaults } from "../hmac-authentication-defaults.js";
+import { getByteArray, getKeyBytes, getSignature, getUnicode } from "../utilities/hmac-utilities";
+import { Algorithm } from "../components/algorithm";
+import { HashAlgorithm } from "../hash-algorithm";
+import { HmacAuthenticationDefaults } from "../hmac-authentication-defaults";
 
 /**
  * Class responsible for building a signature using HMAC.

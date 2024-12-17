@@ -1,8 +1,8 @@
 import { assert, test } from "vitest";
-import { HmacManager } from "../hmac_manager/hmac-manager.js";
-import { HashAlgorithm } from "../hmac_manager/hash-algorithm.js";
-import { HmacAuthenticationDefaults } from "../hmac_manager/hmac-authentication-defaults.js";
-import HmacHeaderBuilder from "../hmac_manager/builders/hmac-header-builder.js";
+import HmacManager from "../src/hmac-manager";
+import { HashAlgorithm } from "../src/hash-algorithm";
+import { HmacAuthenticationDefaults } from "../src/hmac-authentication-defaults";
+import HmacHeaderBuilder from "../src/builders/hmac-header-builder";
 
 test("HmacManager_Sign_Adds_Authorization_Header", async () => {
     const request = new Request("https://localhost:7216/api/weatherforecast");

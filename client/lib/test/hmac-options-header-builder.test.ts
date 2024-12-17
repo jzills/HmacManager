@@ -1,6 +1,6 @@
 import { assert, test } from "vitest";
-import { HmacAuthenticationDefaults } from "../hmac_manager/hmac-authentication-defaults.js";
-import HmacOptionsHeaderBuilder from "../hmac_manager/builders/hmac-options-header-builder.js";
+import { HmacAuthenticationDefaults } from "../src/hmac-authentication-defaults";
+import HmacOptionsHeaderBuilder from "../src/builders/hmac-options-header-builder";
 
 test("HmacHeaderOptionsBuilder_Build_ExpectOptions", () => {
     const authorization = "someAuthorizationHeaderValue";

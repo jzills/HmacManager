@@ -1,5 +1,5 @@
 import { assert, test } from "vitest";
-import { SigningContentAccessor, SigningContentBuilderAccessor } from "../hmac_manager/builders/signing-content-builder-accessor.js";
+import { SigningContentAccessor, SigningContentBuilderAccessor } from "../src/builders/signing-content-builder-accessor";
 
 test("SigningContentBuilderAccessor", async () => {
     const contextAccessor: SigningContentAccessor = context => {

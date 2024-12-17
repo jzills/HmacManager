@@ -20,7 +20,7 @@
 A short and sweet overview of how to register `HmacManager` to help you get up and running. There are two methods of dependency injection registration. You should choose the one appropriate for your situation and how much flexibility you might require.
 
 - [Register without built-in authentication flow](#register-without-built-in-authentication-flow)
-    - Only registers the `HmacManager` object through an `IHmacManagerFactory` service where you will be required to handle signatures and verification manually. An implementation of `IHmacManagerFactory` is registered with the DI container automatically. This is how you will instantiate `HmacManager` objects.
+    - Registers only the `HmacManager` object through an `IHmacManagerFactory` service where you will be required to handle signatures and verification manually. An implementation of `IHmacManagerFactory` is registered with the DI container automatically. This is how you will instantiate `HmacManager` objects. 
 - [Register with built-in authentication flow](#register-with-built-in-authentication-flow)
     - Automatically registers an authentication handler and maps any authenticated request headers defined by a scheme to claims. This method handles verifying incoming requests without any additional setup. 
 
@@ -46,7 +46,7 @@ Access an instance of a `HmacManager` responsible for a specified policy from `I
 > [!NOTE]
 > An implementation of `IHmacManagerFactory` is automatically registered with the DI container so it can be accessed anywhere services can be injected.
 
-A policy can be extended with schemes. These schemes represent the required headers that must be present in a request. These become a part of the signing content.
+A policy can be extended with schemes. These schemes represent the required headers that must be present in a request. The values of these headers become a part of the signing content.
 
     builder.Services.AddHmacManager(options =>
     {

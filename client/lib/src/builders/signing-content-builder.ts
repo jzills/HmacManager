@@ -1,4 +1,4 @@
-import SigningContentContext from "./signing-content-context.js";
+import SigningContentContext from "./signing-content-context";
 
 /**
  * Builder for constructing the signing content used in HMAC authentication.

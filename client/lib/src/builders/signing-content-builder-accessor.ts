@@ -1,5 +1,5 @@
-import { SigningContentBuilder } from "./signing-content-builder.js";
-import SigningContentContext from "./signing-content-context.js";
+import { SigningContentBuilder } from "./signing-content-builder";
+import SigningContentContext from "./signing-content-context";
 
 export type SigningContentAccessor = (context: SigningContentContext) => Promise<string>;
 

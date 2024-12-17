@@ -1,4 +1,4 @@
-import { Hmac } from "./hmac.js";
+import { Hmac } from "./hmac";
 
 /**
  * Represents the result of an HMAC signing operation.

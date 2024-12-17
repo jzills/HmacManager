@@ -1,5 +1,5 @@
-import { HmacPolicy } from "./hmac-policy.js";
-import { HmacScheme } from "./hmac-scheme.js";
+import { HmacPolicy } from "./hmac-policy";
+import { HmacScheme } from "./hmac-scheme";
 
 /**
  * Represents a collection of HMAC policies and their associated schemes.

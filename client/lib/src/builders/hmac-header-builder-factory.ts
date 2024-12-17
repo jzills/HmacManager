@@ -1,12 +1,12 @@
-import HmacHeaderBuilder from "./hmac-header-builder.js";
-import HmacOptionsHeaderBuilder from "./hmac-options-header-builder.js";
+import { HmacHeaderBuilder } from "./hmac-header-builder";
+import HmacOptionsHeaderBuilder from "./hmac-options-header-builder";
 
 /**
  * Factory class to create instances of HMAC header builders.
  * Depending on the configuration, it creates either a standard HMAC header builder 
  * or a consolidated options header builder.
  */
-export default class HmacHeaderBuilderFactory {
+export class HmacHeaderBuilderFactory {
     /**
      * Indicates whether the consolidated headers mode is enabled.
      */

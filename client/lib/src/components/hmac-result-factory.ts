@@ -1,5 +1,5 @@
-import { HmacResult } from "./hmac-result.js";
-import { Hmac } from "./hmac.js";
+import { HmacResult } from "./hmac-result";
+import { Hmac } from "./hmac";
 
 /**
  * Factory class for creating HMAC result instances.
