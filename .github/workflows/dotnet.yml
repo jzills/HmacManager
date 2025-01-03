@@ -16,7 +16,7 @@ jobs:
     - name: Setup redis
       uses: supercharge/redis-github-action@1.2.0
       with: 
-          redis-version: 6
+        redis-version: 6
     - name: Install redis cli 
       run: sudo apt-get install -y redis-tools
     - name: Verify that redis is up
@@ -25,7 +25,9 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 8.0.x
+        dotnet-version: |
+          8.0.x
+          9.0.x 
     - name: Restore dependencies
       working-directory: ./test/Unit
       run: dotnet restore
