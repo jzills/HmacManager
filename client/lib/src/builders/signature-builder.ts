@@ -1,12 +1,12 @@
-import { getByteArray, getKeyBytes, getSignature, getUnicode } from "../utilities/hmac-utilities";
-import { Algorithm } from "../components/algorithm";
-import { HashAlgorithm } from "../hash-algorithm";
+import Algorithm from "../components/algorithm";
+import HashAlgorithm from "../hash-algorithm";
 import { HmacAuthenticationDefaults } from "../hmac-authentication-defaults";
+import { getByteArray, getKeyBytes, getSignature, getUnicode } from "../utilities/hmac-utilities";
 
 /**
  * Class responsible for building a signature using HMAC.
  */
-export class SignatureBuilder {
+export default class SignatureBuilder {
     /**
      * Represents the private key used for HMAC signature generation.
      */

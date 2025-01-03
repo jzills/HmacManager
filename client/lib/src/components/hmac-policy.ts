@@ -1,11 +1,11 @@
-import { SigningContentAccessor } from "../builders/signing-content-builder-accessor";
-import { HashAlgorithm } from "../hash-algorithm";
-import { HmacScheme } from "./hmac-scheme";
+import SigningContentAccessor from "../builders/signing-content-accessor";
+import HashAlgorithm from "../hash-algorithm";
+import HmacScheme from "./hmac-scheme";
 
 /**
  * Represents an HMAC policy configuration.
  */
-export type HmacPolicy = {
+type HmacPolicy = {
     /** The name of the HMAC policy. */
     name: string;
 
@@ -26,3 +26,5 @@ export type HmacPolicy = {
 
     signingContentAccessor?: SigningContentAccessor;
 };
+
+export default HmacPolicy;

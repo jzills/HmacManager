@@ -1,4 +1,4 @@
-import { HmacHeaderBuilder } from "./hmac-header-builder";
+import HmacHeaderBuilder from "./hmac-header-builder";
 import HmacOptionsHeaderBuilder from "./hmac-options-header-builder";
 
 /**
@@ -6,7 +6,7 @@ import HmacOptionsHeaderBuilder from "./hmac-options-header-builder";
  * Depending on the configuration, it creates either a standard HMAC header builder 
  * or a consolidated options header builder.
  */
-export class HmacHeaderBuilderFactory {
+export default class HmacHeaderBuilderFactory {
     /**
      * Indicates whether the consolidated headers mode is enabled.
      */

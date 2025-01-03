@@ -13,18 +13,19 @@ export default defineConfig({
         lib: {
             entry: path.resolve(__dirname, "src/index.ts"),
             name: "HmacManager",
-            fileName: "hmac-manager", 
+            fileName: "index", 
         },
         rollupOptions: {
             output: [{
-                entryFileNames: "hmac-manager.js",
+                entryFileNames: "index.js",
                 format: "esm", 
             },
             {
-                entryFileNames: "hmac-manager.cjs",  
+                entryFileNames: "index.cjs",  
                 format: "cjs",
             }],
             external: ["tslib", "node_modules"], 
+            treeshake: false
         },
         target: "esnext"
     }

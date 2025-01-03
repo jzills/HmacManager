@@ -3,7 +3,7 @@ import SigningContentContext from "./signing-content-context";
 /**
  * Builder for constructing the signing content used in HMAC authentication.
  */
-export class SigningContentBuilder {
+export default class SigningContentBuilder {
     protected context: SigningContentContext = {
         request: null,
         contentHash: null,

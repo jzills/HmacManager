@@ -1,10 +1,10 @@
-import { HmacPolicy } from "./hmac-policy";
-import { HmacScheme } from "./hmac-scheme";
+import HmacPolicy from "./hmac-policy";
+import HmacScheme from "./hmac-scheme";
 
 /**
  * Represents a collection of HMAC policies and their associated schemes.
  */
-export class HmacPolicyCollection {
+export default class HmacPolicyCollection {
     /** 
      * A collection of HMAC policies, where the key is a unique identifier and the value is the corresponding HmacPolicy.
      */

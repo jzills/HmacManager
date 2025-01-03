@@ -1,9 +1,11 @@
 **.vscode
 **bin
 **obj
-**node_modules
 **.DS_Store
 **out
+
+**node_modules
+**dist
 
 client/lib/dist
 

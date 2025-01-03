@@ -1,7 +1,7 @@
 /**
  * Represents an HMAC scheme used for signing requests.
  */
-export type HmacScheme = {
+type HmacScheme = {
     /** 
      * The name of the HMAC scheme.
      */
@@ -12,3 +12,5 @@ export type HmacScheme = {
      */
     headers: string[];
 };
+
+export default HmacScheme;

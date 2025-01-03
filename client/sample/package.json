@@ -2,6 +2,7 @@
 	"name": "sample",
 	"version": "1.0.0",
 	"main": "index.js",
+	"type": "module",
 	"scripts": {
 		"start": "node dist/Index.js",
 		"build": "tsc",
@@ -12,7 +13,7 @@
 	"description": "",
 	"dependencies": {
 		"@types/node": "^22.10.2",
-		"hmac-manager": "file:../lib/hmac-manager-2.5.2.tgz",
+		"hmac-manager": "file:../lib/hmac-manager-2.5.3.tgz",
 		"typescript": "^5.7.2"
 	}
 }

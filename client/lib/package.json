@@ -1,6 +1,6 @@
 {
     "name": "hmac-manager",
-    "version": "2.5.2",
+    "version": "2.5.3",
     "author": "Joshua Zillwood",
     "license": "MIT",
     "keywords": [
@@ -12,17 +12,19 @@
         "type": "git",
         "url": "https://github.com/jzills/HmacManager.git"
     },
+    "main": "./dist/index.cjs",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "import": "./dist/index.js",
+            "require": "./dist/index.cjs",
+            "types": "./dist/index.d.ts"
+        }
+    },
     "files": [
         "dist"
     ],
-    "main": "./dist/hmac-manager.js",
-	"types": "./dist/hmac-manager.d.ts",
-    "exports": {
-		".": {
-			"import": "./dist/hmac-manager.js",
-			"require": "./dist/hmac-manager.cjs"
-		}
-	},
     "scripts": {
         "test": "vitest"
     },

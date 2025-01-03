@@ -1,13 +1,6 @@
+import HmacHeaderBuilder from "./hmac-header-builder";
+import HmacHeaderCollection from "../components/hmac-header-collection";
 import { HmacAuthenticationDefaults } from "../hmac-authentication-defaults";
-import { HmacHeaderBuilder } from "./hmac-header-builder";
-
-/**
- * Represents a collection of HMAC headers where each header key is optional 
- * and maps to a value that can be a string or `null`.
- */
-export type HmacHeaderCollection = { 
-    [key in HmacAuthenticationDefaults.Headers]?: string | null;
-};
 
 /**
  * A subclass of `HmacHeaderBuilder` that adds functionality for constructing

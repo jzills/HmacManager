@@ -1,18 +1,18 @@
-import { HmacHeaderBuilder } from "./builders/hmac-header-builder";
-import { HmacResultFactory } from "./components/hmac-result-factory";
-import { HmacSignatureProvider } from "./components/hmac-signature-provider";
-import { HmacResult } from "./components/hmac-result";
-import { Hmac } from "./components/hmac";
-import { HmacPolicy } from "./components/hmac-policy";
-import { HmacScheme } from "./components/hmac-scheme";
-import { SigningContentBuilder } from "./builders/signing-content-builder";
-import { SigningContentBuilderAccessor } from "./builders/signing-content-builder-accessor";
+import HmacHeaderBuilder from "./builders/hmac-header-builder";
+import HmacResultFactory from "./components/hmac-result-factory";
+import HmacSignatureProvider from "./components/hmac-signature-provider";
+import HmacResult from "./components/hmac-result";
+import Hmac from "./components/hmac";
+import HmacPolicy from "./components/hmac-policy";
+import HmacScheme from "./components/hmac-scheme";
+import SigningContentBuilder from "./builders/signing-content-builder";
+import SigningContentBuilderAccessor from "./builders/signing-content-builder-accessor";
 
 /**
  * HmacManager is responsible for handling HMAC signing of requests.
  * Initializes the required policy, scheme, provider, and result factory to generate signed requests.
  */
-export class HmacManager {
+export default class HmacManager {
     /** 
      * The policy configuration for HMAC, containing rules and constraints.
      */

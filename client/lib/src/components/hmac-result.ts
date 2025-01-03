@@ -1,9 +1,9 @@
-import { Hmac } from "./hmac";
+import Hmac from "./hmac";
 
 /**
  * Represents the result of an HMAC signing operation.
  */
-export type HmacResult = {
+type HmacResult = {
     /** 
      * The generated HMAC details, or null if the signing operation failed.
      */
@@ -19,3 +19,5 @@ export type HmacResult = {
      */
     dateGenerated: Date;
 };
+
+export default HmacResult;

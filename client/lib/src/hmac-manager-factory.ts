@@ -1,13 +1,13 @@
-import { HmacManager } from "./hmac-manager";
-import { HmacPolicy } from "./components/hmac-policy";
-import { HmacPolicyCollection } from "./components/hmac-policy-collection";
-import { HmacHeaderBuilderFactory } from "./builders/hmac-header-builder-factory";
+import HmacManager from "./hmac-manager";
+import HmacPolicy from "./components/hmac-policy";
+import HmacPolicyCollection from "./components/hmac-policy-collection";
+import HmacHeaderBuilderFactory from "./builders/hmac-header-builder-factory";
 
 /**
  * A factory class for creating instances of HmacManager based on
  * specified policies and schemes.
  */
-export class HmacManagerFactory {
+export default class HmacManagerFactory {
     /**
      * A collection of HMAC policies used for authentication.
      */
@@ -21,6 +21,7 @@ export class HmacManagerFactory {
     /**
      * Initializes the factory with a collection of HmacPolicy objects.
      * @param policies - Array of HmacPolicy objects to manage and retrieve.
+     * @param isConsolidatedHeadersEnabled - `true` if header consolidation is enabled otherwise `false`.
      */
     constructor(policies: HmacPolicy[], isConsolidatedHeadersEnabled: boolean = false) {
         this.policies = new HmacPolicyCollection(policies);

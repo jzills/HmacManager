@@ -1,10 +1,10 @@
-import { HmacResult } from "./hmac-result";
-import { Hmac } from "./hmac";
+import HmacResult from "./hmac-result";
+import Hmac from "./hmac";
 
 /**
  * Factory class for creating HMAC result instances.
  */
-export class HmacResultFactory {
+export default class HmacResultFactory {
     /**
      * Creates a successful HMAC result.
      * @param hmac - The HMAC details to include in the result.

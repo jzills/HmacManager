@@ -1,7 +1,7 @@
 /**
  * Represents the HMAC data used for signing requests.
  */
-export type Hmac = {
+type Hmac = {
     /** 
      * The policy used for generating the HMAC.
      */
@@ -27,3 +27,5 @@ export type Hmac = {
     /** The generated HMAC signature. */
     signature: string;
 }
+
+export default Hmac;
