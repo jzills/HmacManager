@@ -198,9 +198,9 @@ Events are executed through user defined delegates at different points within th
 
 | Event | Path | Return |
 | -------- | ------ | ------ |
-| OnValidateKeysAsync | Executes after a signature has been parsed from an incoming request but before any attempts at verification | `bool`
-| OnAuthenticationSuccessAsync | Executes upon a successful signature verification | `Claim[]`
-| OnAuthenticationFailureAsync | Executes upon a failed signature verification | `Exception`
+| OnValidateKeysAsync | Executes after a signature has been parsed from an incoming request but before any attempts at verification | `Task<bool>`
+| OnAuthenticationSuccessAsync | Executes upon a successful signature verification | `Task<Claim[]>`
+| OnAuthenticationFailureAsync | Executes upon a failed signature verification | `Task<Exception>`
 
 > [!NOTE]
 > The default values for `HmacEvents` return pass through values, i.e. *OnValidateKeysAsync* returns a `Task` with the value `true`, *OnAuthenticationSuccessAsync* returns a `Task` with an empty `Claim[]` and *OnAuthenticationFailureAsync* returns a `Task` with an `HmacAuthenticationException`.
