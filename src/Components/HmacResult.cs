@@ -23,6 +23,11 @@ public sealed class HmacResult
     /// <value>A UTC date and time.</value>
     public readonly DateTime DateGenerated = DateTime.UtcNow;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="HmacResult"/> class.
+    /// </summary>
+    /// <param name="isSuccess">Indicates whether the operation was successful.</param>
+    /// <param name="hmac">The HMAC (Hash-based Message Authentication Code) associated with the result, or null if not available.</param>
     internal HmacResult(bool isSuccess, Hmac? hmac)
     {
         IsSuccess = isSuccess;
