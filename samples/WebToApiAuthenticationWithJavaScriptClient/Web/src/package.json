@@ -1,6 +1,6 @@
 {
     "type": "module",
     "dependencies": {
-        "hmac-manager": "^0.0.4"
+        "hmac-manager": "file:../../../../client/lib/hmac-manager-2.6.0.tgz"
     }
 }

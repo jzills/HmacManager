@@ -1,5 +1,6 @@
 import { assert, test } from "vitest";
-import { SigningContentAccessor, SigningContentBuilderAccessor } from "../src/builders/signing-content-builder-accessor";
+import SigningContentAccessor from "../src/builders/signing-content-accessor";
+import SigningContentBuilderAccessor from "../src/builders/signing-content-builder-accessor";
 
 test("SigningContentBuilderAccessor", async () => {
     const contextAccessor: SigningContentAccessor = context => {

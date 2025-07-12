@@ -1,6 +1,6 @@
 {
     "name": "hmac-manager",
-    "version": "2.5.3",
+    "version": "2.6.0",
     "author": "Joshua Zillwood",
     "license": "MIT",
     "keywords": [
@@ -26,6 +26,7 @@
         "dist"
     ],
     "scripts": {
+        "build": "vite build",
         "test": "vitest"
     },
     "devDependencies": {

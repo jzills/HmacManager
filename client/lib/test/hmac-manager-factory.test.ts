@@ -1,6 +1,6 @@
 import { assert, test } from "vitest";
 import HmacManagerFactory from "../src/hmac-manager-factory";
-import { HashAlgorithm } from "../src/hash-algorithm";
+import HashAlgorithm from "../src/hash-algorithm";
 
 test("HmacManagerFactory", async () => {
     const request = new Request("https://localhost:7216/api/weatherforecast", {

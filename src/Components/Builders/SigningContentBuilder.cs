@@ -1,4 +1,5 @@
 using System.Text;
+using HmacManager.Exceptions;
 using HmacManager.Headers;
 
 namespace HmacManager.Components;
@@ -133,13 +134,13 @@ public class SigningContentBuilder : ISigningContentBuilder
             if (Context.Request.RequestUri.IsAbsoluteUri)
             {
                 Builder.Append($":{Context.Request.RequestUri.PathAndQuery}");
-
-                // Authority is not available in a relative URI, so we remove it from the signing content for consistency.
-                //Builder.Append($":{Context.Request.RequestUri.Authority}");
+                Builder.Append($":{Context.Request.RequestUri.Authority}");
             }
             else
             {
-                Builder.Append($":{Context.Request.RequestUri.OriginalString}");
+                throw new AbsoluteUriException(
+                    "The RequestUri must be absolute when signing requests. " +
+                    "Please ensure the HttpRequestMessage has an absolute URI before signing.");
             }
         }
 

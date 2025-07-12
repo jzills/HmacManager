@@ -76,7 +76,7 @@ public class Test_HmacAuthenticationHandler_WithoutDelegatingHandler
     [Test]
     public async Task Test_Get()
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, "/api");
+        var request = new HttpRequestMessage(HttpMethod.Get, $"{Client.BaseAddress}api");
 
         request.Headers.Add("X-Account", "myAccount");
         request.Headers.Add("X-Email", "myEmail");
@@ -90,7 +90,7 @@ public class Test_HmacAuthenticationHandler_WithoutDelegatingHandler
     [Test]
     public async Task Test_Post()
     {
-        var request = new HttpRequestMessage(HttpMethod.Post, "/api")
+        var request = new HttpRequestMessage(HttpMethod.Post, $"{Client.BaseAddress}api")
         {
             Content = new StringContent(JsonConvert.SerializeObject("TestContent"), Encoding.UTF8, "application/json")
         };

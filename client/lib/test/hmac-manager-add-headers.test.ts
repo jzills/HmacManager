@@ -1,8 +1,8 @@
 import { assert, test } from "vitest";
-import HmacManager from "../src/hmac-manager";
-import { HashAlgorithm } from "../src/hash-algorithm";
 import { HmacAuthenticationDefaults } from "../src/hmac-authentication-defaults";
+import HmacManager from "../src/hmac-manager";
 import HmacHeaderBuilder from "../src/builders/hmac-header-builder";
+import HashAlgorithm from "../src/hash-algorithm";
 
 test("HmacManager_Sign_Adds_Authorization_Header", async () => {
     const request = new Request("https://localhost:7216/api/weatherforecast");

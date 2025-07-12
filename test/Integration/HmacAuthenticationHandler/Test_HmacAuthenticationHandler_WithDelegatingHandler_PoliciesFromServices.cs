@@ -16,13 +16,12 @@ public class Test_HmacAuthenticationHandler_WithDelegatingHandler_ScopedPolicies
 {
     TestServer Server;
     HttpClient Client;
-    IHmacManager HmacManager;
 
     [SetUp]
     public void Setup()
     {
         var builder = new WebHostBuilder()
-            .ConfigureServices(services => 
+            .ConfigureServices(services =>
             {
                 services.AddRouting();
                 services.AddMemoryCache();
@@ -48,8 +47,8 @@ public class Test_HmacAuthenticationHandler_WithDelegatingHandler_ScopedPolicies
                     });
                 });
 
-                services.AddAuthorization(options => 
-                    options.AddPolicy("TestPolicy", policy => 
+                services.AddAuthorization(options =>
+                    options.AddPolicy("TestPolicy", policy =>
                         policy.RequireHmacAuthentication("MyPolicy", "RequireAccountAndEmail")));
             })
             .Configure(app =>
@@ -65,19 +64,23 @@ public class Test_HmacAuthenticationHandler_WithDelegatingHandler_ScopedPolicies
                     endpoints.MapGet("/api", async (HttpContext context) =>
                     {
                         await context.Response.WriteAsync("Ok!");
-                    }).RequireAuthorization("TestPolicy"); 
+                    }).RequireAuthorization("TestPolicy");
 
                     endpoints.MapPost("/api", async (HttpContext context, [FromBody] string body) =>
                     {
                         await context.Response.WriteAsync("Ok!");
-                    }).RequireAuthorization("TestPolicy"); 
+                    }).RequireAuthorization("TestPolicy");
                 });
             });
 
         Server = new TestServer(builder);
-        Client = Server.CreateClient();
-        HmacManager = Server.Services.GetRequiredService<IHmacManagerFactory>()
+
+        var hmacManager = Server.Services
+            .GetRequiredService<IHmacManagerFactory>()
             .Create("MyPolicy", "RequireAccountAndEmail")!;
+
+        var handler = new HmacDelegatingHandler(hmacManager) { InnerHandler = Server.CreateHandler() };
+        Client = new HttpClient(handler) { BaseAddress = Server.BaseAddress };
     }
 
     [Test]
@@ -87,8 +90,6 @@ public class Test_HmacAuthenticationHandler_WithDelegatingHandler_ScopedPolicies
 
         request.Headers.Add("X-Account", "myAccount");
         request.Headers.Add("X-Email", "myEmail");
-
-        await HmacManager.SignAsync(request);
 
         var response = await Client.SendAsync(request);
         Assert.That(response.IsSuccessStatusCode);
@@ -104,8 +105,6 @@ public class Test_HmacAuthenticationHandler_WithDelegatingHandler_ScopedPolicies
 
         request.Headers.Add("X-Account", "myAccount");
         request.Headers.Add("X-Email", "myEmail");
-
-        await HmacManager.SignAsync(request);
 
         var response = await Client.SendAsync(request);
         Assert.That(response.IsSuccessStatusCode);

@@ -87,11 +87,12 @@ export default class SigningContentBuilder {
      */
     build = async () => {
         const { method, url } = this.context.request as Request;
-        const { search, pathname } = new URL(url);
+        const { host, search, pathname } = new URL(url);
 
         const stringBuilder: string[] = [];
         stringBuilder.push(method);
         stringBuilder.push(`${pathname}${search}`);
+        stringBuilder.push(host);
         stringBuilder.push(this.context.dateRequested.getTime().toString());
         stringBuilder.push(this.context.publicKey);
         

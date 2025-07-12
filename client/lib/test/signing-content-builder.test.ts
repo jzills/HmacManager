@@ -1,5 +1,5 @@
 import { assert, test } from "vitest";
-import { SigningContentBuilder } from "../src/builders/signing-content-builder";
+import SigningContentBuilder from "../src/builders/signing-content-builder";
 
 test("SigningContentBuilder", async () => {
     const dateRequested = new Date();
@@ -13,5 +13,5 @@ test("SigningContentBuilder", async () => {
         .withNonce("SOME_NONCE");
 
     const signingContent = await builder.build();
-    assert.equal(signingContent, `GET:/api/weatherforecast:${dateRequested.getTime()}:SOME_PUBLIC_KEY:SOME_CONTENT_HASH:SOME_NONCE`)
+    assert.equal(signingContent, `GET:/api/weatherforecast:localhost:7216:${dateRequested.getTime()}:SOME_PUBLIC_KEY:SOME_CONTENT_HASH:SOME_NONCE`)
 });
