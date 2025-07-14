@@ -83,7 +83,7 @@ public class Test_HmacPolicyCollection_DynamicPolicies_Add : TestServiceCollecti
 
         Assert.IsNotNull(hmacManager);
 
-        var request = new HttpRequestMessage(HttpMethod.Get, "/api/some/path");
+        var request = new HttpRequestMessage(HttpMethod.Get, "https://sample.com/api/some/path");
         request.Headers.Add("Cool_Dynamic_Header", "Cool_Dynamic_Value");
 
         var signingResult = await hmacManager.SignAsync(request);
