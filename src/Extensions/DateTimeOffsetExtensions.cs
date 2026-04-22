@@ -12,7 +12,12 @@ internal static class DateTimeOffsetExtensions
     /// <param name="maxAgeInSeconds">The maximum allowable age in seconds for the request to be considered valid.</param>
     /// <returns><c>true</c> if the <paramref name="dateRequested"/> is within the specified maximum age; otherwise, <c>false</c>.</returns>
     public static bool HasValidDateRequested(
-        this DateTimeOffset dateRequested, 
-        int maxAgeInSeconds
-    ) => DateTimeOffset.UtcNow.Subtract(dateRequested) < TimeSpan.FromSeconds(maxAgeInSeconds);
+      this DateTimeOffset dateRequested,
+      int maxAgeInSeconds
+    )
+    {
+        var elapsed = DateTimeOffset.UtcNow.Subtract(dateRequested);
+        return elapsed >= TimeSpan.Zero
+            && elapsed < TimeSpan.FromSeconds(maxAgeInSeconds);
+    }
 }
