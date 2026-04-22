@@ -17,9 +17,6 @@ jobs:
         with:
           redis-version: 7
 
-      - name: Verify Redis
-        run: redis-cli ping
-
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
