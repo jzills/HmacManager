@@ -11,7 +11,7 @@ public class Test_AddHmac_OnePolicy_ZeroSchemes : TestBase
     public async Task Test(HttpRequestMessage request)
     {
         var services = new ServiceCollection()
-            .AddStackExchangeRedisCache(options => options.Configuration = "127.0.0.1:6379");
+            .AddDistributedMemoryCache();
 
         services
             .AddAuthentication()
