@@ -6,18 +6,18 @@ using HmacManager.Policies;
 namespace HmacManager.Mvc.Extensions;
 
 /// <summary>
-/// A class representing extension methods on an <c>AuthenticationBuilder</c>.
+/// A class representing extension methods on an <see cref="AuthenticationBuilder"/>.
 /// </summary>
 public static class AuthenticationBuilderExtensions
 {
     /// <summary>
-    /// Adds HmacAuthentication to the <c>AuthenticationBuilder</c> with the
-    /// configured <c>HmacAuthenticationOptions</c>. This method also adds
-    /// the implementation for <c>IHmacManagerFactory</c> to the DI container.
+    /// Adds HmacAuthentication to the <see cref="AuthenticationBuilder"/> with the
+    /// configured <see cref="HmacAuthenticationOptions"/>. This method also adds
+    /// the implementation for <see cref="IHmacManagerFactory"/> to the DI container.
     /// </summary>
-    /// <param name="builder">The calling <c>AuthenticationBuilder</c>.</param>
-    /// <param name="configureOptions">The configuration action for <c>HmacAuthenticationOptions</c>.</param>
-    /// <returns>An <c>AuthenticationBuilder</c></returns>
+    /// <param name="builder">The calling <see cref="AuthenticationBuilder"/>.</param>
+    /// <param name="configureOptions">The configuration action for <see cref="HmacAuthenticationOptions"/>.</param>
+    /// <returns>An <see cref="AuthenticationBuilder"/></returns>
     public static AuthenticationBuilder AddHmac(
         this AuthenticationBuilder builder,
         Action<HmacAuthenticationOptions> configureOptions
@@ -33,13 +33,13 @@ public static class AuthenticationBuilderExtensions
     }
 
     /// <summary>
-    /// Adds HmacAuthentication to the <c>AuthenticationBuilder</c> with the
-    /// configured <c>IConfigurationSection</c>. This method also adds
-    /// the implementation for <c>IHmacManagerFactory</c> to the DI container.
+    /// Adds HmacAuthentication to the <see cref="AuthenticationBuilder"/> with the
+    /// configured <see cref="IConfigurationSection"/>. This method also adds
+    /// the implementation for <see cref="IHmacManagerFactory"/> to the DI container.
     /// </summary>
-    /// <param name="builder">The calling <c>AuthenticationBuilder</c>.</param>
-    /// <param name="configurationSection">The <c>IConfigurationSection</c> representing <c>HmacPolicy</c> objects for <c>HmacManagerOptions</c>.</param>
-    /// <returns>An <c>AuthenticationBuilder</c></returns>
+    /// <param name="builder">The calling <see cref="AuthenticationBuilder"/>.</param>
+    /// <param name="configurationSection">The <see cref="IConfigurationSection"/> representing <see cref="HmacPolicy"/> objects for <see cref="HmacManagerOptions"/>.</param>
+    /// <returns>An <see cref="AuthenticationBuilder"/></returns>
     public static AuthenticationBuilder AddHmac(
         this AuthenticationBuilder builder,
         IConfigurationSection configurationSection
@@ -54,14 +54,14 @@ public static class AuthenticationBuilderExtensions
     }
 
     /// <summary>
-    /// Adds HmacAuthentication to the <c>AuthenticationBuilder</c> with the
-    /// configured <c>IConfigurationSection</c>. This method also adds
-    /// the implementation for <c>IHmacManagerFactory</c> to the DI container.
+    /// Adds HmacAuthentication to the <see cref="AuthenticationBuilder"/> with the
+    /// configured <see cref="IConfigurationSection"/>. This method also adds
+    /// the implementation for <see cref="IHmacManagerFactory"/> to the DI container.
     /// </summary>
-    /// <param name="builder">The calling <c>AuthenticationBuilder</c>.</param>
-    /// <param name="configurationSection">The <c>IConfigurationSection</c> representing <c>HmacPolicy</c> objects for <c>HmacManagerOptions</c>.</param>
-    /// <param name="events">An instance of <c>HmacEvents</c>.</param>
-    /// <returns>An <c>AuthenticationBuilder</c></returns>
+    /// <param name="builder">The calling <see cref="AuthenticationBuilder"/>.</param>
+    /// <param name="configurationSection">The <see cref="IConfigurationSection"/> representing <see cref="HmacPolicy"/> objects for <see cref="HmacManagerOptions"/>.</param>
+    /// <param name="events">An instance of <see cref="HmacEvents"/>.</param>
+    /// <returns>An <see cref="AuthenticationBuilder"/></returns>
     public static AuthenticationBuilder AddHmac(
         this AuthenticationBuilder builder,
         IConfigurationSection configurationSection,

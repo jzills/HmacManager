@@ -24,7 +24,7 @@ internal class HmacPolicyValidator : IValidator<HmacPolicy>
     /// <returns>A <see cref="ValidationResult"/> that contains validation results for the <see cref="HmacPolicy"/>.</returns>
     public ValidationResult Validate(HmacPolicy validatable) =>
         new ValidationResult(
-            _nameValidator.Validate(validatable.Name),  // Validates the policy name
-            _keysValidator.Validate(validatable.Keys)   // Validates the keys associated with the policy
+            _nameValidator.Validate(validatable.Name),
+            _keysValidator.Validate(validatable.Keys)
         );
 }

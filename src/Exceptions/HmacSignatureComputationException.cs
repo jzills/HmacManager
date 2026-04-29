@@ -7,7 +7,7 @@ namespace HmacManager.Exceptions;
 public class HmacSignatureComputationException : Exception
 {
     /// <summary>
-    /// Creates an instance of <c>HmacSignatureComputationException</c>.
+    /// Creates an instance of <see cref="HmacSignatureComputationException"/>.
     /// </summary>
     /// <param name="message">An optional error message.</param>
     public HmacSignatureComputationException(string? message = null) 

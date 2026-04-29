@@ -5,41 +5,41 @@ using HmacManager.Mvc.Extensions.Internal;
 namespace HmacManager.Mvc.Extensions;
 
 /// <summary>
-/// A class representing extension methods on an <c>IServiceCollection</c>.
+/// A class representing extension methods on an <see cref="IServiceCollection"/>.
 /// </summary>
 public static class IServiceCollectionExtensions
 {
     /// <summary>
-    /// Registers the necessary dependencies to use <c>IHmacManagerFactory</c>
-    /// in the dependency injection container with the configured <c>HmacManagerOptions</c>.
+    /// Registers the necessary dependencies to use <see cref="IHmacManagerFactory"/>
+    /// in the dependency injection container with the configured <see cref="HmacManagerOptions"/>.
     ///     <para>
     ///         See <see href="https://github.com/jzills/HmacManager/tree/main/samples/">here</see> for examples.
     ///     </para>
     /// </summary>
-    /// <param name="services">The <c>IServiceCollection</c>.</param>
-    /// <param name="configureOptions">The configuration action for <c>HmacManagerOptions</c>.</param>
-    /// <returns>An <c>IServiceCollection</c> that can be used to further configure services.</returns>
+    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+    /// <param name="configureOptions">The configuration action for <see cref="HmacManagerOptions"/>.</param>
+    /// <returns>An <see cref="IServiceCollection"/> that can be used to further configure services.</returns>
     public static IServiceCollection AddHmacManager(
         this IServiceCollection services, 
         Action<HmacManagerOptions> configureOptions
     )
     {
         var options = new HmacManagerOptions();
-        configureOptions.Invoke(options);
+        configureOptions(options);
         
         return services.AddHmacManager(options);
     }
 
     /// <summary>
-    /// Registers the necessary dependencies to use <c>IHmacManagerFactory</c>
-    /// in the dependency injection container with the corresponding <c>IConfiguration</c> settings.
+    /// Registers the necessary dependencies to use <see cref="IHmacManagerFactory"/>
+    /// in the dependency injection container with the corresponding <see cref="IConfiguration"/> settings.
     ///     <para>
     ///         See <see href="https://github.com/jzills/HmacManager/tree/main/samples/">here</see> for examples.
     ///     </para>
     /// </summary>
-    /// <param name="services">The <c>IServiceCollection</c>.</param>
-    /// <param name="configurationSection">The <c>IConfigurationSection</c> for an array of JSON objects representing an <c>HmacPolicy</c>.</param>
-    /// <returns>An <c>IServiceCollection</c> that can be used to further configure services.</returns>
+    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+    /// <param name="configurationSection">The <see cref="IConfigurationSection"/> for an array of JSON objects representing an <see cref="HmacPolicy"/>.</param>
+    /// <returns>An <see cref="IServiceCollection"/> that can be used to further configure services.</returns>
     public static IServiceCollection AddHmacManager(
         this IServiceCollection services, 
         IConfigurationSection configurationSection

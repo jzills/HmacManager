@@ -4,24 +4,24 @@ using HmacManager.Validation;
 namespace HmacManager.Policies;
 
 /// <summary>
-/// A class representing a <c>HmacPolicyCollection</c>.
+/// A class representing a <see cref="HmacPolicyCollection"/>.
 /// </summary>
 public class HmacPolicyCollection : ComponentCollection<HmacPolicy>, IHmacPolicyCollection
 {
     /// <summary>
     /// A simple <c>object</c> lock to restrict collection mutation
-    /// since the <c>HmacPolicyCollection</c> is registered as
+    /// since the <see cref="HmacPolicyCollection"/> is registered as
     /// a singleton with the DI container.
     /// </summary>
     private readonly object _locker = new();
 
     /// <summary>
-    /// Validates an <c>HmacPolicy</c> before it is added to the collection.
+    /// Validates an <see cref="HmacPolicy"/> before it is added to the collection.
     /// </summary>
     protected readonly IValidator<HmacPolicy> Validator;
 
     /// <summary>
-    /// Creates an empty <c>HmacPolicyCollection</c>.
+    /// Creates an empty <see cref="HmacPolicyCollection"/>.
     /// </summary>
     public HmacPolicyCollection()
     {
@@ -29,9 +29,9 @@ public class HmacPolicyCollection : ComponentCollection<HmacPolicy>, IHmacPolicy
     }
 
     /// <summary>
-    /// Creates an <c>HmacPolicyCollection</c> from a specified policy collection.
+    /// Creates an <see cref="HmacPolicyCollection"/> from a specified policy collection.
     /// </summary>
-    /// <param name="policies">An <c>IEnumerable</c> of <c>HmacPolicy</c> objects.</param>
+    /// <param name="policies">An <see cref="IEnumerable"/> of <see cref="HmacPolicy"/> objects.</param>
     public HmacPolicyCollection(IEnumerable<HmacPolicy> policies) : this()
     {
         foreach (var policy in policies)

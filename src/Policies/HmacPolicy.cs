@@ -6,7 +6,7 @@ using HmacManager.Schemes;
 namespace HmacManager.Policies;
 
 /// <summary>
-/// A class representing a <c>HmacPolicy</c>.
+/// A class representing a <see cref="HmacPolicy"/>.
 /// </summary>
 public class HmacPolicy
 {
@@ -17,40 +17,40 @@ public class HmacPolicy
     public string? Name { get; init; }
 
     /// <summary>
-    /// Creates an instance of <c>HmacPolicy</c>.
+    /// Creates an instance of <see cref="HmacPolicy"/>.
     /// </summary> 
     internal HmacPolicy() { }
 
     /// <summary>
-    /// Creates an <c>HmacPolicy</c> from a specified name.
+    /// Creates an <see cref="HmacPolicy"/> from a specified name.
     /// </summary>
-    /// <param name="name">The name of the <c>HmacPolicy</c>.</param>
+    /// <param name="name">The name of the <see cref="HmacPolicy"/>.</param>
     public HmacPolicy(string? name) => Name = name;
 
     /// <summary>
-    /// The <c>KeyCredentials</c> used to sign and verify authentication codes.
-    /// This includes both <c>PublicKey</c> and <c>PrivateKey</c>.
+    /// The <see cref="KeyCredentials"/> used to sign and verify authentication codes.
+    /// This includes both <see cref="PublicKey"/> and <see cref="PrivateKey"/>.
     /// </summary>
     public KeyCredentials Keys { get; set; } = new();
 
     /// <summary>
-    /// The <c>Algorithms</c> used to compute hash values.
-    /// This includes both <c>ContentHashAlgorithm</c> and <c>SignatureContentAlgorithm</c>.
+    /// The <see cref="Algorithms"/> used to compute hash values.
+    /// This includes both <see cref="ContentHashAlgorithm"/> and <see cref="SignatureContentAlgorithm"/>.
     /// </summary>
     public Algorithms Algorithms { get; set; } = new();
     
     /// <summary>
-    /// A <c>Nonce</c> object containing the cache type and max age.
+    /// A <see cref="Nonce"/> object containing the cache type and max age.
     /// </summary>
     public Nonce Nonce { get; set; } = new();
 
     /// <summary>
-    /// A collection of <c>Scheme</c> objects for this policy.
+    /// A collection of <see cref="Scheme"/> objects for this policy.
     /// </summary>
     public SchemeCollection Schemes { get; set; } = new();
 
     /// <summary>
-    /// The <c>SigningContentBuilder</c> used to construct signing content.
+    /// The <see cref="SigningContentBuilder"/> used to construct signing content.
     /// </summary>
     public SigningContentBuilder SigningContentBuilder { get; set; } = new SigningContentBuilderValidated();
 }

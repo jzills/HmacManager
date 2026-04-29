@@ -1,7 +1,7 @@
 namespace HmacManager.Common;
 
 /// <summary>
-/// A class representing a generic <c>ComponentCollection</c>.
+/// A class representing a generic <see cref="ComponentCollection"/>.
 /// </summary>
 public abstract class ComponentCollection<TComponent>
     : IComponentCollection<TComponent> 
@@ -14,10 +14,10 @@ public abstract class ComponentCollection<TComponent>
         new Dictionary<string, TComponent>();
 
     /// <summary>
-    /// Adds a <c>TComponent</c> to the collection stored at the key name.
+    /// Adds a <typeparamref name="TComponent"/> to the collection stored at the key name.
     /// </summary>
     /// <param name="name">A <c>string</c> representing the name of the component.</param>
-    /// <param name="component">A <c>TComponent</c>.</param>
+    /// <param name="component">A <typeparamref name="TComponent"/>.</param>
     protected void Add(string name, TComponent component)
     {
         if (!Components.ContainsKey(name))
@@ -27,7 +27,7 @@ public abstract class ComponentCollection<TComponent>
     }
 
     /// <summary>
-    /// Removes a <c>TComponent</c> from the collection stored at the key name.
+    /// Removes a <typeparamref name="TComponent"/> from the collection stored at the key name.
     /// </summary>
     /// <param name="name">A <c>string</c> representing the name of the component.</param>
     protected void Remove(string name)
@@ -39,23 +39,17 @@ public abstract class ComponentCollection<TComponent>
     }
 
     /// <summary>
-    /// Gets a <c>TComponent</c> from the collection stored at the key name.
+    /// Gets a <typeparamref name="TComponent"/> from the collection stored at the key name.
     /// </summary>
     /// <param name="name">A <c>string</c> representing the name of the component.</param>
     public TComponent? Get(string name)
     {
-        if (!Components.ContainsKey(name))
-        {
-            return default;
-        }
-        else
-        {
-            return Components[name];
-        }
+        Components.TryGetValue(name, out var value);
+        return value;
     }
 
     /// <summary>
-    /// Gets the entire <c>TComponent</c> collection.
+    /// Gets the entire <typeparamref name="TComponent"/> collection.
     /// </summary>
     public IReadOnlyCollection<TComponent> GetAll() => 
         Components.Values.ToList().AsReadOnly();

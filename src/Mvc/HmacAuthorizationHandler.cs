@@ -14,7 +14,7 @@ public class HmacAuthorizationHandler : AuthorizationHandler<HmacAuthenticateAtt
     /// </summary>
     /// <param name="context">The authorization context containing information about the user and resources.</param>
     /// <param name="requirement">The HMAC authentication requirement to validate against the user's policy and scheme.</param>
-    /// <returns>A completed <c>Task</c> representing the asynchronous operation.</returns>
+    /// <returns>A completed <see cref="Task"/> representing the asynchronous operation.</returns>
     protected override Task HandleRequirementAsync(
         AuthorizationHandlerContext context, 
         HmacAuthenticateAttribute requirement
