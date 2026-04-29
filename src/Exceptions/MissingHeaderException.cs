@@ -7,7 +7,7 @@ namespace HmacManager.Exceptions;
 public class MissingHeaderException : Exception
 {
     /// <summary>
-    /// Creates an instance of <c>MissingHeaderException</c>.
+    /// Creates an instance of <see cref="MissingHeaderException"/>.
     /// </summary>
     /// <param name="message">An optional error message.</param>
     public MissingHeaderException(string? message = null) 

@@ -48,7 +48,7 @@ public class SchemeCollectionJsonConverter : JsonConverter<SchemeCollection>
                     var builder = new SchemeBuilder(schemeName);
                     foreach (var header in headers)
                     {
-                        builder.AddHeader(header.Name, header.ClaimType);
+                        builder.AddHeader(header.Name!, header.ClaimType!);
                     }
                     
                     schemeCollection.Add(builder.Build());

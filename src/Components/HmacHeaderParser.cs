@@ -15,7 +15,7 @@ public class HmacHeaderParser : IHmacHeaderParser
     protected readonly IDictionary<string, string> Headers;
 
     /// <summary>
-    /// Creates an instance of <c>HmacHeaderParser</c>.
+    /// Creates an instance of <see cref="HmacHeaderParser"/>.
     /// </summary>
     public HmacHeaderParser()
     {
@@ -23,15 +23,15 @@ public class HmacHeaderParser : IHmacHeaderParser
     }
 
     /// <summary>
-    /// Initializes a new instance of the <c>HmacHeaderParser</c> class with the specified headers.
+    /// Initializes a new instance of the <see cref="HmacHeaderParser"/> class with the specified headers.
     /// </summary>
     /// <param name="headers">A dictionary of headers to parse.</param>
     public HmacHeaderParser(IDictionary<string, string> headers) => Headers = headers;
 
     /// <summary>
-    /// Initializes a new instance of the <c>HmacHeaderParser</c> class with the specified headers.
+    /// Initializes a new instance of the <see cref="HmacHeaderParser"/> class with the specified headers.
     /// </summary>
-    /// <param name="headers">An instance of <c>HttpRequestHeaders</c>.</param>
+    /// <param name="headers">An instance of <see cref="HttpRequestHeaders"/>.</param>
     public HmacHeaderParser(HttpRequestHeaders headers) 
         : this(headers.ToDictionary(
             header => header.Key,
@@ -125,7 +125,7 @@ public class HmacHeaderParser : IHmacHeaderParser
     /// <summary>
     /// Gets the date requested from the headers.
     /// </summary>
-    /// <returns>The date requested as a <c>DateTimeOffset</c> if found and valid; otherwise, null.</returns>
+    /// <returns>The date requested as a <see cref="DateTimeOffset"/> if found and valid; otherwise, null.</returns>
     public virtual DateTimeOffset GetDateRequested()
     {
         if (Headers.TryGetValue(HmacAuthenticationDefaults.Headers.DateRequested, out var dateRequested))
@@ -152,9 +152,9 @@ public class HmacHeaderParser : IHmacHeaderParser
     public virtual IHmacHeaderParser CreateParser(HttpRequestHeaders headers) => new HmacHeaderParser(headers);
 
     /// <summary>
-    /// Parses the headers and creates an <c>Hmac</c> object if all required values are present.
+    /// Parses the headers and creates an <see cref="Hmac"/> object if all required values are present.
     /// </summary>
-    /// <returns>An <c>Hmac</c> object if parsing is successful; otherwise, throws <c>MissingHeaderException</c>.</returns>
+    /// <returns>An <see cref="Hmac"/> object if parsing is successful; otherwise, throws <see cref="MissingHeaderException"/>.</returns>
     /// <exception cref="MissingHeaderException">Thrown if any required headers are missing.</exception>
     public virtual HmacPartial Parse(out string signature)
     {

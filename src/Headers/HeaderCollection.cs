@@ -23,7 +23,7 @@ public class HeaderCollection : ComponentCollection<Header>
         var validationResult = Validator.Validate(header);
         if (validationResult.IsValid)
         {
-            Add(header.Name, header); 
+            Add(header.Name!, header);
         }
         else
         {

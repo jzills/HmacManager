@@ -1,18 +1,18 @@
 namespace HmacManager.Policies;
 
 /// <summary>
-/// A class representing an instance of <c>HmacPolicyCollectionOptions</c>.
+/// A class representing an instance of <see cref="HmacPolicyCollectionOptions"/>.
 /// </summary>
 public class HmacPolicyCollectionOptions
 {
     /// <summary>
-    /// An implementation of <c>IHmacPolicyCollection</c>.
+    /// An implementation of <see cref="IHmacPolicyCollection"/>.
     /// </summary>
     public IHmacPolicyCollection Policies = new HmacPolicyCollection();
 
     /// <summary>
-    /// An accessor given an <c>IServiceProvider</c> that returns an implementation
-    /// of an <c>IHmacPolicyCollection</c>.
+    /// An accessor given an <see cref="IServiceProvider"/> that returns an implementation
+    /// of an <see cref="IHmacPolicyCollection"/>.
     /// </summary> 
     public Func<IServiceProvider, IHmacPolicyCollection>? PoliciesAccessor = null;
 

@@ -14,9 +14,9 @@ public record HmacPartial
     public required string Policy { get; init; }
 
     /// <summary>
-    /// Represents the name of the <c>Scheme</c> used by <c>HmacManager</c> for signing and verification.
+    /// Represents the name of the <see cref="Scheme"/> used by <see cref="HmacManager"/> for signing and verification.
     /// </summary>
-    /// <value>The name of the <c>Scheme</c>.</value>
+    /// <value>The name of the <see cref="Scheme"/>.</value>
     public string? Scheme { get; init; }
     
     /// <summary>

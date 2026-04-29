@@ -4,7 +4,7 @@ using HmacManager.Exceptions;
 namespace HmacManager.Components;
 
 /// <summary>
-/// A class representing a <c>ContentHashGenerator</c>.
+/// A class representing a <see cref="ContentHashGenerator"/>.
 /// </summary>
 public sealed class ContentHashGenerator : HashGeneratorBase, IHashGenerator
 {
@@ -14,10 +14,10 @@ public sealed class ContentHashGenerator : HashGeneratorBase, IHashGenerator
     private readonly ContentHashAlgorithm _contentHashAlgorithm;
 
     /// <summary>
-    /// Creates a <c>ContentHashGenerator</c> object.
+    /// Creates a <see cref="ContentHashGenerator"/> object.
     /// </summary>
-    /// <param name="contentHashAlgorithm"><c>ContentHashAlgorithm</c></param>
-    /// <returns>A <c>ContentHashGenerator</c> object.</returns>
+    /// <param name="contentHashAlgorithm"><see cref="ContentHashAlgorithm"/></param>
+    /// <returns>A <see cref="ContentHashGenerator"/> object.</returns>
     public ContentHashGenerator(ContentHashAlgorithm contentHashAlgorithm) => _contentHashAlgorithm = contentHashAlgorithm;
 
     /// <inheritdoc/>

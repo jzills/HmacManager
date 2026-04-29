@@ -1,7 +1,7 @@
 namespace HmacManager.Components;
 
 /// <summary>
-/// An <c>enum</c> representing a <c>ContentHashAlgorithm</c>.
+/// An <c>enum</c> representing a <see cref="ContentHashAlgorithm"/>.
 /// </summary>
 public enum ContentHashAlgorithm
 {

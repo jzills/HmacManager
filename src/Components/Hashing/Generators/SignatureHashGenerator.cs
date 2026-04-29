@@ -4,7 +4,7 @@ using HmacManager.Exceptions;
 namespace HmacManager.Components;
 
 /// <summary>
-/// A class representing a <c>SignatureHashGenerator</c>.
+/// A class representing a <see cref="SignatureHashGenerator"/>.
 /// </summary>
 public sealed class SignatureHashGenerator : HashGeneratorBase, IHashGenerator
 {
@@ -19,11 +19,11 @@ public sealed class SignatureHashGenerator : HashGeneratorBase, IHashGenerator
     private readonly SigningHashAlgorithm _signingHashAlgorithm;
 
     /// <summary>
-    /// Creates a <c>SignatureHashGenerator</c> object.
+    /// Creates a <see cref="SignatureHashGenerator"/> object.
     /// </summary>
     /// <param name="privateKey"><c>string?</c></param>/// 
-    /// <param name="signingHashAlgorithm"><c>SigningHashAlgorithm</c></param>
-    /// <returns>A <c>SignatureHashGenerator</c> object.</returns>
+    /// <param name="signingHashAlgorithm"><see cref="SigningHashAlgorithm"/></param>
+    /// <returns>A <see cref="SignatureHashGenerator"/> object.</returns>
     public SignatureHashGenerator(
         string privateKey, 
         SigningHashAlgorithm signingHashAlgorithm

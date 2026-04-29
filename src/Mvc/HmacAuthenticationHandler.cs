@@ -48,7 +48,7 @@ internal class HmacAuthenticationHandler : AuthenticationHandler<HmacAuthenticat
     {
         if (ContextProvider.TryGetAuthenticationContext(Request.Headers, out var hmacAuthenticationContext))
         {
-            var hasValidKeys = await Options.Events.OnValidateKeysAsync(Context, hmacAuthenticationContext.Policy.Keys);
+            var hasValidKeys = await Options.Events.OnValidateKeysAsync(Context, hmacAuthenticationContext.Policy!.Keys);
             if (!hasValidKeys)
             {
                 return AuthenticateResult.Fail(new HmacAuthenticationException());
@@ -89,7 +89,7 @@ internal class HmacAuthenticationHandler : AuthenticationHandler<HmacAuthenticat
         {
             foreach (var headerValue in hmacResult.Hmac.HeaderValues)
             {
-                claims.Add(new Claim(headerValue.ClaimType, headerValue.Value));
+                claims.Add(new Claim(headerValue.ClaimType ?? headerValue.Name ?? string.Empty, headerValue.Value ?? string.Empty));
             }
         }
 
@@ -103,8 +103,8 @@ internal class HmacAuthenticationHandler : AuthenticationHandler<HmacAuthenticat
         }
 
         // Adds policy and header claims to support dynamic authorization policies.
-        claims.Add(new Claim(HmacAuthenticationDefaults.Properties.PolicyProperty, hmacResult.Hmac.Policy));
-        claims.Add(new Claim(HmacAuthenticationDefaults.Properties.SchemeProperty, hmacResult.Hmac.Scheme));
+        claims.Add(new Claim(HmacAuthenticationDefaults.Properties.PolicyProperty, hmacResult.Hmac!.Policy));
+        claims.Add(new Claim(HmacAuthenticationDefaults.Properties.SchemeProperty, hmacResult.Hmac.Scheme ?? string.Empty));
 
         return claims;
     }
@@ -124,7 +124,7 @@ internal class HmacAuthenticationHandler : AuthenticationHandler<HmacAuthenticat
                     HmacAuthenticationDefaults.AuthenticationScheme)),
             new AuthenticationProperties(new Dictionary<string, string?>
             {
-                { HmacAuthenticationDefaults.Properties.PolicyProperty, result.Hmac.Policy },
+                { HmacAuthenticationDefaults.Properties.PolicyProperty, result.Hmac!.Policy },
                 { HmacAuthenticationDefaults.Properties.SchemeProperty, result.Hmac.Scheme }
             }),
             HmacAuthenticationDefaults.AuthenticationScheme
@@ -157,8 +157,8 @@ internal class HmacAuthenticationHandler : AuthenticationHandler<HmacAuthenticat
     /// </summary>
     /// <param name="context">The HMAC authentication context containing request information.</param>
     /// <returns>A task that represents the asynchronous operation, containing the HMAC verification result.</returns>
-    private Task<HmacResult> GetResultAsync(HmacAuthenticationContext context) => 
-        context.HmacManager.VerifyAsync(
+    private Task<HmacResult> GetResultAsync(HmacAuthenticationContext context) =>
+        context.HmacManager!.VerifyAsync(
             Request.HttpContext.GetHttpRequestMessage()
         );
 }

@@ -10,7 +10,7 @@ namespace HmacManager.Features;
 internal class HttpRequestMessageFeature : IHttpRequestMessageFeature
 {
     private readonly HttpContext _httpContext;
-    private HttpRequestMessage _httpRequestMessage;
+    private HttpRequestMessage? _httpRequestMessage;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="HttpRequestMessageFeature"/> class.
@@ -75,7 +75,7 @@ internal class HttpRequestMessageFeature : IHttpRequestMessageFeature
         {
             if (!message.Headers.TryAddWithoutValidation(header.Key, (IEnumerable<string>)header.Value))
             {
-                message.Content.Headers.TryAddWithoutValidation(header.Key, (IEnumerable<string>)header.Value);
+                message.Content?.Headers.TryAddWithoutValidation(header.Key, (IEnumerable<string>)header.Value);
             }
         }
 
