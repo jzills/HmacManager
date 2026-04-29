@@ -10,7 +10,7 @@ namespace HmacManager.Mvc.Extensions;
 public static class IServiceCollectionExtensions
 {
     /// <summary>
-    /// Registers the necessary dependencies to use <see cref="IHmacManagerFactory"/>
+    /// Registers the necessary dependencies to use <see cref="HmacManager.Components.IHmacManagerFactory"/>
     /// in the dependency injection container with the configured <see cref="HmacManagerOptions"/>.
     ///     <para>
     ///         See <see href="https://github.com/jzills/HmacManager/tree/main/samples/">here</see> for examples.
@@ -31,14 +31,14 @@ public static class IServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Registers the necessary dependencies to use <see cref="IHmacManagerFactory"/>
+    /// Registers the necessary dependencies to use <see cref="HmacManager.Components.IHmacManagerFactory"/>
     /// in the dependency injection container with the corresponding <see cref="IConfiguration"/> settings.
     ///     <para>
     ///         See <see href="https://github.com/jzills/HmacManager/tree/main/samples/">here</see> for examples.
     ///     </para>
     /// </summary>
     /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-    /// <param name="configurationSection">The <see cref="IConfigurationSection"/> for an array of JSON objects representing an <see cref="HmacPolicy"/>.</param>
+    /// <param name="configurationSection">The <see cref="IConfigurationSection"/> for an array of JSON objects representing an <see cref="HmacManager.Policies.HmacPolicy"/>.</param>
     /// <returns>An <see cref="IServiceCollection"/> that can be used to further configure services.</returns>
     public static IServiceCollection AddHmacManager(
         this IServiceCollection services, 

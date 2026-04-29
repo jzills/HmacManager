@@ -31,7 +31,7 @@ public class HmacPolicyCollection : ComponentCollection<HmacPolicy>, IHmacPolicy
     /// <summary>
     /// Creates an <see cref="HmacPolicyCollection"/> from a specified policy collection.
     /// </summary>
-    /// <param name="policies">An <see cref="IEnumerable"/> of <see cref="HmacPolicy"/> objects.</param>
+    /// <param name="policies">An <see cref="IEnumerable{T}"/> of <see cref="HmacPolicy"/> objects.</param>
     public HmacPolicyCollection(IEnumerable<HmacPolicy> policies) : this()
     {
         foreach (var policy in policies)

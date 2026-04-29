@@ -29,13 +29,13 @@ public class HmacPolicy
 
     /// <summary>
     /// The <see cref="KeyCredentials"/> used to sign and verify authentication codes.
-    /// This includes both <see cref="PublicKey"/> and <see cref="PrivateKey"/>.
+    /// This includes both <see cref="KeyCredentials.PublicKey"/> and <see cref="KeyCredentials.PrivateKey"/>.
     /// </summary>
     public KeyCredentials Keys { get; set; } = new();
 
     /// <summary>
     /// The <see cref="Algorithms"/> used to compute hash values.
-    /// This includes both <see cref="ContentHashAlgorithm"/> and <see cref="SignatureContentAlgorithm"/>.
+    /// This includes both <see cref="ContentHashAlgorithm"/> and <see cref="SigningHashAlgorithm"/>.
     /// </summary>
     public Algorithms Algorithms { get; set; } = new();
     

@@ -1,7 +1,7 @@
 namespace HmacManager.Common;
 
 /// <summary>
-/// A class representing a generic <see cref="ComponentCollection"/>.
+/// A class representing a generic <see cref="ComponentCollection{TComponent}"/>.
 /// </summary>
 public abstract class ComponentCollection<TComponent>
     : IComponentCollection<TComponent> 

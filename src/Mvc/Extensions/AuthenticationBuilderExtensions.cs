@@ -13,7 +13,7 @@ public static class AuthenticationBuilderExtensions
     /// <summary>
     /// Adds HmacAuthentication to the <see cref="AuthenticationBuilder"/> with the
     /// configured <see cref="HmacAuthenticationOptions"/>. This method also adds
-    /// the implementation for <see cref="IHmacManagerFactory"/> to the DI container.
+    /// the implementation for <see cref="HmacManager.Components.IHmacManagerFactory"/> to the DI container.
     /// </summary>
     /// <param name="builder">The calling <see cref="AuthenticationBuilder"/>.</param>
     /// <param name="configureOptions">The configuration action for <see cref="HmacAuthenticationOptions"/>.</param>
@@ -35,7 +35,7 @@ public static class AuthenticationBuilderExtensions
     /// <summary>
     /// Adds HmacAuthentication to the <see cref="AuthenticationBuilder"/> with the
     /// configured <see cref="IConfigurationSection"/>. This method also adds
-    /// the implementation for <see cref="IHmacManagerFactory"/> to the DI container.
+    /// the implementation for <see cref="HmacManager.Components.IHmacManagerFactory"/> to the DI container.
     /// </summary>
     /// <param name="builder">The calling <see cref="AuthenticationBuilder"/>.</param>
     /// <param name="configurationSection">The <see cref="IConfigurationSection"/> representing <see cref="HmacPolicy"/> objects for <see cref="HmacManagerOptions"/>.</param>
@@ -56,7 +56,7 @@ public static class AuthenticationBuilderExtensions
     /// <summary>
     /// Adds HmacAuthentication to the <see cref="AuthenticationBuilder"/> with the
     /// configured <see cref="IConfigurationSection"/>. This method also adds
-    /// the implementation for <see cref="IHmacManagerFactory"/> to the DI container.
+    /// the implementation for <see cref="HmacManager.Components.IHmacManagerFactory"/> to the DI container.
     /// </summary>
     /// <param name="builder">The calling <see cref="AuthenticationBuilder"/>.</param>
     /// <param name="configurationSection">The <see cref="IConfigurationSection"/> representing <see cref="HmacPolicy"/> objects for <see cref="HmacManagerOptions"/>.</param>
