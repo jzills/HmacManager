@@ -102,6 +102,14 @@ kubectl create configmap hmac-manager-config \
 
 ## Step 5 — Deploy the service
 
+For local testing, enable the `Development` environment so the `/sign` endpoint is available (see [Signing endpoint](#signing-endpoint-development-only)):
+
+```bash
+kubectl set env deployment/hmac-manager ASPNETCORE_ENVIRONMENT=Development -n hmac-system
+```
+
+Apply the manifests:
+
 ```bash
 kubectl apply -f services/HmacManager.Kubernetes/deploy/deployment.yaml
 kubectl apply -f services/HmacManager.Kubernetes/deploy/service.yaml
@@ -186,7 +194,71 @@ kubectl run curl --image=curlimages/curl --restart=Never --rm -it \
 
 **Signed request — should be forwarded:**
 
-Use `HmacDelegatingHandler` from your own .NET client with the same policy/key, or build a small test client using HmacManager's `IHmacManagerFactory.Create("MyPolicy").SignAsync(request)` to produce the required HMAC headers, then send that request from inside the cluster.
+Use the `/sign` endpoint (see below) to get the headers, then attach them to your curl.
+
+## Signing endpoint (Development only)
+
+`POST /sign` is only registered when `ASPNETCORE_ENVIRONMENT=Development`. It accepts a request description and returns the HMAC headers you need to attach to your actual request — no separate .NET client required.
+
+**Request:**
+
+```json
+{
+  "policy": "MyPolicy",
+  "method": "GET",
+  "uri": "http://echo.default.svc.cluster.local/test",
+  "scheme": null,
+  "body": null
+}
+```
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `policy` | Yes | Policy name as configured in `appsettings.json` |
+| `method` | Yes | HTTP method of the request you want to sign |
+| `uri` | Yes | Full URI of the request you want to sign (must match exactly what the real request will use) |
+| `scheme` | No | Named scheme within the policy, if any |
+| `body` | No | Request body string; include this if the real request has a body so the content hash covers it |
+
+**Response:**
+
+```json
+{
+  "Authorization": "Hmac <signature>",
+  "Hmac-Policy": "MyPolicy",
+  "Hmac-Nonce": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "Hmac-DateRequested": "2026-06-15T10:00:00.000Z",
+  "Hmac-Options": "..."
+}
+```
+
+**End-to-end test with curl:**
+
+```bash
+# 1. Get signed headers from the signing endpoint
+SIGN_RESPONSE=$(kubectl run curl-sign --image=curlimages/curl --restart=Never --rm -q -it \
+  -- curl -s -X POST http://hmac-manager.hmac-system.svc.cluster.local:8080/sign \
+  -H "Content-Type: application/json" \
+  -d '{"policy":"MyPolicy","method":"GET","uri":"http://echo.default.svc.cluster.local/test"}')
+
+AUTH=$(echo "$SIGN_RESPONSE"       | grep -o '"Authorization":"[^"]*"' | cut -d'"' -f4)
+POLICY=$(echo "$SIGN_RESPONSE"     | grep -o '"Hmac-Policy":"[^"]*"'   | cut -d'"' -f4)
+NONCE=$(echo "$SIGN_RESPONSE"      | grep -o '"Hmac-Nonce":"[^"]*"'    | cut -d'"' -f4)
+DATE=$(echo "$SIGN_RESPONSE"       | grep -o '"Hmac-DateRequested":"[^"]*"' | cut -d'"' -f4)
+OPTIONS=$(echo "$SIGN_RESPONSE"    | grep -o '"Hmac-Options":"[^"]*"'  | cut -d'"' -f4)
+
+# 2. Send the signed request through the waypoint
+kubectl run curl-test --image=curlimages/curl --restart=Never --rm -it \
+  -- curl -sv http://echo.default.svc.cluster.local/test \
+  -H "Authorization: $AUTH" \
+  -H "Hmac-Policy: $POLICY" \
+  -H "Hmac-Nonce: $NONCE" \
+  -H "Hmac-DateRequested: $DATE" \
+  -H "Hmac-Options: $OPTIONS"
+# Expected: 200 OK, response from echo server
+```
+
+> The `/sign` endpoint is not registered when `ASPNETCORE_ENVIRONMENT` is anything other than `Development`. In staging and production the route returns 404 — it does not exist.
 
 ## Verifying ext-authz calls
 
