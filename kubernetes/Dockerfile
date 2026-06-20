@@ -9,16 +9,16 @@ EXPOSE 8080
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG DOTNET_VERSION
 WORKDIR /repo
-COPY ["services/HmacManager.Kubernetes/HmacManager.Kubernetes.csproj", "services/HmacManager.Kubernetes/"]
+COPY ["kubernetes/HmacManager.Kubernetes.csproj", "kubernetes/"]
 COPY ["src/HmacManager.csproj", "src/"]
-RUN dotnet restore "services/HmacManager.Kubernetes/HmacManager.Kubernetes.csproj"
+RUN dotnet restore "kubernetes/HmacManager.Kubernetes.csproj"
 COPY . .
-RUN dotnet build "services/HmacManager.Kubernetes/HmacManager.Kubernetes.csproj" \
+RUN dotnet build "kubernetes/HmacManager.Kubernetes.csproj" \
     -c Release -f net${DOTNET_VERSION}.0 -o /app/build
 
 FROM build AS publish
 ARG DOTNET_VERSION
-RUN dotnet publish "services/HmacManager.Kubernetes/HmacManager.Kubernetes.csproj" \
+RUN dotnet publish "kubernetes/HmacManager.Kubernetes.csproj" \
     -c Release -f net${DOTNET_VERSION}.0 -o /app/publish
 
 FROM base AS final

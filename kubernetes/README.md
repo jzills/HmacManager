@@ -52,7 +52,7 @@ kubectl get pods -n istio-system
 Run from the **repository root** (the Dockerfile copies files relative to the root):
 
 ```bash
-docker build -f services/HmacManager.Kubernetes/Dockerfile -t hmac-manager:latest .
+docker build -f kubernetes/Dockerfile -t hmac-manager:latest .
 ```
 
 Load the image into your local cluster:
@@ -111,8 +111,8 @@ kubectl set env deployment/hmac-manager ASPNETCORE_ENVIRONMENT=Development -n hm
 Apply the manifests:
 
 ```bash
-kubectl apply -f services/HmacManager.Kubernetes/deploy/deployment.yaml
-kubectl apply -f services/HmacManager.Kubernetes/deploy/service.yaml
+kubectl apply -f kubernetes/deploy/deployment.yaml
+kubectl apply -f kubernetes/deploy/service.yaml
 ```
 
 Wait for the pod to be ready:
@@ -135,7 +135,7 @@ kubectl patch configmap istio \
 Or apply the provided patch file directly:
 
 ```bash
-kubectl apply -f services/HmacManager.Kubernetes/deploy/mesh-config-patch.yaml
+kubectl apply -f kubernetes/deploy/mesh-config-patch.yaml
 ```
 
 > `withRequestBody` is required because HMAC signatures cover the request body hash. Adjust `maxRequestBytes` to match your largest expected payload.
@@ -171,7 +171,7 @@ kubectl get gateway -n default
 ## Step 8 — Apply the AuthorizationPolicy
 
 ```bash
-kubectl apply -f services/HmacManager.Kubernetes/deploy/authorization-policy.yaml
+kubectl apply -f kubernetes/deploy/authorization-policy.yaml
 ```
 
 This tells the waypoint to call `hmac-manager` via `action: CUSTOM` for all inbound requests to workloads in the `default` namespace.
