@@ -4,8 +4,8 @@ FROM mcr.microsoft.com/dotnet/aspnet:${NET_VERSION}.0 AS base
 WORKDIR /app
 EXPOSE 8080
 
-# SDK version must match the library's highest TFM (currently net10.0).
-# NET_VERSION controls only the runtime image and the published framework.
+# SDK must match the library's highest TFM. NET_VERSION controls the runtime
+# image and published framework only; update this line when a new TFM is added.
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG NET_VERSION
 WORKDIR /repo
