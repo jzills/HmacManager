@@ -1,0 +1,6 @@
+apiVersion: v2
+name: hmac-manager
+description: Istio ext-authz HTTP server for HMAC request authentication
+type: application
+version: 0.1.0
+appVersion: "latest"

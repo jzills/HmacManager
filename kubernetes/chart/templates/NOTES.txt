@@ -1,0 +1,39 @@
+hmac-manager deployed to namespace {{ .Values.namespace }}.
+
+{{- if .Values.istio.enabled }}
+
+ACTION REQUIRED — register the ext-authz provider with Istio:
+
+  kubectl patch configmap {{ .Values.istio.meshConfig.configMapName }} \
+    -n {{ .Values.istio.meshConfig.namespace }} \
+    --type merge \
+    --patch '{"data":{"mesh":"extensionProviders:\n- name: {{ include "hmac-manager.fullname" . }}\n  envoyExtAuthzHttp:\n    service: {{ include "hmac-manager.fullname" . }}.{{ .Values.namespace }}.svc.cluster.local\n    port: {{ .Values.service.port }}\n    withRequestBody:\n      maxRequestBytes: {{ .Values.istio.meshConfig.maxRequestBytes }}\n      allowPartialMessage: {{ .Values.istio.meshConfig.allowPartialMessage }}"}}'
+
+This patches the existing Istio ConfigMap rather than replacing it.
+Run this once after install (and again after any Istio upgrade that resets the ConfigMap).
+
+{{- if not .Values.istio.authorizationPolicy.enabled }}
+
+ACTION REQUIRED — AuthorizationPolicy was disabled (istio.authorizationPolicy.enabled=false).
+Apply one manually. The provider name below must match exactly:
+
+  apiVersion: security.istio.io/v1
+  kind: AuthorizationPolicy
+  metadata:
+    name: {{ include "hmac-manager.fullname" . }}-auth
+    namespace: <YOUR_POLICY_NAMESPACE>   # e.g. default, or the namespace of your waypoint
+    labels:
+      {{- include "hmac-manager.labels" . | nindent 6 }}
+  spec:
+    targetRefs:
+      - kind: <YOUR_TARGET_KIND>         # e.g. Gateway
+        group: <YOUR_TARGET_GROUP>       # e.g. gateway.networking.k8s.io
+        name: <YOUR_TARGET_NAME>         # e.g. waypoint
+    action: CUSTOM
+    provider:
+      name: {{ include "hmac-manager.fullname" . }}
+    rules:
+      - {}
+
+{{- end }}
+{{- end }}

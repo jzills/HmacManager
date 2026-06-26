@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "hmac-manager.fullname" . }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "hmac-manager.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "hmac-manager.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "hmac-manager.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ include "hmac-manager.name" . }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          env:
+            - name: ASPNETCORE_URLS
+              value: "http://+:{{ .Values.service.port }}"
+          envFrom:
+            - configMapRef:
+                name: {{ include "hmac-manager.fullname" . }}-config
+            - secretRef:
+                name: {{ include "hmac-manager.secretName" . }}

@@ -1,0 +1,50 @@
+nameOverride: ""
+fullnameOverride: ""
+
+image:
+  repository: hmac-manager
+  tag: latest
+  pullPolicy: IfNotPresent
+
+replicaCount: 1
+namespace: hmac-system
+
+service:
+  port: 8080
+
+# Non-secret config loaded via envFrom ConfigMap.
+# Use ASP.NET Core double-underscore env var format for nested keys.
+# Example:
+#   HmacManager__MyPolicy__PublicKey: "00000000-0000-0000-0000-000000000000"
+#   ASPNETCORE_ENVIRONMENT: "Production"
+config: {}
+
+# Secret key-value pairs — only rendered when existingSecret is "".
+# Example:
+#   HmacManager__MyPolicy__PrivateKey: "replace-with-secret"
+secretData: {}
+
+# Name of a pre-existing Secret (ExternalSecret, Vault sidecar, etc.).
+# When set, the chart's Secret template is skipped and this name is
+# referenced in the Deployment's envFrom instead.
+existingSecret: ""
+
+istio:
+  # Master switch — set to false to skip the AuthorizationPolicy and suppress NOTES output.
+  enabled: true
+
+  # Values used to generate the kubectl patch command printed in NOTES after install.
+  meshConfig:
+    namespace: istio-system
+    configMapName: istio
+    maxRequestBytes: 8192
+    allowPartialMessage: false
+
+  authorizationPolicy:
+    # Set to false to skip the AuthorizationPolicy.
+    enabled: true
+    namespace: default
+    targetRef:
+      kind: Gateway
+      group: gateway.networking.k8s.io
+      name: waypoint

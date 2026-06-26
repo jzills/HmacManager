@@ -1,0 +1,19 @@
+{{- if and .Values.istio.enabled .Values.istio.authorizationPolicy.enabled }}
+apiVersion: security.istio.io/v1
+kind: AuthorizationPolicy
+metadata:
+  name: {{ include "hmac-manager.fullname" . }}-auth
+  namespace: {{ .Values.istio.authorizationPolicy.namespace }}
+  labels:
+    {{- include "hmac-manager.labels" . | nindent 4 }}
+spec:
+  targetRefs:
+    - kind: {{ .Values.istio.authorizationPolicy.targetRef.kind }}
+      group: {{ .Values.istio.authorizationPolicy.targetRef.group }}
+      name: {{ .Values.istio.authorizationPolicy.targetRef.name }}
+  action: CUSTOM
+  provider:
+    name: {{ include "hmac-manager.fullname" . }}
+  rules:
+    - {}
+{{- end }}
