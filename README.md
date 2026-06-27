@@ -1,18 +1,5 @@
 
-```
-╔═════════════════════════════════════════════════╗
-║     __  ____  ______   ______                   ║
-║    / / / /  |/  /   | / ____/                   ║
-║   / /_/ / /|_/ / /| |/ /                        ║
-║  / __  / /  / / ___ / /___                      ║
-║ /_/ /_/_/  /_/_/  |_\____/                      ║
-║     __  ______    _   _____   ________________  ║
-║    /  |/  /   |  / | / /   | / ____/ ____/ __ \ ║
-║   / /|_/ / /| | /  |/ / /| |/ / __/ __/ / /_/ / ║
-║  / /  / / ___ |/ /|  / ___ / /_/ / /___/ _, _/  ║
-║ /_/  /_/_/  |_/_/ |_/_/  |_\____/_____/_/ |_|   ║
-╚═════════════════════════════════════════════════╝
-```
+# HmacManager
 
 [![NuGet Version](https://img.shields.io/nuget/v/HmacManager.svg)](https://www.nuget.org/packages/HmacManager/) [![NuGet Downloads](https://img.shields.io/nuget/dt/HmacManager.svg)](https://www.nuget.org/packages/HmacManager/) [![.NET](https://github.com/jzills/HmacManager/actions/workflows/pr.yml/badge.svg)](https://github.com/jzills/HmacManager/actions/workflows/pr.yml)
 
