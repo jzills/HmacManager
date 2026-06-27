@@ -7,17 +7,21 @@ internal class ExtAuthzHandler(IHmacAuthenticationContextProvider contextProvide
 {
     public async Task<IResult> CheckAsync(HttpContext ctx)
     {
+        // Envoy lowercases all custom headers. Normalize to case-insensitive before
+        // passing to the context provider whose internal dictionary is case-sensitive.
+        var headers = ctx.Request.Headers.ToDictionary(
+            h => h.Key,
+            h => h.Value.FirstOrDefault() ?? string.Empty,
+            StringComparer.OrdinalIgnoreCase);
+
         try
         {
-            if (!contextProvider.TryGetAuthenticationContext(ctx.Request.Headers, out var authContext) ||
+            if (!contextProvider.TryGetAuthenticationContext(headers, out var authContext) ||
                 authContext.HmacManager is null)
             {
                 return Results.StatusCode(StatusCodes.Status403Forbidden);
             }
 
-            // Envoy preserves the original Host header in the check request.
-            // x-forwarded-proto carries the original scheme (the connection to the
-            // ext-authz service is plain HTTP regardless of the upstream scheme).
             var scheme = ctx.Request.Headers["x-forwarded-proto"].FirstOrDefault() ?? ctx.Request.Scheme;
             var host   = ctx.Request.Host.Value;
             var uri    = new Uri($"{scheme}://{host}{ctx.Request.PathBase}{ctx.Request.Path}{ctx.Request.QueryString}");
@@ -37,11 +41,12 @@ internal class ExtAuthzHandler(IHmacAuthenticationContextProvider contextProvide
             }
 
             var result = await authContext.HmacManager.VerifyAsync(httpRequest);
+
             return result.IsSuccess
                 ? Results.Ok()
                 : Results.StatusCode(StatusCodes.Status403Forbidden);
         }
-        catch (HmacPolicyNotFoundException)
+        catch (Exception e) when (e is HmacPolicyNotFoundException or MissingHeaderException)
         {
             return Results.StatusCode(StatusCodes.Status403Forbidden);
         }
