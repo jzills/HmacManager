@@ -6,46 +6,25 @@ hmac-manager deployed to namespace {{ .Values.namespace }}.
  ACTION REQUIRED — Register ext-authz provider with Istio
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Run the following to safely merge hmac-manager into the Istio
-MeshConfig without overwriting existing configuration.
-This command is idempotent — safe to run multiple times.
+Requires: jq
 
-  PATCH=$(python3 << 'EOF'
-import subprocess, yaml, json
-
-result = subprocess.run(
-    [
-        'kubectl', 'get', 'configmap',
-        '{{ .Values.istio.meshConfig.configMapName }}',
-        '-n', '{{ .Values.istio.meshConfig.namespace }}',
-        '-o', 'jsonpath={.data.mesh}'
-    ],
-    capture_output=True, text=True
-)
-mesh = yaml.safe_load(result.stdout) or {}
-providers = [
-    p for p in mesh.get('extensionProviders', [])
-    if p.get('name') != '{{ include "hmac-manager.fullname" . }}'
-]
-providers.append({
-    'name': '{{ include "hmac-manager.fullname" . }}',
-    'envoyExtAuthzHttp': {
-        'service': '{{ include "hmac-manager.fullname" . }}.{{ .Values.namespace }}.svc.cluster.local',
-        'port': {{ .Values.service.port }},
-        'withRequestBody': {
-            'maxRequestBytes': {{ .Values.istio.meshConfig.maxRequestBytes }},
-            'allowPartialMessage': {{ if .Values.istio.meshConfig.allowPartialMessage }}True{{ else }}False{{ end }}
-        }
-    }
-})
-mesh['extensionProviders'] = providers
-print(json.dumps({'data': {'mesh': yaml.dump(mesh)}}))
-EOF
-)
+  MESH=$(kubectl get configmap {{ .Values.istio.meshConfig.configMapName }} \
+      -n {{ .Values.istio.meshConfig.namespace }} \
+      -o jsonpath='{.data.mesh}')
 
   kubectl patch configmap {{ .Values.istio.meshConfig.configMapName }} \
       -n {{ .Values.istio.meshConfig.namespace }} \
-      --type merge -p "$PATCH"
+      --type merge \
+      -p "$(jq -cn --arg v "$MESH
+extensionProviders:
+- name: {{ include "hmac-manager.fullname" . }}
+  envoyExtAuthzHttp:
+    service: {{ include "hmac-manager.fullname" . }}.{{ .Values.namespace }}.svc.cluster.local
+    port: {{ .Values.service.port }}
+    withRequestBody:
+      maxRequestBytes: {{ .Values.istio.meshConfig.maxRequestBytes }}
+      allowPartialMessage: {{ .Values.istio.meshConfig.allowPartialMessage }}" \
+      '{"data":{"mesh":$v}}')"
 
   kubectl rollout restart deployment/istiod \
       -n {{ .Values.istio.meshConfig.namespace }}
