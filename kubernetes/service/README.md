@@ -52,7 +52,7 @@ kubectl get pods -n istio-system
 Run from the **repository root** (the Dockerfile copies files relative to the root):
 
 ```bash
-docker build -f kubernetes/Dockerfile -t hmac-manager:latest .
+docker build -f kubernetes/service/Dockerfile -t hmac-manager:latest .
 ```
 
 Load the image into your local cluster:
@@ -104,15 +104,12 @@ kubectl create configmap hmac-manager-config \
 
 For local testing, enable the `Development` environment so the `/sign` endpoint is available (see [Signing endpoint](#signing-endpoint-development-only)):
 
-```bash
-kubectl set env deployment/hmac-manager ASPNETCORE_ENVIRONMENT=Development -n hmac-system
-```
-
-Apply the manifests:
+Install with Helm, passing the development environment flag:
 
 ```bash
-kubectl apply -f kubernetes/deploy/deployment.yaml
-kubectl apply -f kubernetes/deploy/service.yaml
+helm install hmac-manager kubernetes/chart \
+  --namespace hmac-system --create-namespace \
+  --set config.ASPNETCORE_ENVIRONMENT=Development
 ```
 
 Wait for the pod to be ready:
@@ -130,12 +127,6 @@ kubectl patch configmap istio \
   -n istio-system \
   --type merge \
   -p '{"data":{"mesh":"extensionProviders:\n- name: hmac-manager\n  envoyExtAuthzHttp:\n    service: hmac-manager.hmac-system.svc.cluster.local\n    port: 8080\n    withRequestBody:\n      maxRequestBytes: 8192\n      allowPartialMessage: false\n"}}'
-```
-
-Or apply the provided patch file directly:
-
-```bash
-kubectl apply -f kubernetes/deploy/mesh-config-patch.yaml
 ```
 
 > `withRequestBody` is required because HMAC signatures cover the request body hash. Adjust `maxRequestBytes` to match your largest expected payload.
@@ -170,8 +161,12 @@ kubectl get gateway -n default
 
 ## Step 8 — Apply the AuthorizationPolicy
 
+The Helm chart includes an `AuthorizationPolicy` template. It is enabled by default and targets the `default` namespace waypoint. To apply it, upgrade (or re-install) with Istio support enabled:
+
 ```bash
-kubectl apply -f kubernetes/deploy/authorization-policy.yaml
+helm upgrade hmac-manager kubernetes/chart \
+  --namespace hmac-system \
+  --set istio.enabled=true
 ```
 
 This tells the waypoint to call `hmac-manager` via `action: CUSTOM` for all inbound requests to workloads in the `default` namespace.
