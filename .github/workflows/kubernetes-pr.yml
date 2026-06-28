@@ -5,7 +5,6 @@ on:
     branches: [ "main", "develop" ]
     paths:
       - "kubernetes/**"
-      - "test/e2e/**"
 
 env:
   ISTIO_VERSION: "1.30.2"
@@ -29,7 +28,7 @@ jobs:
         run: helm plugin install https://github.com/helm-unittest/helm-unittest --version v0.7.2
 
       - name: Run Helm unit tests
-        run: helm unittest kubernetes/chart/
+        run: helm unittest kubernetes/chart/ -f 'tests/*_test.yaml'
 
   e2e-tests:
     name: E2E Tests
@@ -86,12 +85,12 @@ jobs:
           export TEST_PRIVATE_KEY=${{ env.TEST_PRIVATE_KEY }}
           # Use cached CRD file instead of re-downloading in setup.sh
           export GATEWAY_API_CRD_FILE="$PWD/gateway-api-crds.yaml"
-          bash test/e2e/setup.sh
+          bash kubernetes/test/e2e/setup.sh
 
       - name: Run e2e tests
         run: |
           export PATH="$PWD/istio-${{ env.ISTIO_VERSION }}/bin:$PATH"
-          bats test/e2e/hmac_manager.bats
+          bats kubernetes/test/e2e/hmac_manager.bats
 
       - name: Collect logs on failure
         if: failure()
@@ -109,4 +108,4 @@ jobs:
         if: always()
         run: |
           export CLUSTER_NAME=${{ env.CLUSTER_NAME }}
-          bash test/e2e/teardown.sh
+          bash kubernetes/test/e2e/teardown.sh

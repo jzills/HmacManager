@@ -10,7 +10,7 @@ TEST_PUBLIC_KEY="${TEST_PUBLIC_KEY:-00000000-0000-0000-0000-000000000001}"
 TEST_PRIVATE_KEY="${TEST_PRIVATE_KEY:-euJ9iXZfURClr78ERyZr8csmHoVkZIfeoSVu3jNZf0w=}"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 
 log() { echo "[setup] $*"; }
 
