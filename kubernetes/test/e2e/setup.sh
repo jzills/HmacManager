@@ -137,6 +137,31 @@ done
 
 if [[ "$ENFORCED" != "true" ]]; then
     log "ERROR: waypoint enforcement not active after 120s (last status: ${code:-none})."
+
+    echo "════════════════ WAYPOINT ENFORCEMENT DIAGNOSTICS ════════════════"
+    echo "## MeshConfig extensionProviders:"
+    kubectl get configmap istio -n istio-system -o jsonpath='{.data.mesh}' 2>/dev/null || true
+    echo; echo "## AuthorizationPolicies (all namespaces):"
+    kubectl get authorizationpolicy -A -o yaml 2>/dev/null || true
+    echo "## istioctl proxy-status:"
+    istioctl proxy-status 2>/dev/null || true
+    echo "## istioctl analyze (default namespace):"
+    istioctl analyze -n default 2>/dev/null || true
+
+    WP=$(kubectl get pods -n default \
+        -l gateway.networking.k8s.io/gateway-name=waypoint \
+        -o jsonpath='{.items[0].metadata.name}' 2>/dev/null || true)
+    echo "## waypoint pod: ${WP:-<none found>}"
+    if [[ -n "$WP" ]]; then
+        echo "## waypoint listeners — ext_authz filter / provider references:"
+        istioctl proxy-config listener "$WP" -n default -o json 2>/dev/null \
+            | grep -iE "ext_authz|hmac-manager" || echo "  (no ext_authz filter present on the waypoint)"
+        echo "## waypoint clusters — ext-authz upstream:"
+        istioctl proxy-config cluster "$WP" -n default 2>/dev/null \
+            | grep -iE "hmac|ext.?authz" || echo "  (no hmac-manager upstream cluster present)"
+    fi
+    echo "═══════════════════════════════════════════════════════════════════"
+
     exit 1
 fi
 
