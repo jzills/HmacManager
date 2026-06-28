@@ -10,7 +10,8 @@ SIGN_PORT=9090
 
 sign_request() {
     local method="$1" uri="$2"
-    curl -sf -X POST "http://localhost:${SIGN_PORT}/sign" \
+    # -f omitted intentionally: sign endpoint is internal and always 200
+    curl -s -X POST "http://localhost:${SIGN_PORT}/sign" \
         -H "Content-Type: application/json" \
         -d "{\"Policy\":\"MyPolicy\",\"Method\":\"${method}\",\"Uri\":\"${uri}\"}"
 }
@@ -21,19 +22,35 @@ extract() {
 }
 
 send_signed() {
-    local sign_json="$1"
+    local sign_json="$1" target="${2:-http://${ECHO_SVC}/}" namespace="${3:-default}" pod="${4:-curl}"
     local auth policy nonce date
     auth=$(extract "$sign_json" "Authorization")
     policy=$(extract "$sign_json" "Hmac-Policy")
     nonce=$(extract "$sign_json" "Hmac-Nonce")
     date=$(extract "$sign_json" "Hmac-DateRequested")
 
-    kubectl exec -n default curl -- curl -sf -o /dev/null -w "%{http_code}" \
+    # -s only (no -f): we want the HTTP status code even on 4xx responses
+    kubectl exec -n "$namespace" "$pod" -- curl -s -o /dev/null -w "%{http_code}" \
         -H "Authorization: $auth" \
         -H "Hmac-Policy: $policy" \
         -H "Hmac-Nonce: $nonce" \
         -H "Hmac-DateRequested: $date" \
-        "http://${ECHO_SVC}/"
+        "$target"
+}
+
+create_ns_with_curl() {
+    local ns="$1" ambient="${2:-true}"
+    kubectl create namespace "$ns" --save-config 2>/dev/null || true
+    if [[ "$ambient" == "true" ]]; then
+        kubectl label namespace "$ns" istio.io/dataplane-mode=ambient --overwrite
+    fi
+    kubectl run curl-ext --image=curlimages/curl:latest -n "$ns" \
+        --restart=Never -- sleep 3600 2>/dev/null || true
+    kubectl wait --for=condition=Ready pod/curl-ext -n "$ns" --timeout=60s
+}
+
+delete_ns() {
+    kubectl delete namespace "$1" --ignore-not-found --wait=true --timeout=60s
 }
 
 # ---------------------------------------------------------------------------
@@ -104,60 +121,46 @@ teardown_file() {
 # Cross-namespace enforcement
 # ---------------------------------------------------------------------------
 
+setup() {
+    # Ensure test-ns and external-ns are clean before each cross-namespace test
+    case "$BATS_TEST_NAME" in
+        *"ambient-enrolled"*|*"non-ambient"*)
+            kubectl delete namespace test-ns external-ns --ignore-not-found --wait=true \
+                --timeout=60s 2>/dev/null || true
+            ;;
+    esac
+}
+
 @test "unsigned request from ambient-enrolled namespace returns 403" {
-    kubectl create namespace test-ns --dry-run=client -o yaml | kubectl apply -f -
-    kubectl label namespace test-ns istio.io/dataplane-mode=ambient --overwrite
-    kubectl run curl-ext --image=curlimages/curl:latest -n test-ns \
-        --restart=Never --command -- sleep 3600 \
-        --dry-run=client -o yaml | kubectl apply -f -
-    kubectl wait --for=condition=Ready pod/curl-ext -n test-ns --timeout=30s
+    create_ns_with_curl "test-ns" "true"
 
     run kubectl exec -n test-ns curl-ext -- \
         curl -s -o /dev/null -w "%{http_code}" "http://${ECHO_SVC}/"
     [ "$output" = "403" ]
 
-    kubectl delete namespace test-ns --wait=false
+    delete_ns "test-ns"
 }
 
 @test "signed request from ambient-enrolled namespace returns 200" {
-    kubectl create namespace test-ns --dry-run=client -o yaml | kubectl apply -f -
-    kubectl label namespace test-ns istio.io/dataplane-mode=ambient --overwrite
-    kubectl run curl-ext --image=curlimages/curl:latest -n test-ns \
-        --restart=Never --command -- sleep 3600 \
-        --dry-run=client -o yaml | kubectl apply -f -
-    kubectl wait --for=condition=Ready pod/curl-ext -n test-ns --timeout=30s
+    create_ns_with_curl "test-ns" "true"
 
-    local sign auth policy nonce date
+    local sign
     sign=$(sign_request "GET" "http://${ECHO_SVC}/")
-    auth=$(extract "$sign" "Authorization")
-    policy=$(extract "$sign" "Hmac-Policy")
-    nonce=$(extract "$sign" "Hmac-Nonce")
-    date=$(extract "$sign" "Hmac-DateRequested")
-
-    run kubectl exec -n test-ns curl-ext -- curl -s -o /dev/null -w "%{http_code}" \
-        -H "Authorization: $auth" \
-        -H "Hmac-Policy: $policy" \
-        -H "Hmac-Nonce: $nonce" \
-        -H "Hmac-DateRequested: $date" \
-        "http://${ECHO_SVC}/"
+    run send_signed "$sign" "http://${ECHO_SVC}/" "test-ns" "curl-ext"
     [ "$output" = "200" ]
 
-    kubectl delete namespace test-ns --wait=false
+    delete_ns "test-ns"
 }
 
 @test "unsigned request from non-ambient namespace bypasses waypoint" {
-    kubectl create namespace external-ns --dry-run=client -o yaml | kubectl apply -f -
-    kubectl run curl-ext --image=curlimages/curl:latest -n external-ns \
-        --restart=Never --command -- sleep 3600 \
-        --dry-run=client -o yaml | kubectl apply -f -
-    kubectl wait --for=condition=Ready pod/curl-ext -n external-ns --timeout=30s
+    create_ns_with_curl "external-ns" "false"
 
     # Not enrolled in ambient — bypasses the waypoint entirely
     run kubectl exec -n external-ns curl-ext -- \
         curl -s -o /dev/null -w "%{http_code}" "http://${ECHO_SVC}/"
     [ "$output" = "200" ]
 
-    kubectl delete namespace external-ns --wait=false
+    delete_ns "external-ns"
 }
 
 # ---------------------------------------------------------------------------
@@ -215,15 +218,10 @@ EOF
     kubectl wait --for=condition=Programmed gateway/ingress-gateway -n default --timeout=60s
     sleep 3  # allow xDS propagation
 
-    GW_IP=$(kubectl get gateway ingress-gateway -n default \
-        -o jsonpath='{.status.addresses[0].value}')
-
     kubectl port-forward svc/ingress-gateway-istio 8888:80 -n default \
         >/tmp/pf-ingress.log 2>&1 &
     echo "$!" > /tmp/pf-ingress.pid
     sleep 2
-
-    export INGRESS_URL="http://localhost:8888"
 }
 
 teardown_ingress() {
@@ -238,7 +236,7 @@ teardown_ingress() {
 
 @test "unsigned request through ingress gateway returns 403" {
     setup_ingress
-    run curl -s -o /dev/null -w "%{http_code}" "$INGRESS_URL/"
+    run curl -s -o /dev/null -w "%{http_code}" "http://localhost:8888/"
     teardown_ingress
     [ "$output" = "403" ]
 }
@@ -247,14 +245,14 @@ teardown_ingress() {
     setup_ingress
 
     local sign
-    sign=$(sign_request "GET" "$INGRESS_URL/")
+    sign=$(sign_request "GET" "http://localhost:8888/")
     local auth policy nonce date
     auth=$(extract "$sign" "Authorization")
     policy=$(extract "$sign" "Hmac-Policy")
     nonce=$(extract "$sign" "Hmac-Nonce")
     date=$(extract "$sign" "Hmac-DateRequested")
 
-    run curl -s -o /dev/null -w "%{http_code}" "$INGRESS_URL/" \
+    run curl -s -o /dev/null -w "%{http_code}" "http://localhost:8888/" \
         -H "Authorization: $auth" \
         -H "Hmac-Policy: $policy" \
         -H "Hmac-Nonce: $nonce" \
@@ -267,18 +265,20 @@ teardown_ingress() {
     setup_ingress
 
     local sign
-    sign=$(sign_request "GET" "$INGRESS_URL/")
+    sign=$(sign_request "GET" "http://localhost:8888/")
     local auth policy nonce date
     auth=$(extract "$sign" "Authorization")
     policy=$(extract "$sign" "Hmac-Policy")
     nonce=$(extract "$sign" "Hmac-Nonce")
     date=$(extract "$sign" "Hmac-DateRequested")
 
-    curl -s -o /dev/null "http://localhost:8888/" \
+    # First use (not via run — we don't need to assert on this)
+    curl -s -o /dev/null \
         -H "Authorization: $auth" -H "Hmac-Policy: $policy" \
-        -H "Hmac-Nonce: $nonce" -H "Hmac-DateRequested: $date"
+        -H "Hmac-Nonce: $nonce" -H "Hmac-DateRequested: $date" \
+        "http://localhost:8888/"
 
-    run curl -s -o /dev/null -w "%{http_code}" "$INGRESS_URL/" \
+    run curl -s -o /dev/null -w "%{http_code}" "http://localhost:8888/" \
         -H "Authorization: $auth" -H "Hmac-Policy: $policy" \
         -H "Hmac-Nonce: $nonce" -H "Hmac-DateRequested: $date"
     teardown_ingress
