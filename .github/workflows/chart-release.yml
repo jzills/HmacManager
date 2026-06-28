@@ -80,32 +80,42 @@ jobs:
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
-      - name: Align chart version with tag
+      - name: Extract version from tag
+        id: version
         run: |
           VERSION="${GITHUB_REF_NAME#chart/v}"
           if ! echo "$VERSION" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
             echo "Invalid tag format: $GITHUB_REF_NAME (expected chart/vX.Y.Z)" >&2
             exit 1
           fi
-          # chart-releaser derives the version from Chart.yaml; align it with the
-          # tag so the HTTP repo publishes the same version as the OCI artifact.
-          sed -i "s/^version:.*/version: $VERSION/" ${{ env.CHART_PATH }}/Chart.yaml
+          echo "value=$VERSION" >> "$GITHUB_OUTPUT"
+          APP_VERSION=$(grep '^appVersion:' ${{ env.CHART_PATH }}/Chart.yaml | awk '{print $2}' | tr -d '"')
+          echo "app_version=$APP_VERSION" >> "$GITHUB_OUTPUT"
 
-      - name: Run chart-releaser
-        uses: helm/chart-releaser-action@v1.7.0
-        with:
-          charts_dir: kubernetes
-        env:
-          CR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Publish Artifact Hub repo metadata to Pages root
+      - name: Package chart
         run: |
+          mkdir -p .cr-release-packages
+          helm package ${{ env.CHART_PATH }} \
+            --version ${{ steps.version.outputs.value }} \
+            --app-version ${{ steps.version.outputs.app_version }} \
+            --destination .cr-release-packages
+
+      # Publish the package straight to the gh-pages branch rather than as a
+      # GitHub Release asset: this repo has immutable releases enabled, which
+      # rejects attaching assets to a release (chart-releaser fails on that).
+      - name: Publish chart and index to gh-pages
+        run: |
+          PAGES_URL="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}"
           git fetch origin gh-pages
           git worktree add gh-pages origin/gh-pages
+          cp .cr-release-packages/*.tgz gh-pages/
           cp artifacthub-repo.yml gh-pages/artifacthub-repo.yml
           cd gh-pages
-          if ! git diff --quiet -- artifacthub-repo.yml; then
-            git add artifacthub-repo.yml
-            git commit -m "Update Artifact Hub repo metadata"
-            git push origin HEAD:gh-pages
+          if [ -f index.yaml ]; then
+            helm repo index . --url "$PAGES_URL" --merge index.yaml
+          else
+            helm repo index . --url "$PAGES_URL"
           fi
+          git add -A
+          git commit -m "Publish chart ${{ steps.version.outputs.value }} to HTTP repo"
+          git push origin HEAD:gh-pages
