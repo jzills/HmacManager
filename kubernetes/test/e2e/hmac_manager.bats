@@ -217,13 +217,22 @@ spec:
   rules:
   - {}
 EOF
-    kubectl wait --for=condition=Programmed gateway/ingress-gateway -n default --timeout=60s
-    sleep 3  # allow xDS propagation
+    # Gateway programming can briefly retry on optimistic-concurrency conflicts
+    # ("object has been modified"), so allow generous time for the Programmed
+    # condition to settle.
+    kubectl wait --for=condition=Programmed gateway/ingress-gateway -n default --timeout=180s
 
     kubectl port-forward svc/ingress-gateway-istio 8888:80 -n default \
         >/tmp/pf-ingress.log 2>&1 &
     echo "$!" > /tmp/pf-ingress.pid
     sleep 2
+
+    # Wait for the ingress AuthorizationPolicy to take effect before asserting.
+    for _ in $(seq 1 30); do
+        code=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:8888/" 2>/dev/null || echo "000")
+        [[ "$code" == "403" ]] && break
+        sleep 2
+    done
 }
 
 teardown_ingress() {

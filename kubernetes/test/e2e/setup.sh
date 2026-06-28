@@ -118,4 +118,27 @@ log "Restarting istiod to pick up MeshConfig changes..."
 kubectl rollout restart deployment/istiod -n istio-system
 kubectl rollout status deployment/istiod -n istio-system --timeout=120s
 
+# ── 10. Wait for enforcement to propagate ─────────────────────────────────────
+# The ext-authz filter is delivered to the waypoint via xDS after the istiod
+# restart, so there is a window where the waypoint still allows unsigned traffic.
+# Block until an unsigned request is actually rejected before handing off to the
+# test suite, otherwise the first assertions race the config push.
+log "Waiting for waypoint ext-authz enforcement to become active..."
+ENFORCED=false
+for _ in $(seq 1 60); do
+    code=$(kubectl exec -n default curl -- \
+        curl -s -o /dev/null -w "%{http_code}" "http://echo.default.svc.cluster.local/" 2>/dev/null || echo "000")
+    if [[ "$code" == "403" ]]; then
+        ENFORCED=true
+        break
+    fi
+    sleep 2
+done
+
+if [[ "$ENFORCED" != "true" ]]; then
+    log "ERROR: waypoint enforcement not active after 120s (last status: ${code:-none})."
+    exit 1
+fi
+
+log "Enforcement active (unsigned request rejected with 403)."
 log "Setup complete."
