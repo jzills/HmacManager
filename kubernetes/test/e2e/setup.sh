@@ -44,15 +44,20 @@ kubectl rollout status deployment/istiod -n istio-system --timeout=120s
 kubectl rollout status daemonset/ztunnel -n istio-system --timeout=120s
 
 # ── 4. Namespace setup ────────────────────────────────────────────────────────
+# Only enroll the dataplane here. The istio.io/use-waypoint label is applied by
+# `istioctl waypoint apply --enroll-namespace` below; setting it up front (before
+# the waypoint Gateway exists) makes the apply report the namespace as already
+# enrolled and the waypoint never programs (AuthorizationPolicy stays unbound).
 log "Labeling default namespace for ambient mode..."
-kubectl label namespace default \
-    istio.io/dataplane-mode=ambient \
-    istio.io/use-waypoint=waypoint \
-    --overwrite
+kubectl label namespace default istio.io/dataplane-mode=ambient --overwrite
 
 # ── 5. Waypoint ───────────────────────────────────────────────────────────────
 log "Creating waypoint proxy..."
 istioctl waypoint apply --enroll-namespace -n default --wait
+
+log "Waiting for the waypoint Gateway to be programmed and ready..."
+kubectl wait --for=condition=Programmed gateway/waypoint -n default --timeout=180s
+kubectl rollout status deployment/waypoint -n default --timeout=120s
 
 # ── 6. Test workloads ─────────────────────────────────────────────────────────
 log "Deploying echo and curl pods..."
@@ -139,6 +144,11 @@ if [[ "$ENFORCED" != "true" ]]; then
     log "ERROR: waypoint enforcement not active after 120s (last status: ${code:-none})."
 
     echo "════════════════ WAYPOINT ENFORCEMENT DIAGNOSTICS ════════════════"
+    echo "## waypoint Gateway:"
+    kubectl get gateway -n default -o wide 2>/dev/null || true
+    kubectl describe gateway waypoint -n default 2>/dev/null | sed -n '/Status:/,$p' || true
+    echo "## default-namespace workloads:"
+    kubectl get deploy,pods -n default 2>/dev/null || true
     echo "## MeshConfig extensionProviders:"
     kubectl get configmap istio -n istio-system -o jsonpath='{.data.mesh}' 2>/dev/null || true
     echo; echo "## AuthorizationPolicies (all namespaces):"
