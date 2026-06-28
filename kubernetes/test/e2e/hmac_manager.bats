@@ -217,10 +217,15 @@ spec:
   rules:
   - {}
 EOF
-    # Gateway programming can briefly retry on optimistic-concurrency conflicts
-    # ("object has been modified"), so allow generous time for the Programmed
-    # condition to settle.
-    kubectl wait --for=condition=Programmed gateway/ingress-gateway -n default --timeout=180s
+    # The Gateway's "Programmed" condition stalls in kind because the istio-class
+    # Gateway provisions a LoadBalancer Service that never receives an external
+    # address. The tests reach the gateway via port-forward, which only needs the
+    # backing deployment — so wait on that instead of the Programmed condition.
+    for _ in $(seq 1 30); do
+        kubectl get deploy ingress-gateway-istio -n default >/dev/null 2>&1 && break
+        sleep 2
+    done
+    kubectl rollout status deployment/ingress-gateway-istio -n default --timeout=120s
 
     kubectl port-forward svc/ingress-gateway-istio 8888:80 -n default \
         >/tmp/pf-ingress.log 2>&1 &
