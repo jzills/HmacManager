@@ -1,0 +1,141 @@
+name: Kubernetes PR Validation
+
+on:
+  pull_request:
+    branches: [ "main", "develop" ]
+    paths:
+      - "kubernetes/**"
+
+env:
+  ISTIO_VERSION: "1.30.2"
+  GATEWAY_API_VERSION: "v1.2.0"
+  CLUSTER_NAME: "hmac-manager-e2e"
+  IMAGE_TAG: "e2e-${{ github.sha }}"
+  TEST_PUBLIC_KEY: "00000000-0000-0000-0000-000000000001"
+  TEST_PRIVATE_KEY: "euJ9iXZfURClr78ERyZr8csmHoVkZIfeoSVu3jNZf0w="
+
+jobs:
+  helm-unit-tests:
+    name: Helm Unit Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.20.2
+
+      - name: Install helm-unittest plugin
+        run: helm plugin install https://github.com/helm-unittest/helm-unittest --version v0.7.2
+
+      - name: Run Helm unit tests
+        run: helm unittest kubernetes/chart/ -f 'tests/*_test.yaml'
+
+  trivy-scan:
+    name: Trivy Security Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      security-events: write
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: fs
+          scan-ref: kubernetes/
+          severity: CRITICAL,HIGH
+          format: sarif
+          output: trivy-results.sarif
+
+      - name: Upload Trivy results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: trivy-results.sarif
+
+  e2e-tests:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.20.2
+
+      - name: Install kind
+        uses: helm/kind-action@v1
+        with:
+          install_only: true
+
+      - name: Cache Istio binary
+        id: cache-istio
+        uses: actions/cache@v4
+        with:
+          path: istio-${{ env.ISTIO_VERSION }}
+          key: istio-${{ env.ISTIO_VERSION }}-linux-amd64
+
+      - name: Download Istio
+        if: steps.cache-istio.outputs.cache-hit != 'true'
+        run: |
+          curl -sSL https://istio.io/downloadIstio \
+            | ISTIO_VERSION=${{ env.ISTIO_VERSION }} TARGET_ARCH=x86_64 sh -
+
+      - name: Cache Gateway API CRDs
+        id: cache-gateway-crds
+        uses: actions/cache@v4
+        with:
+          path: gateway-api-crds.yaml
+          key: gateway-api-crds-${{ env.GATEWAY_API_VERSION }}
+
+      - name: Download Gateway API CRDs
+        if: steps.cache-gateway-crds.outputs.cache-hit != 'true'
+        run: |
+          curl -sSL \
+            "https://github.com/kubernetes-sigs/gateway-api/releases/download/${{ env.GATEWAY_API_VERSION }}/standard-install.yaml" \
+            -o gateway-api-crds.yaml
+
+      - name: Install bats
+        run: |
+          sudo apt-get install -y bats
+
+      - name: Run e2e setup
+        run: |
+          export PATH="$PWD/istio-${{ env.ISTIO_VERSION }}/bin:$PATH"
+          export ISTIO_VERSION=${{ env.ISTIO_VERSION }}
+          export CLUSTER_NAME=${{ env.CLUSTER_NAME }}
+          export IMAGE_TAG=${{ env.IMAGE_TAG }}
+          export TEST_PUBLIC_KEY=${{ env.TEST_PUBLIC_KEY }}
+          export TEST_PRIVATE_KEY=${{ env.TEST_PRIVATE_KEY }}
+          # Use cached CRD file instead of re-downloading in setup.sh
+          export GATEWAY_API_CRD_FILE="$PWD/gateway-api-crds.yaml"
+          bash kubernetes/test/e2e/setup.sh
+
+      - name: Run e2e tests
+        run: |
+          export PATH="$PWD/istio-${{ env.ISTIO_VERSION }}/bin:$PATH"
+          bats kubernetes/test/e2e/hmac_manager.bats
+
+      - name: Collect logs on failure
+        if: failure()
+        run: |
+          echo "=== hmac-manager pod logs ==="
+          kubectl logs -l app.kubernetes.io/name=hmac-manager -n hmac-system --tail=100 || true
+          echo "=== istiod logs ==="
+          kubectl logs -l app=istiod -n istio-system --tail=50 || true
+          echo "=== AuthorizationPolicy status ==="
+          kubectl get authorizationpolicy -A || true
+          echo "=== Pod status ==="
+          kubectl get pods -A || true
+
+      - name: Teardown
+        if: always()
+        run: |
+          export CLUSTER_NAME=${{ env.CLUSTER_NAME }}
+          bash kubernetes/test/e2e/teardown.sh

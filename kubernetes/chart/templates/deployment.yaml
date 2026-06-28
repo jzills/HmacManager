@@ -1,0 +1,43 @@
+{{- if and (gt (int .Values.replicaCount) 1) (not .Values.redis.enabled) }}
+{{- fail "replicaCount > 1 requires redis.enabled=true: the in-process nonce cache is not shared across pods, so replay protection would be bypassed. Enable Redis (redis.enabled=true) or set replicaCount to 1." }}
+{{- end }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "hmac-manager.fullname" . }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "hmac-manager.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "hmac-manager.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "hmac-manager.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ include "hmac-manager.name" . }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          env:
+            - name: ASPNETCORE_URLS
+              value: "http://+:{{ .Values.service.port }}"
+            {{- if .Values.redis.enabled }}
+            - name: ConnectionStrings__Redis
+              valueFrom:
+                secretKeyRef:
+                  name: {{ if .Values.redis.existingSecret }}{{ .Values.redis.existingSecret }}{{ else }}{{ include "hmac-manager.fullname" . }}-redis{{ end }}
+                  key: {{ .Values.redis.existingSecretKey }}
+            {{- end }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "hmac-manager.fullname" . }}-config
+            - secretRef:
+                name: {{ include "hmac-manager.secretName" . }}

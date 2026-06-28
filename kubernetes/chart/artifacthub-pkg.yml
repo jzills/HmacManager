@@ -1,0 +1,26 @@
+version: 0.1.0
+name: hmac-manager
+displayName: HMAC Manager
+createdAt: "2025-01-01T00:00:00Z"
+description: Istio ext-authz HTTP server for HMAC request authentication
+logoURL: ""
+digest: ""
+license: MIT
+homeURL: https://github.com/jzills/HmacManager
+keywords:
+  - hmac
+  - authentication
+  - istio
+  - ext-authz
+  - security
+links:
+  - name: Source
+    url: https://github.com/jzills/HmacManager
+  - name: NuGet
+    url: https://www.nuget.org/packages/HmacManager
+maintainers:
+  - name: Joshua Zillwood
+    email: joshua.zillwood@gmail.com
+provider:
+  name: Joshua Zillwood
+recommendations: []

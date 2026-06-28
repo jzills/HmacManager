@@ -19,14 +19,15 @@ public class HmacHeaderParser : IHmacHeaderParser
     /// </summary>
     public HmacHeaderParser()
     {
-        Headers = new Dictionary<string, string>();
+        Headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="HmacHeaderParser"/> class with the specified headers.
     /// </summary>
     /// <param name="headers">A dictionary of headers to parse.</param>
-    public HmacHeaderParser(IDictionary<string, string> headers) => Headers = headers;
+    public HmacHeaderParser(IDictionary<string, string> headers) =>
+        Headers = new Dictionary<string, string>(headers, StringComparer.OrdinalIgnoreCase);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="HmacHeaderParser"/> class with the specified headers.

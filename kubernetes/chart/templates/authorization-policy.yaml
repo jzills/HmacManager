@@ -1,0 +1,39 @@
+{{- if and .Values.istio.enabled .Values.istio.ingressGateway.enabled .Values.istio.ingressGateway.authorizationPolicy.enabled }}
+apiVersion: security.istio.io/v1
+kind: AuthorizationPolicy
+metadata:
+  name: {{ include "hmac-manager.fullname" . }}-ingress-auth
+  namespace: {{ required "istio.ingressGateway.namespace is required when istio.ingressGateway.enabled=true" .Values.istio.ingressGateway.namespace }}
+  labels:
+    {{- include "hmac-manager.labels" . | nindent 4 }}
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: {{ required "istio.ingressGateway.name is required when istio.ingressGateway.enabled=true" .Values.istio.ingressGateway.name }}
+  action: CUSTOM
+  provider:
+    name: {{ include "hmac-manager.fullname" . }}
+  rules:
+    - {}
+{{- end }}
+{{- if and .Values.istio.enabled .Values.istio.waypoint.enabled .Values.istio.waypoint.authorizationPolicy.enabled }}
+---
+apiVersion: security.istio.io/v1
+kind: AuthorizationPolicy
+metadata:
+  name: {{ include "hmac-manager.fullname" . }}-waypoint-auth
+  namespace: {{ required "istio.waypoint.namespace is required when istio.waypoint.enabled=true" .Values.istio.waypoint.namespace }}
+  labels:
+    {{- include "hmac-manager.labels" . | nindent 4 }}
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: {{ required "istio.waypoint.name is required when istio.waypoint.enabled=true" .Values.istio.waypoint.name }}
+  action: CUSTOM
+  provider:
+    name: {{ include "hmac-manager.fullname" . }}
+  rules:
+    - {}
+{{- end }}
