@@ -1,0 +1,59 @@
+suite: deployment
+release:
+  name: hmac-manager
+templates:
+  - deployment.yaml
+
+tests:
+  - it: uses the correct image
+    set:
+      image.repository: my-registry/hmac-manager
+      image.tag: v1.2.3
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: my-registry/hmac-manager:v1.2.3
+
+  - it: deploys to the configured namespace
+    set:
+      namespace: my-namespace
+    asserts:
+      - equal:
+          path: metadata.namespace
+          value: my-namespace
+
+  - it: sets ASPNETCORE_URLS to the configured port
+    set:
+      service.port: 9090
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: ASPNETCORE_URLS
+            value: "http://+:9090"
+
+  - it: references chart-managed secret by default
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].envFrom
+          content:
+            secretRef:
+              name: hmac-manager-secrets
+
+  - it: references existingSecret when set
+    set:
+      existingSecret: my-external-secret
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].envFrom
+          content:
+            secretRef:
+              name: my-external-secret
+
+  - it: sets the correct replica count
+    set:
+      replicaCount: 3
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 3
