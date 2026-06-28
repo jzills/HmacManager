@@ -3,10 +3,6 @@ name: PR Validation
 on:
   pull_request:
     branches: [ "main", "develop" ]
-    paths:
-      - "src/**"
-      - "test/Unit/**"
-      - "test/Integration/**"
 
 jobs:
   unit-tests:
