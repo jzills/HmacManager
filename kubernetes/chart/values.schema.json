@@ -44,6 +44,17 @@
     "existingSecret": {
       "type": "string"
     },
+    "redis": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled":           { "type": "boolean" },
+        "connectionString":  { "type": "string" },
+        "existingSecret":    { "type": "string" },
+        "existingSecretKey": { "type": "string", "minLength": 1 }
+      },
+      "required": ["enabled"]
+    },
     "istio": {
       "type": "object",
       "additionalProperties": false,

@@ -46,7 +46,7 @@ internal class ExtAuthzHandler(IHmacAuthenticationContextProvider contextProvide
                 ? Results.Ok()
                 : Results.StatusCode(StatusCodes.Status403Forbidden);
         }
-        catch (Exception e) when (e is HmacPolicyNotFoundException or MissingHeaderException)
+        catch (Exception e) when (e is HmacPolicyNotFoundException or MissingHeaderException or BadHeaderFormatException)
         {
             return Results.StatusCode(StatusCodes.Status403Forbidden);
         }

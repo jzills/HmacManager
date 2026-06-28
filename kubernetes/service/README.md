@@ -193,7 +193,14 @@ Use the `/sign` endpoint (see below) to get the headers, then attach them to you
 
 ## Signing endpoint (Development only)
 
-`POST /sign` is only registered when `ASPNETCORE_ENVIRONMENT=Development`. It accepts a request description and returns the HMAC headers you need to attach to your actual request — no separate .NET client required.
+`POST /sign` is only registered when `ASPNETCORE_ENVIRONMENT=Development`, and it listens on a **dedicated sign port (`8081`)** that is separate from the ext-authz verify port (`8080`). This isolation is deliberate: the ext-authz provider and the Kubernetes `Service` only expose `8080`, so a request whose path happens to be `/sign` arriving through the waypoint can never reach the signer — it falls through to normal verification. Reach `/sign` by port-forwarding to the pod's sign port directly:
+
+```bash
+kubectl port-forward deploy/hmac-manager 9090:8081 -n hmac-system
+# /sign is now available at http://localhost:9090/sign
+```
+
+The sign port (`8081`) is configurable via the `SignPort` setting and is only opened in `Development`. It accepts a request description and returns the HMAC headers you need to attach to your actual request — no separate .NET client required.
 
 **Request:**
 
@@ -230,9 +237,11 @@ Use the `/sign` endpoint (see below) to get the headers, then attach them to you
 **End-to-end test with curl:**
 
 ```bash
+# 0. Port-forward the dev sign port (8081) from the pod in a separate terminal:
+#    kubectl port-forward deploy/hmac-manager 9090:8081 -n hmac-system
+
 # 1. Get signed headers from the signing endpoint
-SIGN_RESPONSE=$(kubectl run curl-sign --image=curlimages/curl --restart=Never --rm -q -it \
-  -- curl -s -X POST http://hmac-manager.hmac-system.svc.cluster.local:8080/sign \
+SIGN_RESPONSE=$(curl -s -X POST http://localhost:9090/sign \
   -H "Content-Type: application/json" \
   -d '{"policy":"MyPolicy","method":"GET","uri":"http://echo.default.svc.cluster.local/test"}')
 
@@ -253,7 +262,27 @@ kubectl run curl-test --image=curlimages/curl --restart=Never --rm -it \
 # Expected: 200 OK, response from echo server
 ```
 
-> The `/sign` endpoint is not registered when `ASPNETCORE_ENVIRONMENT` is anything other than `Development`. In staging and production the route returns 404 — it does not exist.
+> The `/sign` endpoint is not registered when `ASPNETCORE_ENVIRONMENT` is anything other than `Development`, and the sign port (`8081`) is not opened at all outside `Development`. Never run this service with `ASPNETCORE_ENVIRONMENT=Development` in a real cluster.
+
+## Replay protection and replicas
+
+Replay protection works by recording each nonce until it expires. The default `Memory` cache stores nonces **in-process**, so a replayed signature routed to a *different* replica is not detected. As a result:
+
+- With the default in-process cache, run a **single replica** (`replicaCount: 1`). The Helm chart enforces this — it refuses to render when `replicaCount > 1` unless `redis.enabled=true`.
+- To run multiple replicas, configure a shared **Redis** store. The service registers a Redis-backed `IDistributedCache` automatically when a connection string is present under `ConnectionStrings:Redis` (env var `ConnectionStrings__Redis`), and you set the policy's `Nonce__CacheType` to `Distributed`.
+
+> Note: `CacheType=Distributed` without a Redis connection string silently falls back to an in-process cache. Always provide `ConnectionStrings__Redis` when using `Distributed`. The service logs a warning at startup when no Redis connection string is configured.
+
+Via the Helm chart:
+
+```bash
+helm upgrade --install hmac-manager kubernetes/chart \
+  --namespace hmac-system \
+  --set replicaCount=3 \
+  --set redis.enabled=true \
+  --set redis.connectionString="redis-master.redis.svc.cluster.local:6379" \
+  --set "config.HmacManager__0__Nonce__CacheType=Distributed"
+```
 
 ## Verifying ext-authz calls
 
@@ -279,7 +308,9 @@ kubectl logs -l app=hmac-manager -n hmac-system
 | `HmacManager__N__Algorithms__ContentHashAlgorithm` | `SHA256` or `SHA512` | `SHA256` |
 | `HmacManager__N__Algorithms__SigningHashAlgorithm` | `HMACSHA256` or `HMACSHA512` | `HMACSHA256` |
 | `HmacManager__N__Nonce__MaxAgeInSeconds` | Replay attack window | `30` |
-| `HmacManager__N__Nonce__CacheType` | `Memory` or `Distributed` | `Memory` |
+| `HmacManager__N__Nonce__CacheType` | `Memory` (in-process) or `Distributed` (Redis) | `Memory` |
+| `ConnectionStrings__Redis` | Redis connection string; enables the shared nonce cache used by `CacheType=Distributed` | — |
+| `SignPort` | Port for the dev-only `/sign` helper (opened only in `Development`) | `8081` |
 
 ## Teardown
 

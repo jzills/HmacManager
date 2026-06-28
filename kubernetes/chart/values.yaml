@@ -29,6 +29,25 @@ secretData: {}
 # referenced in the Deployment's envFrom instead.
 existingSecret: ""
 
+# Distributed (Redis) nonce cache.
+#
+# The default in-process nonce cache lives inside each pod, so a replayed
+# signature routed to a different replica is NOT detected. Running more than one
+# replica therefore REQUIRES a shared store: set redis.enabled=true and provide a
+# connection string. When redis.enabled=false the chart refuses replicaCount > 1.
+#
+# Note: even with Redis enabled, every policy must use Nonce.CacheType=Distributed
+# for its nonces to be shared — a policy left at CacheType=Memory is still per-pod.
+redis:
+  enabled: false
+  # StackExchange.Redis connection string, injected as ConnectionStrings__Redis.
+  # Rendered into a chart-managed Secret. Ignored when existingSecret is set.
+  connectionString: ""
+  # Reference a pre-existing Secret holding the connection string instead.
+  existingSecret: ""
+  # Key within the Secret (chart-managed or existing) that holds the value.
+  existingSecretKey: "ConnectionStrings__Redis"
+
 istio:
   # Master switch — set to false to skip all Istio resources and suppress NOTES output.
   enabled: true

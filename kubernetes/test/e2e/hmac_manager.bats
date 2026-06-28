@@ -58,7 +58,9 @@ delete_ns() {
 # ---------------------------------------------------------------------------
 
 setup_file() {
-    kubectl port-forward svc/hmac-manager "${SIGN_PORT}:8080" -n hmac-system \
+    # The dev-only /sign helper listens on the sign port (8081), which the
+    # Service deliberately does not expose — forward to the pod directly.
+    kubectl port-forward deploy/hmac-manager "${SIGN_PORT}:8081" -n hmac-system \
         >/tmp/pf-hmac.log 2>&1 &
     echo "$!" > /tmp/pf-hmac.pid
     sleep 3

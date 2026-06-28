@@ -50,10 +50,56 @@ tests:
             secretRef:
               name: my-external-secret
 
-  - it: sets the correct replica count
+  - it: sets the correct replica count when Redis is enabled
     set:
       replicaCount: 3
+      redis.enabled: true
+      redis.connectionString: redis-master:6379
     asserts:
       - equal:
           path: spec.replicas
           value: 3
+
+  - it: fails when replicaCount > 1 without Redis enabled
+    set:
+      replicaCount: 3
+    asserts:
+      - failedTemplate:
+          errorMessage: "replicaCount > 1 requires redis.enabled=true: the in-process nonce cache is not shared across pods, so replay protection would be bypassed. Enable Redis (redis.enabled=true) or set replicaCount to 1."
+
+  - it: injects the Redis connection string env var when enabled
+    set:
+      redis.enabled: true
+      redis.connectionString: redis-master:6379
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: ConnectionStrings__Redis
+            valueFrom:
+              secretKeyRef:
+                name: hmac-manager-redis
+                key: ConnectionStrings__Redis
+
+  - it: references redis.existingSecret for the connection string when set
+    set:
+      redis.enabled: true
+      redis.existingSecret: my-redis-secret
+      redis.existingSecretKey: redis-url
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: ConnectionStrings__Redis
+            valueFrom:
+              secretKeyRef:
+                name: my-redis-secret
+                key: redis-url
+
+  - it: omits the Redis env var when disabled
+    asserts:
+      - notContains:
+          path: spec.template.spec.containers[0].env
+          any: true
+          content:
+            name: ConnectionStrings__Redis

@@ -34,7 +34,7 @@ jobs:
           echo "app_version=$APP_VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Setup Helm
-        uses: helm/setup-helm@v4
+        uses: azure/setup-helm@v4
 
       - name: Log in to GHCR
         run: |
