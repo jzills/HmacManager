@@ -47,6 +47,12 @@ providers.append({
     'envoyExtAuthzHttp': {
         'service': '{{ include "hmac-manager.fullname" . }}.{{ .Values.namespace }}.svc.cluster.local',
         'port': {{ .Values.service.port }},
+        'includeRequestHeadersInCheck': [
+            'authorization',
+            'hmac-policy',
+            'hmac-nonce',
+            'hmac-daterequested',
+        ],
         'withRequestBody': {
             'maxRequestBytes': {{ .Values.istio.meshConfig.maxRequestBytes }},
             'allowPartialMessage': {{ if .Values.istio.meshConfig.allowPartialMessage }}True{{ else }}False{{ end }}
@@ -77,6 +83,11 @@ EOF
     envoyExtAuthzHttp:
       service: {{ include "hmac-manager.fullname" . }}.{{ .Values.namespace }}.svc.cluster.local
       port: {{ .Values.service.port }}
+      includeRequestHeadersInCheck:
+        - authorization
+        - hmac-policy
+        - hmac-nonce
+        - hmac-daterequested
       withRequestBody:
         maxRequestBytes: {{ .Values.istio.meshConfig.maxRequestBytes }}
         allowPartialMessage: {{ .Values.istio.meshConfig.allowPartialMessage }}
@@ -85,32 +96,61 @@ EOF
   kubectl rollout restart deployment/istiod \
       -n {{ .Values.istio.meshConfig.namespace }}
 
-{{- if not .Values.istio.authorizationPolicy.enabled }}
+{{- $anyPolicyDisabled := or
+      (and .Values.istio.ingressGateway.enabled (not .Values.istio.ingressGateway.authorizationPolicy.enabled))
+      (and .Values.istio.waypoint.enabled (not .Values.istio.waypoint.authorizationPolicy.enabled)) }}
+{{- if $anyPolicyDisabled }}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  ACTION REQUIRED — Apply AuthorizationPolicy manually
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-AuthorizationPolicy was disabled (istio.authorizationPolicy.enabled=false).
-The provider name in the policy must match exactly.
+One or more AuthorizationPolicies were disabled. Apply them
+manually, making sure the provider name matches exactly.
 
+{{- if and .Values.istio.ingressGateway.enabled (not .Values.istio.ingressGateway.authorizationPolicy.enabled) }}
+
+  # Ingress gateway policy (external traffic):
   apiVersion: security.istio.io/v1
   kind: AuthorizationPolicy
   metadata:
-    name: {{ include "hmac-manager.fullname" . }}-auth
-    namespace: <YOUR_POLICY_NAMESPACE>
+    name: {{ include "hmac-manager.fullname" . }}-ingress-auth
+    namespace: <INGRESS_GATEWAY_NAMESPACE>
     labels:
       {{- include "hmac-manager.labels" . | nindent 6 }}
   spec:
     targetRefs:
-      - kind: <YOUR_TARGET_KIND>
-        group: <YOUR_TARGET_GROUP>
-        name: <YOUR_TARGET_NAME>
+      - group: gateway.networking.k8s.io
+        kind: Gateway
+        name: <INGRESS_GATEWAY_NAME>
     action: CUSTOM
     provider:
       name: {{ include "hmac-manager.fullname" . }}
     rules:
       - {}
 
+{{- end }}
+{{- if and .Values.istio.waypoint.enabled (not .Values.istio.waypoint.authorizationPolicy.enabled) }}
+
+  # Waypoint policy (east-west / service-to-service traffic):
+  apiVersion: security.istio.io/v1
+  kind: AuthorizationPolicy
+  metadata:
+    name: {{ include "hmac-manager.fullname" . }}-waypoint-auth
+    namespace: <WAYPOINT_NAMESPACE>
+    labels:
+      {{- include "hmac-manager.labels" . | nindent 6 }}
+  spec:
+    targetRefs:
+      - group: gateway.networking.k8s.io
+        kind: Gateway
+        name: <WAYPOINT_NAME>
+    action: CUSTOM
+    provider:
+      name: {{ include "hmac-manager.fullname" . }}
+    rules:
+      - {}
+
+{{- end }}
 {{- end }}
 {{- end }}

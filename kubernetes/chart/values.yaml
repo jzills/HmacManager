@@ -30,7 +30,7 @@ secretData: {}
 existingSecret: ""
 
 istio:
-  # Master switch — set to false to skip the AuthorizationPolicy and suppress NOTES output.
+  # Master switch — set to false to skip all Istio resources and suppress NOTES output.
   enabled: true
 
   # Values used to generate the kubectl patch command printed in NOTES after install.
@@ -40,11 +40,24 @@ istio:
     maxRequestBytes: 8192
     allowPartialMessage: false
 
-  authorizationPolicy:
-    # Set to false to skip the AuthorizationPolicy.
+  # Ingress gateway enforcement — protects external traffic entering the cluster.
+  # Enabled by default. Requires an existing Gateway API Gateway resource.
+  ingressGateway:
     enabled: true
-    namespace: default
-    targetRef:
-      kind: Gateway
-      group: gateway.networking.k8s.io
-      name: waypoint
+    # Name of the Gateway resource to target. Required when enabled.
+    name: ""
+    # Namespace the Gateway resource lives in. Required when enabled.
+    namespace: ""
+    authorizationPolicy:
+      enabled: true
+
+  # Waypoint enforcement — protects east-west (service-to-service) traffic inside the mesh.
+  # Disabled by default. Only useful when Istio ambient mode is active.
+  waypoint:
+    enabled: false
+    # Name of the waypoint Gateway resource. Required when enabled.
+    name: ""
+    # Namespace the waypoint lives in. Required when enabled.
+    namespace: ""
+    authorizationPolicy:
+      enabled: false
