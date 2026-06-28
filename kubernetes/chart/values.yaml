@@ -2,8 +2,8 @@ nameOverride: ""
 fullnameOverride: ""
 
 image:
-  repository: hmac-manager
-  tag: latest
+  repository: zills/hmac-manager
+  tag: 0.0.1
   pullPolicy: IfNotPresent
 
 replicaCount: 1
