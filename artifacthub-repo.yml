@@ -1,0 +1,5 @@
+repositoryID: ""  # filled in by Artifact Hub after registration
+owners:
+  - name: Joshua Zillwood
+    email: joshua.zillwood@gmail.com
+ignore: []
