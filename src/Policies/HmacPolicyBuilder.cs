@@ -5,7 +5,7 @@ using HmacManager.Schemes;
 namespace HmacManager.Policies;
 
 /// <summary>
-/// A class representing a <c>HmacPolicyBuilder</c> for creating a <c>HmacPolicy</c>.
+/// A class representing a <see cref="HmacPolicyBuilder"/> for creating a <see cref="HmacPolicy"/>.
 /// </summary>
 public class HmacPolicyBuilder
 {
@@ -52,10 +52,10 @@ public class HmacPolicyBuilder
     public HmacPolicyBuilder(string name) => Name = name;
 
     /// <summary>
-    /// Uses the specified <c>Guid</c> as the public key for this <c>HmacPolicy</c>.
+    /// Uses the specified <see cref="Guid"/> as the public key for this <see cref="HmacPolicy"/>.
     /// </summary>
     /// <param name="key">The public key.</param>
-    /// <returns>A <c>HmacPolicyBuilder</c> that can be used to further configure a policy.</returns>
+    /// <returns>A <see cref="HmacPolicyBuilder"/> that can be used to further configure a policy.</returns>
     public HmacPolicyBuilder UsePublicKey(Guid key)
     {
         Keys.PublicKey = key;
@@ -63,10 +63,10 @@ public class HmacPolicyBuilder
     }
 
     /// <summary>
-    /// Uses the specified base64 encoded <c>string</c> as the private key for this <c>HmacPolicy</c>.
+    /// Uses the specified base64 encoded <c>string</c> as the private key for this <see cref="HmacPolicy"/>.
     /// </summary>
     /// <param name="key">The private key.</param>
-    /// <returns>A <c>HmacPolicyBuilder</c> that can be used to further configure a policy.</returns>
+    /// <returns>A <see cref="HmacPolicyBuilder"/> that can be used to further configure a policy.</returns>
     public HmacPolicyBuilder UsePrivateKey(string key)
     {
         Keys.PrivateKey = key;
@@ -74,10 +74,10 @@ public class HmacPolicyBuilder
     }
 
     /// <summary>
-    /// Uses the specified <c>ContentHashAlgorithm</c> to hash the <c>HttpRequestMessage</c> content as part of the signature.
+    /// Uses the specified <see cref="ContentHashAlgorithm"/> to hash the <see cref="HttpRequestMessage"/> content as part of the signature.
     /// </summary>
-    /// <param name="hashAlgorithm">The <c>ContentHashAlgorithm</c>.</param>
-    /// <returns>A <c>HmacPolicyBuilder</c> that can be used to further configure a policy.</returns>
+    /// <param name="hashAlgorithm">The <see cref="ContentHashAlgorithm"/>.</param>
+    /// <returns>A <see cref="HmacPolicyBuilder"/> that can be used to further configure a policy.</returns>
     public HmacPolicyBuilder UseContentHashAlgorithm(ContentHashAlgorithm hashAlgorithm)
     {
         Algorithms.ContentHashAlgorithm = hashAlgorithm;
@@ -85,10 +85,10 @@ public class HmacPolicyBuilder
     }
 
     /// <summary>
-    /// Uses the specified <c>SigningHashAlgorithm</c> to sign the content for authentication.
+    /// Uses the specified <see cref="SigningHashAlgorithm"/> to sign the content for authentication.
     /// </summary>
-    /// <param name="hashAlgorithm">The <c>SigningHashAlgorithm</c>.</param>
-    /// <returns>A <c>HmacPolicyBuilder</c> that can be used to further configure a policy.</returns>
+    /// <param name="hashAlgorithm">The <see cref="SigningHashAlgorithm"/>.</param>
+    /// <returns>A <see cref="HmacPolicyBuilder"/> that can be used to further configure a policy.</returns>
     public HmacPolicyBuilder UseSigningHashAlgorithm(SigningHashAlgorithm hashAlgorithm)
     {
         Algorithms.SigningHashAlgorithm = hashAlgorithm;
@@ -96,10 +96,10 @@ public class HmacPolicyBuilder
     }
 
     /// <summary>
-    /// Sets the maximum age on an <c>HttpRequestMessage</c> and the TTL for nonce cache entries.
+    /// Sets the maximum age on an <see cref="HttpRequestMessage"/> and the TTL for nonce cache entries.
     /// </summary>
-    /// <param name="maxAgeInSeconds">The <c>TimeSpan</c> representing the max age of a request.</param>
-    /// <returns>A <c>HmacPolicyBuilder</c> that can be used to further configure a policy.</returns>
+    /// <param name="maxAgeInSeconds">The <see cref="TimeSpan"/> representing the max age of a request.</param>
+    /// <returns>A <see cref="HmacPolicyBuilder"/> that can be used to further configure a policy.</returns>
     public HmacPolicyBuilder UseMemoryCache(int maxAgeInSeconds)
     {
         Nonce.CacheType = NonceCacheType.Memory;
@@ -108,10 +108,10 @@ public class HmacPolicyBuilder
     }
 
     /// <summary>
-    /// Sets the maximum age on an <c>HttpRequestMessage</c> and the TTL for nonce cache entries.
+    /// Sets the maximum age on an <see cref="HttpRequestMessage"/> and the TTL for nonce cache entries.
     /// </summary>
-    /// <param name="maxAgeInSeconds">The <c>TimeSpan</c> representing the max age of a request.</param>
-    /// <returns>A <c>HmacPolicyBuilder</c> that can be used to further configure a policy.</returns>
+    /// <param name="maxAgeInSeconds">The <see cref="TimeSpan"/> representing the max age of a request.</param>
+    /// <returns>A <see cref="HmacPolicyBuilder"/> that can be used to further configure a policy.</returns>
     public HmacPolicyBuilder UseDistributedCache(int maxAgeInSeconds)
     {
         Nonce.CacheType = NonceCacheType.Distributed;
@@ -120,10 +120,10 @@ public class HmacPolicyBuilder
     }
 
     /// <summary>
-    /// Defines the configuration for creating signing content for an <c>Hmac</c>.
+    /// Defines the configuration for creating signing content for an <see cref="Hmac"/>.
     /// </summary>
     /// <param name="signingContentAccessor"></param>
-    /// <returns>A <c>HmacPolicyBuilder</c> that can be used to further configure a policy.</returns>
+    /// <returns>A <see cref="HmacPolicyBuilder"/> that can be used to further configure a policy.</returns>
     public HmacPolicyBuilder UseSigningContentBuilder(Func<SigningContentContext, string> signingContentAccessor)
     {
         SigningContentBuilder = new SigningContentBuilderAccessor(signingContentAccessor);
@@ -131,12 +131,12 @@ public class HmacPolicyBuilder
     }
 
     /// <summary>
-    /// Adds a specified scheme to the <c>SchemeCollection</c>. This can later be used
+    /// Adds a specified scheme to the <see cref="SchemeCollection"/>. This can later be used
     /// to authenticate signatures.
     /// </summary>
-    /// <param name="name">The name of the <c>Scheme</c>.</param>
-    /// <param name="configureScheme">The configuration action for <c>Scheme</c>.</param>
-    /// <returns>A <c>HmacPolicyBuilder</c> that can be used to further configure a policy.</returns>
+    /// <param name="name">The name of the <see cref="Scheme"/>.</param>
+    /// <param name="configureScheme">The configuration action for <see cref="Scheme"/>.</param>
+    /// <returns>A <see cref="HmacPolicyBuilder"/> that can be used to further configure a policy.</returns>
     public HmacPolicyBuilder AddScheme(string name, Action<SchemeBuilder> configureScheme)
     {
         var builder = new SchemeBuilder(name);
@@ -146,13 +146,13 @@ public class HmacPolicyBuilder
     }
 
     /// <summary>
-    /// Builds an instance of the configured <c>HmacPolicy</c>.
+    /// Builds an instance of the configured <see cref="HmacPolicy"/>.
     /// </summary>
     /// <returns>The created policy.</returns>
     public HmacPolicy Build() => Build(Name);
 
     /// <summary>
-    /// Builds an instance of the configured <c>HmacPolicy</c>.
+    /// Builds an instance of the configured <see cref="HmacPolicy"/>.
     /// </summary>
     /// <returns>The created policy.</returns>
     internal HmacPolicy Build(string? name = null) => 

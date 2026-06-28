@@ -3,7 +3,7 @@ using HmacManager.Policies;
 namespace HmacManager.Mvc;
 
 /// <summary>
-/// A class representing an instance of <c>HmacManagerOptions</c>.
+/// A class representing an instance of <see cref="HmacManagerOptions"/>.
 /// </summary>
 public class HmacManagerOptions
 {
@@ -32,7 +32,7 @@ public class HmacManagerOptions
     /// <summary>
     /// Enables scoped policies using the specified delegate.
     /// </summary>
-    /// <param name="policiesAccessor">The accessor used to retrieve an <c>IHmacPolicyCollection</c> implementation.</param> 
+    /// <param name="policiesAccessor">The accessor used to retrieve an <see cref="IHmacPolicyCollection"/> implementation.</param> 
     public void EnableScopedPolicies(Func<IServiceProvider, IHmacPolicyCollection> policiesAccessor)
     {
         ArgumentNullException.ThrowIfNull(policiesAccessor, nameof(policiesAccessor));
@@ -46,11 +46,11 @@ public class HmacManagerOptions
     public void EnableConsolidatedHeaders() => IsConsolidatedHeadersEnabled = true;
 
     /// <summary>
-    /// Adds an <c>HmacPolicy</c> to the <c>HmacPolicyCollection</c>
-    /// with the specified name and configuration defined by the <c>HmacPolicyBuilder</c> action.
+    /// Adds an <see cref="HmacPolicy"/> to the <see cref="HmacPolicyCollection"/>
+    /// with the specified name and configuration defined by the <see cref="HmacPolicyBuilder"/> action.
     /// </summary>
-    /// <param name="name">The name of the <c>HmacPolicy</c>.</param>
-    /// <param name="configurePolicy">The configuration action for <c>HmacPolicyBuilder</c>.</param>
+    /// <param name="name">The name of the <see cref="HmacPolicy"/>.</param>
+    /// <param name="configurePolicy">The configuration action for <see cref="HmacPolicyBuilder"/>.</param>
     public void AddPolicy(string name, Action<HmacPolicyBuilder> configurePolicy)
     {
         var builder = new HmacPolicyBuilder();

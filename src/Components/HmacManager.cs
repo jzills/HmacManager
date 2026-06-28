@@ -6,7 +6,7 @@ using HmacManager.Extensions;
 namespace HmacManager.Components;
 
 /// <summary>
-/// A class representing a <c>HmacManager</c>.
+/// A class representing a <see cref="HmacManager"/>.
 /// </summary>
 public class HmacManager : IHmacManager
 {
@@ -14,28 +14,28 @@ public class HmacManager : IHmacManager
     public HmacManagerOptions Options { get; }
 
     /// <summary>
-    /// An implementation of <c>IHmacFactory</c> for creating <c>Hmac</c> objects. 
+    /// An implementation of <see cref="IHmacFactory"/> for creating <see cref="Hmac"/> objects. 
     /// </summary>
     protected readonly IHmacFactory Factory;
 
     /// <summary>
-    /// An implementation of <c>IHmacResultFactory</c> for creating <c>HmacResult</c> objects. 
+    /// An implementation of <see cref="IHmacResultFactory"/> for creating <see cref="HmacResult"/> objects. 
     /// </summary>
     protected readonly IHmacResultFactory ResultFactory;
 
     /// <summary>
-    /// An implementation of <c>INonceCache</c> for storing nonce values.
+    /// An implementation of <see cref="INonceCache"/> for storing nonce values.
     /// </summary>
     protected readonly INonceCache Cache;
 
     /// <summary>
-    /// Creates a <c>HmacManager</c> object.
+    /// Creates a <see cref="HmacManager"/> object.
     /// </summary>
-    /// <param name="options"><c>HmacManagerOptions</c></param> 
-    /// <param name="factory"><c>IHmacFactory</c></param>
-    /// <param name="resultFactory"><c>IHmacResultFactory</c></param>
-    /// <param name="cache"><c>INonceCache</c></param>
-    /// <returns>A <c>HmacManager</c> object.</returns>
+    /// <param name="options"><see cref="HmacManagerOptions"/></param> 
+    /// <param name="factory"><see cref="IHmacFactory"/></param>
+    /// <param name="resultFactory"><see cref="IHmacResultFactory"/></param>
+    /// <param name="cache"><see cref="INonceCache"/></param>
+    /// <returns>A <see cref="HmacManager"/> object.</returns>
     public HmacManager(
         HmacManagerOptions options,
         IHmacFactory factory,

@@ -4,7 +4,7 @@ using HmacManager.Components;
 namespace HmacManager.Policies;
 
 /// <summary>
-/// A class representing the <c>Algorithms</c> used for <c>Hmac</c> generation.
+/// A class representing the <see cref="Algorithms"/> used for <see cref="Hmac"/> generation.
 /// </summary>
 public class Algorithms
 {

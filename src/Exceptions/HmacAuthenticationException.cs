@@ -6,7 +6,7 @@ namespace HmacManager.Exceptions;
 public class HmacAuthenticationException : Exception
 {
     /// <summary>
-    /// Creates an instance of <c>HmacAuthenticationException</c>.
+    /// Creates an instance of <see cref="HmacAuthenticationException"/>.
     /// </summary>
     /// <param name="message">An optional error message.</param>
     public HmacAuthenticationException(string? message = null) 

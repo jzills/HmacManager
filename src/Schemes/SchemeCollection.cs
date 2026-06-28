@@ -5,7 +5,7 @@ using HmacManager.Policies;
 namespace HmacManager.Schemes;
 
 /// <summary>
-/// A class representing a <c>SchemeCollection</c>.
+/// A class representing a <see cref="SchemeCollection"/>.
 /// </summary>
 [JsonConverter(typeof(SchemeCollectionJsonConverter))]
 public class SchemeCollection : ComponentCollection<Scheme>

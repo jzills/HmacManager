@@ -1,0 +1,82 @@
+nameOverride: ""
+fullnameOverride: ""
+
+image:
+  repository: zills/hmac-manager
+  tag: 0.0.1
+  pullPolicy: IfNotPresent
+
+replicaCount: 1
+namespace: hmac-system
+
+service:
+  port: 8080
+
+# Non-secret config loaded via envFrom ConfigMap.
+# Use ASP.NET Core double-underscore env var format for nested keys.
+# Example:
+#   HmacManager__MyPolicy__PublicKey: "00000000-0000-0000-0000-000000000000"
+#   ASPNETCORE_ENVIRONMENT: "Production"
+config: {}
+
+# Secret key-value pairs — only rendered when existingSecret is "".
+# Example:
+#   HmacManager__MyPolicy__PrivateKey: "replace-with-secret"
+secretData: {}
+
+# Name of a pre-existing Secret (ExternalSecret, Vault sidecar, etc.).
+# When set, the chart's Secret template is skipped and this name is
+# referenced in the Deployment's envFrom instead.
+existingSecret: ""
+
+# Distributed (Redis) nonce cache.
+#
+# The default in-process nonce cache lives inside each pod, so a replayed
+# signature routed to a different replica is NOT detected. Running more than one
+# replica therefore REQUIRES a shared store: set redis.enabled=true and provide a
+# connection string. When redis.enabled=false the chart refuses replicaCount > 1.
+#
+# Note: even with Redis enabled, every policy must use Nonce.CacheType=Distributed
+# for its nonces to be shared — a policy left at CacheType=Memory is still per-pod.
+redis:
+  enabled: false
+  # StackExchange.Redis connection string, injected as ConnectionStrings__Redis.
+  # Rendered into a chart-managed Secret. Ignored when existingSecret is set.
+  connectionString: ""
+  # Reference a pre-existing Secret holding the connection string instead.
+  existingSecret: ""
+  # Key within the Secret (chart-managed or existing) that holds the value.
+  existingSecretKey: "ConnectionStrings__Redis"
+
+istio:
+  # Master switch — set to false to skip all Istio resources and suppress NOTES output.
+  enabled: true
+
+  # Values used to generate the kubectl patch command printed in NOTES after install.
+  meshConfig:
+    namespace: istio-system
+    configMapName: istio
+    maxRequestBytes: 8192
+    allowPartialMessage: false
+
+  # Ingress gateway enforcement — protects external traffic entering the cluster.
+  # Enabled by default. Requires an existing Gateway API Gateway resource.
+  ingressGateway:
+    enabled: true
+    # Name of the Gateway resource to target. Required when enabled.
+    name: ""
+    # Namespace the Gateway resource lives in. Required when enabled.
+    namespace: ""
+    authorizationPolicy:
+      enabled: true
+
+  # Waypoint enforcement — protects east-west (service-to-service) traffic inside the mesh.
+  # Disabled by default. Only useful when Istio ambient mode is active.
+  waypoint:
+    enabled: false
+    # Name of the waypoint Gateway resource. Required when enabled.
+    name: ""
+    # Namespace the waypoint lives in. Required when enabled.
+    namespace: ""
+    authorizationPolicy:
+      enabled: false

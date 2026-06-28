@@ -26,7 +26,7 @@ public class HeaderValueValidator : IValidator<HeaderValue>
     public ValidationResult Validate(HeaderValue validatable)
     {
         IEnumerable<string>? values;
-        if (!Request.Headers.TryGetValues(validatable.Name, out values))
+        if (!Request.Headers.TryGetValues(validatable.Name!, out values))
         {
             return new ValidationResult(isValid: false, 
                 new ArgumentException($"The \"{nameof(HeaderValue)}\" with name \"{validatable.Name}\" is not present in the request."));

@@ -6,7 +6,7 @@ namespace HmacManager.Exceptions;
 public class HmacPolicyNotFoundException : Exception
 {
     /// <summary>
-    /// Creates an instance of <c>HmacPolicyNotFoundException</c>.
+    /// Creates an instance of <see cref="HmacPolicyNotFoundException"/>.
     /// </summary>
     /// <param name="message">An optional error message.</param>
     /// <param name="policy">An optional policy.</param>/// 

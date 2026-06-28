@@ -1,0 +1,105 @@
+suite: deployment
+release:
+  name: hmac-manager
+templates:
+  - deployment.yaml
+
+tests:
+  - it: uses the correct image
+    set:
+      image.repository: my-registry/hmac-manager
+      image.tag: v1.2.3
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: my-registry/hmac-manager:v1.2.3
+
+  - it: deploys to the configured namespace
+    set:
+      namespace: my-namespace
+    asserts:
+      - equal:
+          path: metadata.namespace
+          value: my-namespace
+
+  - it: sets ASPNETCORE_URLS to the configured port
+    set:
+      service.port: 9090
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: ASPNETCORE_URLS
+            value: "http://+:9090"
+
+  - it: references chart-managed secret by default
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].envFrom
+          content:
+            secretRef:
+              name: hmac-manager-secrets
+
+  - it: references existingSecret when set
+    set:
+      existingSecret: my-external-secret
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].envFrom
+          content:
+            secretRef:
+              name: my-external-secret
+
+  - it: sets the correct replica count when Redis is enabled
+    set:
+      replicaCount: 3
+      redis.enabled: true
+      redis.connectionString: redis-master:6379
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 3
+
+  - it: fails when replicaCount > 1 without Redis enabled
+    set:
+      replicaCount: 3
+    asserts:
+      - failedTemplate:
+          errorMessage: "replicaCount > 1 requires redis.enabled=true: the in-process nonce cache is not shared across pods, so replay protection would be bypassed. Enable Redis (redis.enabled=true) or set replicaCount to 1."
+
+  - it: injects the Redis connection string env var when enabled
+    set:
+      redis.enabled: true
+      redis.connectionString: redis-master:6379
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: ConnectionStrings__Redis
+            valueFrom:
+              secretKeyRef:
+                name: hmac-manager-redis
+                key: ConnectionStrings__Redis
+
+  - it: references redis.existingSecret for the connection string when set
+    set:
+      redis.enabled: true
+      redis.existingSecret: my-redis-secret
+      redis.existingSecretKey: redis-url
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: ConnectionStrings__Redis
+            valueFrom:
+              secretKeyRef:
+                name: my-redis-secret
+                key: redis-url
+
+  - it: omits the Redis env var when disabled
+    asserts:
+      - notContains:
+          path: spec.template.spec.containers[0].env
+          any: true
+          content:
+            name: ConnectionStrings__Redis

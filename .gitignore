@@ -13,3 +13,8 @@ TODO.txt
 HmacManager.sln
 
 **.tgz
+
+kubernetes/chart/charts/
+kubernetes/chart/*.lock
+
+memory/

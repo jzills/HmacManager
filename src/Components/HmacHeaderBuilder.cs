@@ -28,17 +28,17 @@ public class HmacHeaderBuilder : IHmacHeaderBuilder
     protected IEnumerable<KeyValuePair<string, string?>> NonEmptyHeaderValues => HeaderValues.Where(element => element.NonEmpty());
 
     /// <summary>
-    /// Creates an instance of <c>HmacHeaderBuilder</c>.
+    /// Creates an instance of <see cref="HmacHeaderBuilder"/>.
     /// </summary>
     public HmacHeaderBuilder()
     {
     }
 
     /// <summary>
-    /// Creates an instance of <c>HmacHeaderBuilder</c>.
+    /// Creates an instance of <see cref="HmacHeaderBuilder"/>.
     /// </summary>
-    /// <param name="options">An instance of <c>HmacManagerOptions</c>.</param>
-    /// <param name="hmac">An instance of <c>Hmac</c>.</param>
+    /// <param name="options">An instance of <see cref="HmacManagerOptions"/>.</param>
+    /// <param name="hmac">An instance of <see cref="Hmac"/>.</param>
     public HmacHeaderBuilder(HmacManagerOptions options, Hmac hmac)
     {
         WithPolicy(options.Policy);
@@ -115,9 +115,9 @@ public class HmacHeaderBuilder : IHmacHeaderBuilder
     }
 
     /// <summary>
-    /// Creates a new instance of <c>HmacHeaderBuilder</c>.
+    /// Creates a new instance of <see cref="HmacHeaderBuilder"/>.
     /// </summary>
-    /// <returns>An instance of <c>HmacHeaderBuilder</c>.</returns>
+    /// <returns>An instance of <see cref="HmacHeaderBuilder"/>.</returns>
     public virtual IHmacHeaderBuilder CreateBuilder(HmacManagerOptions options, Hmac hmac) => new HmacHeaderBuilder(options, hmac);
 
     /// <summary>

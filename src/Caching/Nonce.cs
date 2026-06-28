@@ -4,7 +4,7 @@ namespace HmacManager.Caching;
 
 /// <summary>
 /// A class representing basic configurations
-/// for a <c>Nonce</c> and the subsequent caching strategies.
+/// for a <see cref="Nonce"/> and the subsequent caching strategies.
 /// </summary>
 public class Nonce
 {

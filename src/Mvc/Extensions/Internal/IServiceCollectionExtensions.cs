@@ -58,7 +58,7 @@ internal static class IServiceCollectionExtensions
     {
         if (options.IsScopedPoliciesEnabled)
         {
-            services.AddScoped(options.PoliciesAccessor);
+            services.AddScoped(options.PoliciesAccessor!);
         }
         else
         {

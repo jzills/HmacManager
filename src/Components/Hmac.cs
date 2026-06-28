@@ -1,7 +1,7 @@
 namespace HmacManager.Components;
 
 /// <summary>
-/// A class representing a single, generated <c>Hmac</c>.
+/// A class representing a single, generated <see cref="Hmac"/>.
 /// </summary>
 public record Hmac : HmacPartial
 {

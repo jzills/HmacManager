@@ -57,7 +57,7 @@ internal class HmacPolicyConfigurationBuilder : HmacPolicyBuilder
                     {
                         foreach (var header in scheme?.Headers ?? [])
                         {
-                            builder.AddHeader(header.Name, header.ClaimType);
+                            builder.AddHeader(header.Name!, header.ClaimType!);
                         }
                     });
                 }

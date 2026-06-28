@@ -1,0 +1,156 @@
+╔═════════════════════════════════════════════════╗
+║     __  ____  ______   ______                   ║
+║    / / / /  |/  /   | / ____/                   ║
+║   / /_/ / /|_/ / /| |/ /                        ║
+║  / __  / /  / / ___ / /___                      ║
+║ /_/ /_/_/  /_/_/  |_\____/                      ║
+║     __  ______    _   _____   ________________  ║
+║    /  |/  /   |  / | / /   | / ____/ ____/ __ \ ║
+║   / /|_/ / /| | /  |/ / /| |/ / __/ __/ / /_/ / ║
+║  / /  / / ___ |/ /|  / ___ / /_/ / /___/ _, _/  ║
+║ /_/  /_/_/  |_/_/ |_/_/  |_\____/_____/_/ |_|   ║
+╚═════════════════════════════════════════════════╝
+
+hmac-manager deployed to namespace {{ .Values.namespace }}.
+
+{{- if .Values.istio.enabled }}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ ACTION REQUIRED — Register ext-authz provider with Istio
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Run the script below to register hmac-manager as an Istio
+extensionProvider. It is idempotent and preserves any existing
+providers already configured in the MeshConfig.
+
+Requires: python3, PyYAML
+
+  PATCH=$(python3 << 'EOF'
+import subprocess, yaml, json
+
+result = subprocess.run(
+    [
+        'kubectl', 'get', 'configmap',
+        '{{ .Values.istio.meshConfig.configMapName }}',
+        '-n', '{{ .Values.istio.meshConfig.namespace }}',
+        '-o', 'jsonpath={.data.mesh}'
+    ],
+    capture_output=True, text=True
+)
+mesh = yaml.safe_load(result.stdout) or {}
+providers = [
+    p for p in mesh.get('extensionProviders', [])
+    if p.get('name') != '{{ include "hmac-manager.fullname" . }}'
+]
+providers.append({
+    'name': '{{ include "hmac-manager.fullname" . }}',
+    'envoyExtAuthzHttp': {
+        'service': '{{ include "hmac-manager.fullname" . }}.{{ .Values.namespace }}.svc.cluster.local',
+        'port': {{ .Values.service.port }},
+        'includeRequestHeadersInCheck': [
+            'authorization',
+            'hmac-policy',
+            'hmac-nonce',
+            'hmac-daterequested',
+        ],
+        'withRequestBody': {
+            'maxRequestBytes': {{ .Values.istio.meshConfig.maxRequestBytes }},
+            'allowPartialMessage': {{ if .Values.istio.meshConfig.allowPartialMessage }}True{{ else }}False{{ end }}
+        }
+    }
+})
+mesh['extensionProviders'] = providers
+print(json.dumps({'data': {'mesh': yaml.dump(mesh)}}))
+EOF
+) && kubectl patch configmap {{ .Values.istio.meshConfig.configMapName }} \
+       -n {{ .Values.istio.meshConfig.namespace }} \
+       --type merge -p "$PATCH"
+
+  kubectl rollout restart deployment/istiod \
+      -n {{ .Values.istio.meshConfig.namespace }}
+
+────────────────────────────────────────────────────────────
+ Prefer to do it manually? Add the following block to the
+ extensionProviders list in your Istio MeshConfig:
+────────────────────────────────────────────────────────────
+
+  kubectl edit configmap {{ .Values.istio.meshConfig.configMapName }} \
+      -n {{ .Values.istio.meshConfig.namespace }}
+
+  # Under the mesh: key, add or append:
+  extensionProviders:
+  - name: {{ include "hmac-manager.fullname" . }}
+    envoyExtAuthzHttp:
+      service: {{ include "hmac-manager.fullname" . }}.{{ .Values.namespace }}.svc.cluster.local
+      port: {{ .Values.service.port }}
+      includeRequestHeadersInCheck:
+        - authorization
+        - hmac-policy
+        - hmac-nonce
+        - hmac-daterequested
+      withRequestBody:
+        maxRequestBytes: {{ .Values.istio.meshConfig.maxRequestBytes }}
+        allowPartialMessage: {{ .Values.istio.meshConfig.allowPartialMessage }}
+
+  # Then restart istiod:
+  kubectl rollout restart deployment/istiod \
+      -n {{ .Values.istio.meshConfig.namespace }}
+
+{{- $anyPolicyDisabled := or
+      (and .Values.istio.ingressGateway.enabled (not .Values.istio.ingressGateway.authorizationPolicy.enabled))
+      (and .Values.istio.waypoint.enabled (not .Values.istio.waypoint.authorizationPolicy.enabled)) }}
+{{- if $anyPolicyDisabled }}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ ACTION REQUIRED — Apply AuthorizationPolicy manually
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+One or more AuthorizationPolicies were disabled. Apply them
+manually, making sure the provider name matches exactly.
+
+{{- if and .Values.istio.ingressGateway.enabled (not .Values.istio.ingressGateway.authorizationPolicy.enabled) }}
+
+  # Ingress gateway policy (external traffic):
+  apiVersion: security.istio.io/v1
+  kind: AuthorizationPolicy
+  metadata:
+    name: {{ include "hmac-manager.fullname" . }}-ingress-auth
+    namespace: <INGRESS_GATEWAY_NAMESPACE>
+    labels:
+      {{- include "hmac-manager.labels" . | nindent 6 }}
+  spec:
+    targetRefs:
+      - group: gateway.networking.k8s.io
+        kind: Gateway
+        name: <INGRESS_GATEWAY_NAME>
+    action: CUSTOM
+    provider:
+      name: {{ include "hmac-manager.fullname" . }}
+    rules:
+      - {}
+
+{{- end }}
+{{- if and .Values.istio.waypoint.enabled (not .Values.istio.waypoint.authorizationPolicy.enabled) }}
+
+  # Waypoint policy (east-west / service-to-service traffic):
+  apiVersion: security.istio.io/v1
+  kind: AuthorizationPolicy
+  metadata:
+    name: {{ include "hmac-manager.fullname" . }}-waypoint-auth
+    namespace: <WAYPOINT_NAMESPACE>
+    labels:
+      {{- include "hmac-manager.labels" . | nindent 6 }}
+  spec:
+    targetRefs:
+      - group: gateway.networking.k8s.io
+        kind: Gateway
+        name: <WAYPOINT_NAME>
+    action: CUSTOM
+    provider:
+      name: {{ include "hmac-manager.fullname" . }}
+    rules:
+      - {}
+
+{{- end }}
+{{- end }}
+{{- end }}

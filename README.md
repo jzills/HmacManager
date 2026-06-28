@@ -1,7 +1,7 @@
 
 # HmacManager
 
-[![NuGet Version](https://img.shields.io/nuget/v/HmacManager.svg)](https://www.nuget.org/packages/HmacManager/) [![NuGet Downloads](https://img.shields.io/nuget/dt/HmacManager.svg)](https://www.nuget.org/packages/HmacManager/) [![.NET](https://github.com/jzills/HmacManager/actions/workflows/dotnet.yml/badge.svg)](https://github.com/jzills/HmacManager/actions/workflows/dotnet.yml)
+[![NuGet Version](https://img.shields.io/nuget/v/HmacManager.svg)](https://www.nuget.org/packages/HmacManager/) [![NuGet Downloads](https://img.shields.io/nuget/dt/HmacManager.svg)](https://www.nuget.org/packages/HmacManager/) [![.NET](https://github.com/jzills/HmacManager/actions/workflows/pr.yml/badge.svg)](https://github.com/jzills/HmacManager/actions/workflows/pr.yml)
 
 - [Summary](#summary)
 - [Features](#features)
@@ -13,7 +13,7 @@
 
 ## Summary
 
-Integrate hmac authentication seamlessly into your ASP.NET Core applications, fortifying security measures and ensuring robust authentication protocols.
+Add secure HMAC request authentication to ASP.NET Core APIs with lightweight, configurable middleware.
 
 ## Features
 

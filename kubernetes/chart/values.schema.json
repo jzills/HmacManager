@@ -1,0 +1,115 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "nameOverride": {
+      "type": "string"
+    },
+    "fullnameOverride": {
+      "type": "string"
+    },
+    "image": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "repository": { "type": "string", "minLength": 1 },
+        "tag":        { "type": "string", "minLength": 1 },
+        "pullPolicy": { "type": "string", "enum": ["Always", "IfNotPresent", "Never"] }
+      },
+      "required": ["repository", "tag", "pullPolicy"]
+    },
+    "replicaCount": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "namespace": {
+      "type": "string",
+      "minLength": 1
+    },
+    "service": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "port": { "type": "integer", "minimum": 1, "maximum": 65535 }
+      },
+      "required": ["port"]
+    },
+    "config": {
+      "type": "object"
+    },
+    "secretData": {
+      "type": "object"
+    },
+    "existingSecret": {
+      "type": "string"
+    },
+    "redis": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled":           { "type": "boolean" },
+        "connectionString":  { "type": "string" },
+        "existingSecret":    { "type": "string" },
+        "existingSecretKey": { "type": "string", "minLength": 1 }
+      },
+      "required": ["enabled"]
+    },
+    "istio": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "meshConfig": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "namespace":          { "type": "string", "minLength": 1 },
+            "configMapName":      { "type": "string", "minLength": 1 },
+            "maxRequestBytes":    { "type": "integer", "minimum": 1 },
+            "allowPartialMessage":{ "type": "boolean" }
+          },
+          "required": ["namespace", "configMapName", "maxRequestBytes", "allowPartialMessage"]
+        },
+        "ingressGateway": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled":   { "type": "boolean" },
+            "name":      { "type": "string" },
+            "namespace": { "type": "string" },
+            "authorizationPolicy": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "enabled": { "type": "boolean" }
+              },
+              "required": ["enabled"]
+            }
+          },
+          "required": ["enabled", "name", "namespace", "authorizationPolicy"]
+        },
+        "waypoint": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled":   { "type": "boolean" },
+            "name":      { "type": "string" },
+            "namespace": { "type": "string" },
+            "authorizationPolicy": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "enabled": { "type": "boolean" }
+              },
+              "required": ["enabled"]
+            }
+          },
+          "required": ["enabled", "name", "namespace", "authorizationPolicy"]
+        }
+      },
+      "required": ["enabled", "meshConfig", "ingressGateway", "waypoint"]
+    }
+  },
+  "required": ["image", "replicaCount", "namespace", "service", "istio"]
+}

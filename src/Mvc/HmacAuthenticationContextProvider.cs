@@ -92,6 +92,7 @@ public class HmacAuthenticationContextProvider : IHmacAuthenticationContextProvi
         TryGetAuthenticationContext(
             headers.ToDictionary(
                 header => header.Key,
-                header => header.Value.FirstOrDefault()
+                header => header.Value.FirstOrDefault() ?? string.Empty,
+                StringComparer.OrdinalIgnoreCase
         ), out context);
 }

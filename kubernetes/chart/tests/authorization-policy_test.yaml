@@ -1,0 +1,177 @@
+suite: authorization-policy
+release:
+  name: hmac-manager
+templates:
+  - authorization-policy.yaml
+
+tests:
+  # --- Required field validation ---
+
+  - it: fails when ingressGateway is enabled but name is missing
+    set:
+      istio.ingressGateway.enabled: true
+      istio.ingressGateway.namespace: default
+    asserts:
+      - failedTemplate:
+          errorMessage: "istio.ingressGateway.name is required when istio.ingressGateway.enabled=true"
+
+  - it: fails when ingressGateway is enabled but namespace is missing
+    set:
+      istio.ingressGateway.enabled: true
+      istio.ingressGateway.name: my-gateway
+    asserts:
+      - failedTemplate:
+          errorMessage: "istio.ingressGateway.namespace is required when istio.ingressGateway.enabled=true"
+
+  - it: fails when waypoint is enabled but name is missing
+    set:
+      istio.ingressGateway.enabled: false
+      istio.waypoint.enabled: true
+      istio.waypoint.authorizationPolicy.enabled: true
+      istio.waypoint.namespace: default
+    asserts:
+      - failedTemplate:
+          errorMessage: "istio.waypoint.name is required when istio.waypoint.enabled=true"
+
+  - it: fails when waypoint is enabled but namespace is missing
+    set:
+      istio.ingressGateway.enabled: false
+      istio.waypoint.enabled: true
+      istio.waypoint.authorizationPolicy.enabled: true
+      istio.waypoint.name: waypoint
+    asserts:
+      - failedTemplate:
+          errorMessage: "istio.waypoint.namespace is required when istio.waypoint.enabled=true"
+
+  # --- Rendering: no output ---
+
+  - it: renders nothing when istio.enabled is false
+    set:
+      istio.enabled: false
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: renders nothing when both ingressGateway and waypoint are disabled
+    set:
+      istio.ingressGateway.enabled: false
+      istio.waypoint.enabled: false
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: renders nothing when ingressGateway authorizationPolicy is disabled
+    set:
+      istio.ingressGateway.enabled: true
+      istio.ingressGateway.name: my-gateway
+      istio.ingressGateway.namespace: default
+      istio.ingressGateway.authorizationPolicy.enabled: false
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  # --- Rendering: ingress policy only ---
+
+  - it: renders one ingress policy when only ingressGateway is enabled
+    set:
+      istio.ingressGateway.enabled: true
+      istio.ingressGateway.name: my-gateway
+      istio.ingressGateway.namespace: default
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: AuthorizationPolicy
+      - equal:
+          path: metadata.name
+          value: hmac-manager-ingress-auth
+      - equal:
+          path: metadata.namespace
+          value: default
+      - equal:
+          path: spec.targetRefs[0].name
+          value: my-gateway
+      - equal:
+          path: spec.targetRefs[0].kind
+          value: Gateway
+      - equal:
+          path: spec.targetRefs[0].group
+          value: gateway.networking.k8s.io
+      - equal:
+          path: spec.action
+          value: CUSTOM
+      - equal:
+          path: spec.provider.name
+          value: hmac-manager
+
+  # --- Rendering: waypoint policy only ---
+
+  - it: renders one waypoint policy when only waypoint is enabled
+    set:
+      istio.ingressGateway.enabled: false
+      istio.waypoint.enabled: true
+      istio.waypoint.authorizationPolicy.enabled: true
+      istio.waypoint.name: waypoint
+      istio.waypoint.namespace: default
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: AuthorizationPolicy
+      - equal:
+          path: metadata.name
+          value: hmac-manager-waypoint-auth
+      - equal:
+          path: metadata.namespace
+          value: default
+      - equal:
+          path: spec.targetRefs[0].name
+          value: waypoint
+      - equal:
+          path: spec.provider.name
+          value: hmac-manager
+
+  # --- Rendering: both policies ---
+
+  - it: renders two policies when both ingressGateway and waypoint are enabled
+    set:
+      istio.ingressGateway.enabled: true
+      istio.ingressGateway.name: my-gateway
+      istio.ingressGateway.namespace: default
+      istio.waypoint.enabled: true
+      istio.waypoint.authorizationPolicy.enabled: true
+      istio.waypoint.name: waypoint
+      istio.waypoint.namespace: default
+    asserts:
+      - hasDocuments:
+          count: 2
+      - isKind:
+          of: AuthorizationPolicy
+        documentIndex: 0
+      - equal:
+          path: metadata.name
+          value: hmac-manager-ingress-auth
+        documentIndex: 0
+      - isKind:
+          of: AuthorizationPolicy
+        documentIndex: 1
+      - equal:
+          path: metadata.name
+          value: hmac-manager-waypoint-auth
+        documentIndex: 1
+
+  # --- Fullname override ---
+
+  - it: uses fullnameOverride in policy names and provider
+    set:
+      fullnameOverride: custom-name
+      istio.ingressGateway.enabled: true
+      istio.ingressGateway.name: my-gateway
+      istio.ingressGateway.namespace: default
+    asserts:
+      - equal:
+          path: metadata.name
+          value: custom-name-ingress-auth
+      - equal:
+          path: spec.provider.name
+          value: custom-name

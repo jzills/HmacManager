@@ -6,7 +6,7 @@ namespace HmacManager.Exceptions;
 public class NonceCacheTypeNotSupportedException : NotSupportedException
 {
     /// <summary>
-    /// Creates an instance of <c>NonceCacheTypeNotSupported</c>.
+    /// Creates an instance of <see cref="NonceCacheTypeNotSupportedException"/>.
     /// </summary>
     /// <param name="message">An optional error message.</param>
     public NonceCacheTypeNotSupportedException(string? message = null) 

@@ -1,0 +1,321 @@
+# HmacManager.Kubernetes
+
+A containerized ASP.NET Core minimal API that acts as a centralized HMAC verification service for Kubernetes clusters running [Istio](https://istio.io/) in **ambient mode**.
+
+The Istio waypoint proxy calls `POST /check` before forwarding any inbound request. If HMAC verification passes, the request is forwarded to the upstream service. If it fails, the waypoint rejects it with `403 Forbidden` — no request ever reaches your workloads with an invalid or missing signature.
+
+```
+Client → ztunnel (mTLS, L4) → Waypoint proxy (L7)
+                                    ↓ POST /check
+                                HmacManager.Kubernetes
+                                    ↓ VerifyAsync
+                                200 OK → forward upstream
+                                403    → reject
+```
+
+## Prerequisites
+
+| Tool | Purpose |
+|------|---------|
+| [Docker](https://docs.docker.com/get-docker/) | Build the container image |
+| [kubectl](https://kubernetes.io/docs/tasks/tools/) | Apply Kubernetes manifests |
+| [kind](https://kind.sigs.k8s.io/docs/user/quick-start/) or [k3d](https://k3d.io/stable/) | Local Kubernetes cluster |
+| [istioctl](https://istio.io/latest/docs/setup/install/istioctl/) | Install Istio and manage waypoints |
+| [.NET SDK 8+](https://dotnet.microsoft.com/download) | Build the project locally (optional) |
+
+## Step 1 — Create a local cluster
+
+**kind:**
+```bash
+kind create cluster --name hmac-test
+```
+
+**k3d:**
+```bash
+k3d cluster create hmac-test
+```
+
+## Step 2 — Install Istio in ambient mode
+
+```bash
+istioctl install --set profile=ambient --skip-confirmation
+```
+
+Verify the install:
+```bash
+kubectl get pods -n istio-system
+# ztunnel and istiod pods should be Running
+```
+
+## Step 3 — Build the Docker image
+
+Run from the **repository root** (the Dockerfile copies files relative to the root):
+
+```bash
+docker build -f kubernetes/service/Dockerfile -t hmac-manager:latest .
+```
+
+Load the image into your local cluster:
+
+**kind:**
+```bash
+kind load docker-image hmac-manager:latest --name hmac-test
+```
+
+**k3d:**
+```bash
+k3d image import hmac-manager:latest --cluster hmac-test
+```
+
+## Step 4 — Configure your HMAC policies
+
+The service loads policies from `appsettings.json` or environment variables. For local testing the simplest approach is a ConfigMap for non-secret values and a Secret for the private key.
+
+Create the `hmac-system` namespace (the service runs here, **outside** the protected waypoint namespace to avoid a circular ext-authz loop):
+
+```bash
+kubectl create namespace hmac-system
+```
+
+Create a Secret with your private key:
+
+```bash
+kubectl create secret generic hmac-manager-secrets \
+  --namespace hmac-system \
+  --from-literal=HmacManager__0__Keys__PrivateKey=your-private-key-here
+```
+
+Create a ConfigMap with the rest of the policy config:
+
+```bash
+kubectl create configmap hmac-manager-config \
+  --namespace hmac-system \
+  --from-literal=HmacManager__0__Name=MyPolicy \
+  --from-literal=HmacManager__0__Keys__PublicKey=00000000-0000-0000-0000-000000000001 \
+  --from-literal=HmacManager__0__Algorithms__ContentHashAlgorithm=SHA256 \
+  --from-literal=HmacManager__0__Algorithms__SigningHashAlgorithm=HMACSHA256 \
+  --from-literal=HmacManager__0__Nonce__MaxAgeInSeconds=30 \
+  --from-literal=HmacManager__0__Nonce__CacheType=Memory
+```
+
+> The `HmacManager__0__` prefix is .NET's environment variable binding convention for the first element of the `HmacManager` JSON array. Add `HmacManager__1__...` for a second policy, and so on.
+
+## Step 5 — Deploy the service
+
+For local testing, enable the `Development` environment so the `/sign` endpoint is available (see [Signing endpoint](#signing-endpoint-development-only)):
+
+Install with Helm, passing the development environment flag:
+
+```bash
+helm install hmac-manager kubernetes/chart \
+  --namespace hmac-system --create-namespace \
+  --set config.ASPNETCORE_ENVIRONMENT=Development
+```
+
+Wait for the pod to be ready:
+
+```bash
+kubectl rollout status deployment/hmac-manager -n hmac-system
+```
+
+## Step 6 — Register the ext-authz provider in Istio
+
+Patch the Istio MeshConfig to register `hmac-manager` as an extension provider:
+
+```bash
+kubectl patch configmap istio \
+  -n istio-system \
+  --type merge \
+  -p '{"data":{"mesh":"extensionProviders:\n- name: hmac-manager\n  envoyExtAuthzHttp:\n    service: hmac-manager.hmac-system.svc.cluster.local\n    port: 8080\n    withRequestBody:\n      maxRequestBytes: 8192\n      allowPartialMessage: false\n"}}'
+```
+
+> `withRequestBody` is required because HMAC signatures cover the request body hash. Adjust `maxRequestBytes` to match your largest expected payload.
+
+Restart `istiod` to pick up the new provider:
+
+```bash
+kubectl rollout restart deployment/istiod -n istio-system
+```
+
+## Step 7 — Enroll a workload namespace and create a waypoint
+
+Label the `default` namespace for ambient mode enrollment:
+
+```bash
+kubectl label namespace default istio.io/dataplane-mode=ambient
+```
+
+Create a waypoint proxy for the namespace:
+
+```bash
+istioctl waypoint apply --namespace default --enroll-namespace
+```
+
+Verify the waypoint is ready:
+
+```bash
+kubectl get gateway -n default
+# NAME       CLASS            ADDRESS       PROGRAMMED   AGE
+# waypoint   istio-waypoint   10.96.x.x     True         ...
+```
+
+## Step 8 — Apply the AuthorizationPolicy
+
+The Helm chart includes an `AuthorizationPolicy` template. It is enabled by default and targets the `default` namespace waypoint. To apply it, upgrade (or re-install) with Istio support enabled:
+
+```bash
+helm upgrade hmac-manager kubernetes/chart \
+  --namespace hmac-system \
+  --set istio.enabled=true
+```
+
+This tells the waypoint to call `hmac-manager` via `action: CUSTOM` for all inbound requests to workloads in the `default` namespace.
+
+## Step 9 — Test it
+
+Deploy a simple echo server in the protected namespace:
+
+```bash
+kubectl run echo --image=ealen/echo-server --expose --port=80 -n default
+```
+
+**Unsigned request — should be rejected:**
+
+```bash
+kubectl run curl --image=curlimages/curl --restart=Never --rm -it \
+  -- curl -sv http://echo.default.svc.cluster.local/test
+# Expected: HTTP/1.1 403 Forbidden
+```
+
+**Signed request — should be forwarded:**
+
+Use the `/sign` endpoint (see below) to get the headers, then attach them to your curl.
+
+## Signing endpoint (Development only)
+
+`POST /sign` is only registered when `ASPNETCORE_ENVIRONMENT=Development`, and it listens on a **dedicated sign port (`8081`)** that is separate from the ext-authz verify port (`8080`). This isolation is deliberate: the ext-authz provider and the Kubernetes `Service` only expose `8080`, so a request whose path happens to be `/sign` arriving through the waypoint can never reach the signer — it falls through to normal verification. Reach `/sign` by port-forwarding to the pod's sign port directly:
+
+```bash
+kubectl port-forward deploy/hmac-manager 9090:8081 -n hmac-system
+# /sign is now available at http://localhost:9090/sign
+```
+
+The sign port (`8081`) is configurable via the `SignPort` setting and is only opened in `Development`. It accepts a request description and returns the HMAC headers you need to attach to your actual request — no separate .NET client required.
+
+**Request:**
+
+```json
+{
+  "policy": "MyPolicy",
+  "method": "GET",
+  "uri": "http://echo.default.svc.cluster.local/test",
+  "scheme": null,
+  "body": null
+}
+```
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `policy` | Yes | Policy name as configured in `appsettings.json` |
+| `method` | Yes | HTTP method of the request you want to sign |
+| `uri` | Yes | Full URI of the request you want to sign (must match exactly what the real request will use) |
+| `scheme` | No | Named scheme within the policy, if any |
+| `body` | No | Request body string; include this if the real request has a body so the content hash covers it |
+
+**Response:**
+
+```json
+{
+  "Authorization": "Hmac <signature>",
+  "Hmac-Policy": "MyPolicy",
+  "Hmac-Nonce": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "Hmac-DateRequested": "2026-06-15T10:00:00.000Z",
+  "Hmac-Options": "..."
+}
+```
+
+**End-to-end test with curl:**
+
+```bash
+# 0. Port-forward the dev sign port (8081) from the pod in a separate terminal:
+#    kubectl port-forward deploy/hmac-manager 9090:8081 -n hmac-system
+
+# 1. Get signed headers from the signing endpoint
+SIGN_RESPONSE=$(curl -s -X POST http://localhost:9090/sign \
+  -H "Content-Type: application/json" \
+  -d '{"policy":"MyPolicy","method":"GET","uri":"http://echo.default.svc.cluster.local/test"}')
+
+AUTH=$(echo "$SIGN_RESPONSE"       | grep -o '"Authorization":"[^"]*"' | cut -d'"' -f4)
+POLICY=$(echo "$SIGN_RESPONSE"     | grep -o '"Hmac-Policy":"[^"]*"'   | cut -d'"' -f4)
+NONCE=$(echo "$SIGN_RESPONSE"      | grep -o '"Hmac-Nonce":"[^"]*"'    | cut -d'"' -f4)
+DATE=$(echo "$SIGN_RESPONSE"       | grep -o '"Hmac-DateRequested":"[^"]*"' | cut -d'"' -f4)
+OPTIONS=$(echo "$SIGN_RESPONSE"    | grep -o '"Hmac-Options":"[^"]*"'  | cut -d'"' -f4)
+
+# 2. Send the signed request through the waypoint
+kubectl run curl-test --image=curlimages/curl --restart=Never --rm -it \
+  -- curl -sv http://echo.default.svc.cluster.local/test \
+  -H "Authorization: $AUTH" \
+  -H "Hmac-Policy: $POLICY" \
+  -H "Hmac-Nonce: $NONCE" \
+  -H "Hmac-DateRequested: $DATE" \
+  -H "Hmac-Options: $OPTIONS"
+# Expected: 200 OK, response from echo server
+```
+
+> The `/sign` endpoint is not registered when `ASPNETCORE_ENVIRONMENT` is anything other than `Development`, and the sign port (`8081`) is not opened at all outside `Development`. Never run this service with `ASPNETCORE_ENVIRONMENT=Development` in a real cluster.
+
+## Replay protection and replicas
+
+Replay protection works by recording each nonce until it expires. The default `Memory` cache stores nonces **in-process**, so a replayed signature routed to a *different* replica is not detected. As a result:
+
+- With the default in-process cache, run a **single replica** (`replicaCount: 1`). The Helm chart enforces this — it refuses to render when `replicaCount > 1` unless `redis.enabled=true`.
+- To run multiple replicas, configure a shared **Redis** store. The service registers a Redis-backed `IDistributedCache` automatically when a connection string is present under `ConnectionStrings:Redis` (env var `ConnectionStrings__Redis`), and you set the policy's `Nonce__CacheType` to `Distributed`.
+
+> Note: `CacheType=Distributed` without a Redis connection string silently falls back to an in-process cache. Always provide `ConnectionStrings__Redis` when using `Distributed`. The service logs a warning at startup when no Redis connection string is configured.
+
+Via the Helm chart:
+
+```bash
+helm upgrade --install hmac-manager kubernetes/chart \
+  --namespace hmac-system \
+  --set replicaCount=3 \
+  --set redis.enabled=true \
+  --set redis.connectionString="redis-master.redis.svc.cluster.local:6379" \
+  --set "config.HmacManager__0__Nonce__CacheType=Distributed"
+```
+
+## Verifying ext-authz calls
+
+Check the waypoint proxy logs to confirm it is calling the ext-authz service:
+
+```bash
+kubectl logs -l gateway.istio.io/managed=istio-waypoint -n default -c istio-proxy | grep ext_authz
+```
+
+Check the HmacManager service logs:
+
+```bash
+kubectl logs -l app=hmac-manager -n hmac-system
+```
+
+## Configuration reference
+
+| Setting | Description | Default |
+|---------|-------------|---------|
+| `HmacManager__N__Name` | Policy name (matches `Hmac-Policy` header sent by client) | — |
+| `HmacManager__N__Keys__PublicKey` | Public key GUID sent in the signed content | — |
+| `HmacManager__N__Keys__PrivateKey` | Private key used for HMAC computation | — |
+| `HmacManager__N__Algorithms__ContentHashAlgorithm` | `SHA256` or `SHA512` | `SHA256` |
+| `HmacManager__N__Algorithms__SigningHashAlgorithm` | `HMACSHA256` or `HMACSHA512` | `HMACSHA256` |
+| `HmacManager__N__Nonce__MaxAgeInSeconds` | Replay attack window | `30` |
+| `HmacManager__N__Nonce__CacheType` | `Memory` (in-process) or `Distributed` (Redis) | `Memory` |
+| `ConnectionStrings__Redis` | Redis connection string; enables the shared nonce cache used by `CacheType=Distributed` | — |
+| `SignPort` | Port for the dev-only `/sign` helper (opened only in `Development`) | `8081` |
+
+## Teardown
+
+```bash
+kind delete cluster --name hmac-test
+# or
+k3d cluster delete hmac-test
+```

@@ -1,7 +1,7 @@
 namespace HmacManager.Components;
 
 /// <summary>
-/// An <c>enum</c> representing a <c>SigningHashAlgorithm</c>.
+/// An <c>enum</c> representing a <see cref="SigningHashAlgorithm"/>.
 /// </summary>
 public enum SigningHashAlgorithm
 {

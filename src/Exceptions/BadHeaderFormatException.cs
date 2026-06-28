@@ -6,7 +6,7 @@ namespace HmacManager.Exceptions;
 public class BadHeaderFormatException : FormatException
 {
     /// <summary>
-    /// Creates an instance of <c>BadHeaderFormatException</c>.
+    /// Creates an instance of <see cref="BadHeaderFormatException"/>.
     /// </summary>
     /// <param name="message">An optional error message.</param>
     public BadHeaderFormatException(string? message = null) 

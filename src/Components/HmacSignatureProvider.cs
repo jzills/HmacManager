@@ -57,7 +57,7 @@ public class HmacSignatureProvider : IHmacSignatureProvider
 
         if (request.HasContent())
         {
-            var contentString = await request.Content.ReadAsStringAsync();
+            var contentString = await request.Content!.ReadAsStringAsync();
             var contentHash = await Options.ContentHashGenerator.HashAsync(contentString);
             builder.WithContentHash(contentHash);
         }
