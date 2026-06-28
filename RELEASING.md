@@ -119,11 +119,32 @@ git push origin --delete release/chart/v1.5.0
 git branch -d release/chart/v1.5.0
 ```
 
-The chart is published to GHCR as an OCI artifact. Install with:
+The chart is published two ways from the same `chart/vX.Y.Z` tag:
+
+- **HTTP repo** on GitHub Pages (via `helm/chart-releaser-action`) — the conventional `helm repo add` experience and the source Artifact Hub indexes.
+- **OCI artifact** on GHCR — for users who prefer pulling charts from the same registry as images.
+
+Install via the HTTP repo:
+
+```bash
+helm repo add hmac-manager https://jzills.github.io/HmacManager
+helm repo update
+helm install hmac-manager hmac-manager/hmac-manager --version 1.5.0
+```
+
+Or via OCI:
 
 ```bash
 helm install hmac-manager oci://ghcr.io/jzills/charts/hmac-manager --version 1.5.0
 ```
+
+> **One-time setup for the HTTP repo:** create an empty `gh-pages` branch and enable
+> GitHub Pages for it (Settings → Pages → Branch: `gh-pages`, folder `/`). The
+> `pages` job in `chart-release.yml` then publishes `index.yaml`, the packaged
+> chart, and `artifacthub-repo.yml` to the Pages root on each chart release.
+> Point Artifact Hub at `https://jzills.github.io/HmacManager`; because the repo
+> metadata file is served at the root, the Verified Publisher badge works with no
+> extra OCI metadata push.
 
 ---
 
