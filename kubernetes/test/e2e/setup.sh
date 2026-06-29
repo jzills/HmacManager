@@ -65,20 +65,25 @@ kubectl apply -f "$SCRIPT_DIR/manifests/echo.yaml"
 kubectl apply -f "$SCRIPT_DIR/manifests/curl.yaml"
 kubectl wait --for=condition=Ready pod/echo pod/curl -n default --timeout=60s
 
-# ── 7. Docker image ───────────────────────────────────────────────────────────
+# ── 7. Docker images ──────────────────────────────────────────────────────────
 log "Building hmac-manager image ($IMAGE_TAG)..."
 docker build -f "$REPO_ROOT/kubernetes/service/Dockerfile" \
     -t "hmac-manager:${IMAGE_TAG}" \
     "$REPO_ROOT"
 
-log "Loading image into kind..."
+log "Loading hmac-manager image into kind..."
 kind load docker-image "hmac-manager:${IMAGE_TAG}" --name "$CLUSTER_NAME"
+
+log "Pulling and loading bundled Redis image into kind..."
+docker pull redis:7-alpine
+kind load docker-image redis:7-alpine --name "$CLUSTER_NAME"
 
 # ── 8. Helm install ───────────────────────────────────────────────────────────
 log "Installing hmac-manager Helm chart..."
 helm upgrade --install hmac-manager "$REPO_ROOT/kubernetes/chart" \
     --namespace "$NAMESPACE" \
     --create-namespace \
+    --set image.repository=hmac-manager \
     --set image.tag="$IMAGE_TAG" \
     --set image.pullPolicy=Never \
     --set config.ASPNETCORE_ENVIRONMENT=Development \
@@ -89,7 +94,7 @@ helm upgrade --install hmac-manager "$REPO_ROOT/kubernetes/chart" \
     --set istio.waypoint.authorizationPolicy.enabled=true \
     --set istio.waypoint.name=waypoint \
     --set istio.waypoint.namespace=default \
-    --wait --timeout=120s
+    --wait --timeout=180s
 
 # ── 9. MeshConfig: register ext-authz provider ───────────────────────────────
 log "Patching Istio MeshConfig with ext-authz provider..."
