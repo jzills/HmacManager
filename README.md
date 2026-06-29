@@ -16,7 +16,6 @@ _Secure HMAC request authentication for ASP.NET Core — as a NuGet library, or 
 - [Documentation](./src/README.md)
 - [Client Library](./client/)
 - [Resources](#resources)
-- [Further Reading](#further-reading)
 
 ## Summary
 
@@ -68,8 +67,3 @@ See the [Kubernetes setup guide](kubernetes/service/README.md) for the full walk
 
 - [Documentation](src/README.md)
 - [Samples](samples/README.md)
-
-## Further Reading
-
-- [Hmac](https://en.wikipedia.org/wiki/Hmac)
-- [Sign an Http Request](https://learn.microsoft.com/en-us/azure/communication-services/tutorials/Hmac-header-tutorial?pivots=programming-language-csharp)
