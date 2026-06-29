@@ -33,20 +33,25 @@ existingSecret: ""
 #
 # The default in-process nonce cache lives inside each pod, so a replayed
 # signature routed to a different replica is NOT detected. Running more than one
-# replica therefore REQUIRES a shared store: set redis.enabled=true and provide a
-# connection string. When redis.enabled=false the chart refuses replicaCount > 1.
+# replica therefore REQUIRES a shared store: set redis.enabled=true. When
+# redis.enabled=false the chart refuses replicaCount > 1.
 #
-# Note: even with Redis enabled, every policy must use Nonce.CacheType=Distributed
-# for its nonces to be shared — a policy left at CacheType=Memory is still per-pod.
+# By default (redis.bundled=true) a Redis instance is deployed alongside the app
+# as a subchart — no external Redis is needed. Set redis.bundled=false to bring
+# your own Redis via connectionString or existingSecret instead.
 redis:
-  enabled: false
-  # StackExchange.Redis connection string, injected as ConnectionStrings__Redis.
-  # Rendered into a chart-managed Secret. Ignored when existingSecret is set.
+  enabled: true
+  # Deploy a Redis instance as part of this Helm release (recommended).
+  # When true, connectionString and existingSecret are ignored.
+  bundled: true
+  # BYO Redis — only used when bundled: false.
+  # StackExchange.Redis connection string rendered into a chart-managed Secret.
   connectionString: ""
-  # Reference a pre-existing Secret holding the connection string instead.
+  # Reference a pre-existing Secret instead of creating one.
   existingSecret: ""
   # Key within the Secret (chart-managed or existing) that holds the value.
   existingSecretKey: "ConnectionStrings__Redis"
+
 
 istio:
   # Master switch — set to false to skip all Istio resources and suppress NOTES output.

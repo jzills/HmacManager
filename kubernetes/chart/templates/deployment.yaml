@@ -31,10 +31,14 @@ spec:
               value: "http://+:{{ .Values.service.port }}"
             {{- if .Values.redis.enabled }}
             - name: ConnectionStrings__Redis
+              {{- if .Values.redis.bundled }}
+              value: {{ include "hmac-manager.redisAddress" . | quote }}
+              {{- else }}
               valueFrom:
                 secretKeyRef:
                   name: {{ if .Values.redis.existingSecret }}{{ .Values.redis.existingSecret }}{{ else }}{{ include "hmac-manager.fullname" . }}-redis{{ end }}
                   key: {{ .Values.redis.existingSecretKey }}
+              {{- end }}
             {{- end }}
           envFrom:
             - configMapRef:

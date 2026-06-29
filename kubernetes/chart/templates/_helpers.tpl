@@ -51,3 +51,10 @@ Name of the secret to use (existing or chart-managed).
 {{- printf "%s-secrets" (include "hmac-manager.fullname" .) }}
 {{- end }}
 {{- end }}
+
+{{/*
+Redis address for the bundled Redis instance.
+*/}}
+{{- define "hmac-manager.redisAddress" -}}
+{{- printf "%s-redis:6379" (include "hmac-manager.fullname" .) -}}
+{{- end }}

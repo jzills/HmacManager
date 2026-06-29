@@ -1,0 +1,42 @@
+suite: redis-deployment
+release:
+  name: hmac-manager
+templates:
+  - redis-deployment.yaml
+
+tests:
+  - it: renders the bundled Redis Deployment by default
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: Deployment
+      - equal:
+          path: metadata.name
+          value: hmac-manager-redis
+      - equal:
+          path: spec.template.spec.containers[0].name
+          value: redis
+
+  - it: deploys to the configured namespace
+    set:
+      namespace: my-namespace
+    asserts:
+      - equal:
+          path: metadata.namespace
+          value: my-namespace
+
+  - it: renders no Deployment when redis is disabled
+    set:
+      redis.enabled: false
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: renders no Deployment when BYO redis is used
+    set:
+      redis.bundled: false
+      redis.connectionString: redis-master:6379
+    asserts:
+      - hasDocuments:
+          count: 0

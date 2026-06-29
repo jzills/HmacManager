@@ -49,6 +49,7 @@
       "additionalProperties": false,
       "properties": {
         "enabled":           { "type": "boolean" },
+        "bundled":           { "type": "boolean" },
         "connectionString":  { "type": "string" },
         "existingSecret":    { "type": "string" },
         "existingSecretKey": { "type": "string", "minLength": 1 }
