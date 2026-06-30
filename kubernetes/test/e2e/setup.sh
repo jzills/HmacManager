@@ -188,4 +188,56 @@ if [[ "$ENFORCED" != "true" ]]; then
 fi
 
 log "Enforcement active (unsigned request rejected with 403)."
+
+# ── 11. Warmup: verify a signed request returns 200 ───────────────────────────
+# This primes the Redis connection pool and confirms ext-authz is passing
+# correctly signed requests before the bats test suite runs.
+log "Warming up: verifying a signed request returns 200..."
+kubectl port-forward deploy/hmac-manager 9090:8081 -n hmac-system >/dev/null 2>&1 &
+PF_PID=$!
+
+# Wait for the port-forward to accept connections
+for _ in $(seq 1 30); do
+    code=$(curl -s --max-time 1 -o /dev/null -w "%{http_code}" \
+        -X POST -H "Content-Type: application/json" \
+        -d '{}' "http://localhost:9090/sign" 2>/dev/null)
+    if [[ "$code" != "000" ]]; then break; fi
+    sleep 1
+done
+
+WARMUP_OK=false
+for _ in $(seq 1 15); do
+    sign=$(curl -s --max-time 2 -X POST "http://localhost:9090/sign" \
+        -H "Content-Type: application/json" \
+        -d '{"Policy":"MyPolicy","Method":"GET","Uri":"http://echo.default.svc.cluster.local/"}' 2>/dev/null)
+
+    if echo "$sign" | python3 -c "import sys,json; json.load(sys.stdin)" >/dev/null 2>&1; then
+        auth=$(echo "$sign"   | python3 -c "import sys,json; print(json.load(sys.stdin)['Authorization'])")
+        policy=$(echo "$sign" | python3 -c "import sys,json; print(json.load(sys.stdin)['Hmac-Policy'])")
+        nonce=$(echo "$sign"  | python3 -c "import sys,json; print(json.load(sys.stdin)['Hmac-Nonce'])")
+        date=$(echo "$sign"   | python3 -c "import sys,json; print(json.load(sys.stdin)['Hmac-DateRequested'])")
+
+        code=$(kubectl exec -n default curl -- curl -s -o /dev/null -w "%{http_code}" \
+            -H "Authorization: $auth" \
+            -H "Hmac-Policy: $policy" \
+            -H "Hmac-Nonce: $nonce" \
+            -H "Hmac-DateRequested: $date" \
+            "http://echo.default.svc.cluster.local/" 2>/dev/null || echo "000")
+
+        if [[ "$code" == "200" ]]; then
+            WARMUP_OK=true
+            break
+        fi
+    fi
+    sleep 2
+done
+
+kill "$PF_PID" 2>/dev/null || true
+
+if [[ "$WARMUP_OK" != "true" ]]; then
+    log "ERROR: signed requests not passing through ext-authz after warmup."
+    exit 1
+fi
+
+log "Signed request warmup verified."
 log "Setup complete."

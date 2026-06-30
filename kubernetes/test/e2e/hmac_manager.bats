@@ -63,7 +63,16 @@ setup_file() {
     kubectl port-forward deploy/hmac-manager "${SIGN_PORT}:8081" -n hmac-system \
         >/tmp/pf-hmac.log 2>&1 &
     echo "$!" > /tmp/pf-hmac.pid
-    sleep 3
+
+    # Poll until the sign endpoint is reachable; http_code "000" means the
+    # TCP connection was refused (port-forward not yet listening).
+    for _ in $(seq 1 30); do
+        code=$(curl -s --max-time 1 -o /dev/null -w "%{http_code}" \
+            -X POST -H "Content-Type: application/json" \
+            -d '{}' "http://localhost:${SIGN_PORT}/sign" 2>/dev/null)
+        if [[ "$code" != "000" ]]; then break; fi
+        sleep 1
+    done
 }
 
 teardown_file() {
