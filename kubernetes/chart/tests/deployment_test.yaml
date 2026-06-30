@@ -192,3 +192,19 @@ tests:
     asserts:
       - failedTemplate:
           errorMessage: "replicaCount > 1 requires redis.enabled=true: the in-process nonce cache is not shared across pods, so replay protection would be bypassed. Set replicaCount to 1 for a single-replica deployment, or enable Redis (redis.enabled=true) to scale safely."
+
+  - it: labels pods with the server component to distinguish them from bundled Redis
+    set:
+      policies:
+        - name: MyPolicy
+          publicKey: "00000000-0000-0000-0000-000000000001"
+          privateKeySecret:
+            name: my-secret
+            key: private-key
+    asserts:
+      - equal:
+          path: spec.selector.matchLabels["app.kubernetes.io/component"]
+          value: server
+      - equal:
+          path: spec.template.metadata.labels["app.kubernetes.io/component"]
+          value: server

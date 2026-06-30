@@ -13,10 +13,12 @@ spec:
   selector:
     matchLabels:
       {{- include "hmac-manager.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: server
   template:
     metadata:
       labels:
         {{- include "hmac-manager.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: server
     spec:
       volumes:
         - name: config
