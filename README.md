@@ -6,6 +6,7 @@
 - [Summary](#summary)
 - [Features](#features)
 - [Installation](#installation)
+- [Kubernetes (Istio ext-authz)](#kubernetes-istio-ext-authz)
 - [Documentation](./src/README.md)
 - [Client Library](./client/)
 - [Resources](#resources)
@@ -30,6 +31,24 @@ Add secure HMAC request authentication to ASP.NET Core APIs with lightweight, co
 `HmacManager` is available on [NuGet](https://www.nuget.org/packages/HmacManager/). 
 
     dotnet add package HmacManager
+
+## Kubernetes (Istio ext-authz)
+
+Beyond the .NET library, HmacManager ships a containerized verification service and a Helm chart for enforcing HMAC authentication at the mesh edge. The service runs as an [Envoy ext-authz](https://www.envoyproxy.io/docs/envoy/latest/api-v3/extensions/filters/http/ext_authz/v3/ext_authz.proto) HTTP server: an Istio ingress gateway or ambient waypoint calls it before forwarding a request, and anything without a valid HMAC signature is rejected with `403`. Redis is bundled for replay protection — no external dependencies to provision.
+
+```bash
+helm repo add hmac-manager https://jzills.github.io/HmacManager
+helm repo update
+helm install hmac-manager hmac-manager/hmac-manager \
+  --namespace hmac-system --create-namespace \
+  --set "policies[0].name=MyPolicy" \
+  --set "policies[0].publicKey=00000000-0000-0000-0000-000000000001" \
+  --set "policies[0].privateKeySecret.name=my-hmac-secrets" \
+  --set "policies[0].privateKeySecret.key=MyPolicy-privateKey"
+```
+
+- **Helm chart** — [kubernetes/chart](kubernetes/chart/README.md) · [Artifact Hub](https://artifacthub.io/packages/search?repo=hmac-manager)
+- **Container image** — [zills/hmac-manager](https://hub.docker.com/r/zills/hmac-manager) on Docker Hub
 
 ## Resources
 

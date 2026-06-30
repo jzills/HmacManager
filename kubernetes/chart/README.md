@@ -55,6 +55,8 @@ helm install hmac-manager hmac-manager/hmac-manager \
   -f values.yaml
 ```
 
+This deploys the hmac-manager verifier and a bundled Redis. By default it does **not** enforce anything yet — wiring it into the mesh is a deliberate second step (see [Enforce HMAC auth](#enforce-hmac-auth)).
+
 ## Register the ext-authz provider
 
 After installation, NOTES.txt prints a ready-to-run script. The manual equivalent:
@@ -67,6 +69,30 @@ kubectl patch configmap istio -n istio-system --type merge -p '{
 }'
 kubectl rollout restart deployment/istiod -n istio-system
 ```
+
+## Enforce HMAC auth
+
+Enforcement is opt-in: `istio.ingressGateway.enabled` and `istio.waypoint.enabled` are both `false` by default, so a fresh install runs the verifier without routing any traffic to it. Enable an enforcement point by pointing it at an existing Gateway resource:
+
+```bash
+# External traffic — ingress gateway
+helm upgrade hmac-manager hmac-manager/hmac-manager \
+  --namespace hmac-system --reuse-values \
+  --set istio.ingressGateway.enabled=true \
+  --set istio.ingressGateway.name=<gateway-name> \
+  --set istio.ingressGateway.namespace=<gateway-namespace>
+```
+
+```bash
+# East-west traffic — ambient waypoint
+helm upgrade hmac-manager hmac-manager/hmac-manager \
+  --namespace hmac-system --reuse-values \
+  --set istio.waypoint.enabled=true \
+  --set istio.waypoint.name=<waypoint-name> \
+  --set istio.waypoint.namespace=<waypoint-namespace>
+```
+
+Each enabled point renders an `AuthorizationPolicy` (`action: CUSTOM`) that targets the named Gateway and calls the registered `hmac-manager` provider. You can also set these at install time instead of upgrading.
 
 ## Configuration
 
@@ -111,11 +137,15 @@ When `redis.enabled=false` the chart refuses `replicaCount > 1` — the in-proce
 | `replicaCount` | `1` | Number of replicas. Values > 1 require `redis.enabled=true`. |
 | `namespace` | `hmac-system` | Namespace to deploy into. |
 | `image.repository` | `zills/hmac-manager` | Container image repository. |
-| `image.tag` | `0.0.1` | Container image tag. |
+| `image.tag` | `0.1.0` | Container image tag. |
 | `service.port` | `8080` | Port the ext-authz service listens on. |
-| `istio.enabled` | `true` | Render Istio `AuthorizationPolicy` resources. |
-| `istio.ingressGateway.enabled` | `true` | Protect ingress gateway traffic. |
-| `istio.waypoint.enabled` | `false` | Protect east-west (ambient mode) traffic. |
+| `istio.enabled` | `true` | Master switch for Istio integration and the NOTES MeshConfig instructions. |
+| `istio.ingressGateway.enabled` | `false` | Enforce inbound (ingress gateway) traffic. Requires `name` + `namespace`. |
+| `istio.ingressGateway.name` | `""` | Name of the existing Gateway to target. Required when enabled. |
+| `istio.ingressGateway.namespace` | `""` | Namespace of that Gateway. Required when enabled. |
+| `istio.waypoint.enabled` | `false` | Enforce east-west (ambient mode) traffic. Requires `name` + `namespace`. |
+| `istio.waypoint.name` | `""` | Name of the waypoint Gateway. Required when enabled. |
+| `istio.waypoint.namespace` | `""` | Namespace of the waypoint. Required when enabled. |
 
 ## Multiple policies
 

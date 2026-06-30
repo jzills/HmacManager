@@ -6,7 +6,7 @@ Runs as an [Envoy ext-authz](https://www.envoyproxy.io/docs/envoy/latest/api-v3/
 
 ```
 Client → Istio waypoint / ingress gateway
-              ↓ ext-authz check (POST /check)
+              ↓ ext-authz check (original method + path)
          hmac-manager
               ↓ VerifyAsync
          200 OK → forward upstream
@@ -30,7 +30,7 @@ helm install hmac-manager hmac-manager/hmac-manager \
   --set "policies[0].privateKeySecret.key=MyPolicy-privateKey"
 ```
 
-See the [chart documentation](https://artifacthub.io/packages/helm/hmac-manager/hmac-manager) for the full values reference.
+A fresh install deploys the verifier and a bundled Redis but does not enforce any traffic until you enable an Istio enforcement point (`istio.ingressGateway.*` or `istio.waypoint.*`). See the [chart documentation](https://artifacthub.io/packages/helm/hmac-manager/hmac-manager) for the full values reference.
 
 ## Tags
 
