@@ -9,3 +9,18 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+
+  - package-ecosystem: "npm"
+    directory: "/client/lib"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "npm"
+    directory: "/client/sample"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "npm"
+    directory: "/samples/WebToApiAuthenticationWithJavaScriptClient/Web/src"
+    schedule:
+      interval: "weekly"
