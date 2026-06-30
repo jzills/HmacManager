@@ -196,11 +196,13 @@ log "Warming up: verifying a signed request returns 200..."
 kubectl port-forward deploy/hmac-manager 9090:8081 -n hmac-system >/dev/null 2>&1 &
 PF_PID=$!
 
-# Wait for the port-forward to accept connections
+# Wait for the port-forward to accept connections.
+# curl exits 7 on "connection refused"; set -e would kill the script on that
+# exit code inside a command substitution, so || true makes the assignment safe.
 for _ in $(seq 1 30); do
     code=$(curl -s --max-time 1 -o /dev/null -w "%{http_code}" \
         -X POST -H "Content-Type: application/json" \
-        -d '{}' "http://localhost:9090/sign" 2>/dev/null)
+        -d '{}' "http://localhost:9090/sign" 2>/dev/null) || true
     if [[ "$code" != "000" ]]; then break; fi
     sleep 1
 done
@@ -209,7 +211,8 @@ WARMUP_OK=false
 for _ in $(seq 1 15); do
     sign=$(curl -s --max-time 2 -X POST "http://localhost:9090/sign" \
         -H "Content-Type: application/json" \
-        -d '{"Policy":"MyPolicy","Method":"GET","Uri":"http://echo.default.svc.cluster.local/"}' 2>/dev/null)
+        -d '{"Policy":"MyPolicy","Method":"GET","Uri":"http://echo.default.svc.cluster.local/"}' \
+        2>/dev/null) || true
 
     if echo "$sign" | python3 -c "import sys,json; json.load(sys.stdin)" >/dev/null 2>&1; then
         auth=$(echo "$sign"   | python3 -c "import sys,json; print(json.load(sys.stdin)['Authorization'])")
