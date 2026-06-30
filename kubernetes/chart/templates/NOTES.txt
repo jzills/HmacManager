@@ -12,6 +12,7 @@
 ╚═════════════════════════════════════════════════╝
 
 hmac-manager deployed to namespace {{ .Values.namespace }}.
+{{ len .Values.policies }} {{ if eq (len .Values.policies) 1 }}policy{{ else }}policies{{ end }} loaded · Redis {{ if .Values.redis.enabled }}enabled (bundled){{ else }}disabled (single-replica only){{ end }}
 
 {{- if .Values.istio.enabled }}
 

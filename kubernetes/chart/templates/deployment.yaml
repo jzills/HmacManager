@@ -1,5 +1,5 @@
 {{- if and (gt (int .Values.replicaCount) 1) (not .Values.redis.enabled) }}
-{{- fail "replicaCount > 1 requires redis.enabled=true: the in-process nonce cache is not shared across pods, so replay protection would be bypassed. Enable Redis (redis.enabled=true) or set replicaCount to 1." }}
+{{- fail "replicaCount > 1 requires redis.enabled=true: the in-process nonce cache is not shared across pods, so replay protection would be bypassed. Set replicaCount to 1 for a single-replica deployment, or enable Redis (redis.enabled=true) to scale safely." }}
 {{- end }}
 apiVersion: apps/v1
 kind: Deployment
