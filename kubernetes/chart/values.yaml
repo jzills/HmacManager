@@ -3,50 +3,62 @@ fullnameOverride: ""
 
 image:
   repository: zills/hmac-manager
-  tag: 0.0.1
+  tag: 0.1.0
   pullPolicy: IfNotPresent
 
 replicaCount: 1
 namespace: hmac-system
 
+# ASP.NET Core environment. Controls which appsettings.{Environment}.json is loaded
+# and whether the dev-only signing endpoint is active.
+# Allowed values: Production | Development
+environment: Production
+
 service:
   port: 8080
 
-# Non-secret config loaded via envFrom ConfigMap.
-# Use ASP.NET Core double-underscore env var format for nested keys.
-# Example:
-#   HmacManager__MyPolicy__PublicKey: "00000000-0000-0000-0000-000000000000"
-#   ASPNETCORE_ENVIRONMENT: "Production"
-config: {}
-
-# Secret key-value pairs — only rendered when existingSecret is "".
-# Example:
-#   HmacManager__MyPolicy__PrivateKey: "replace-with-secret"
-secretData: {}
-
-# Name of a pre-existing Secret (ExternalSecret, Vault sidecar, etc.).
-# When set, the chart's Secret template is skipped and this name is
-# referenced in the Deployment's envFrom instead.
-existingSecret: ""
-
-# Distributed (Redis) nonce cache.
+# HMAC authentication policies. At least one policy is required.
 #
-# The default in-process nonce cache lives inside each pod, so a replayed
-# signature routed to a different replica is NOT detected. Running more than one
-# replica therefore REQUIRES a shared store: set redis.enabled=true and provide a
-# connection string. When redis.enabled=false the chart refuses replicaCount > 1.
+# Each policy needs a name, a public key (UUID), and a reference to a Kubernetes
+# Secret that holds the private key (use External Secrets or a similar operator —
+# never commit secret values to git).
 #
-# Note: even with Redis enabled, every policy must use Nonce.CacheType=Distributed
-# for its nonces to be shared — a policy left at CacheType=Memory is still per-pod.
+# All other fields have defaults and can be omitted:
+#   algorithms.contentHash  — SHA1 | SHA256 | SHA512       (default: SHA256)
+#   algorithms.signingHash  — HMACSHA1 | HMACSHA256 | HMACSHA512 (default: HMACSHA256)
+#   nonce.maxAgeInSeconds   — integer >= 1                  (default: 60)
+#   schemes                 — list of named header sets     (default: none)
+#
+# Example:
+# policies:
+#   - name: MyPolicy
+#     publicKey: "00000000-0000-0000-0000-000000000001"
+#     privateKeySecret:
+#       name: my-hmac-secrets
+#       key: myPolicy-privateKey
+#     algorithms:
+#       contentHash: SHA256
+#       signingHash: HMACSHA256
+#     nonce:
+#       maxAgeInSeconds: 60
+#     schemes:
+#       - name: UserScheme
+#         headers:
+#           - name: X-UserId
+#             claimType: userId
+policies: []
+
+# Distributed nonce cache (Redis).
+#
+# When enabled, a Redis instance is deployed alongside the app as part of this
+# release. All policies automatically use the distributed cache so replay
+# protection works correctly across multiple replicas.
+#
+# When disabled, each pod uses an in-process nonce cache. Replay protection
+# still works for a single replica, but NOT across multiple pods. The chart
+# refuses replicaCount > 1 when redis is disabled.
 redis:
-  enabled: false
-  # StackExchange.Redis connection string, injected as ConnectionStrings__Redis.
-  # Rendered into a chart-managed Secret. Ignored when existingSecret is set.
-  connectionString: ""
-  # Reference a pre-existing Secret holding the connection string instead.
-  existingSecret: ""
-  # Key within the Secret (chart-managed or existing) that holds the value.
-  existingSecretKey: "ConnectionStrings__Redis"
+  enabled: true
 
 istio:
   # Master switch — set to false to skip all Istio resources and suppress NOTES output.
@@ -60,9 +72,11 @@ istio:
     allowPartialMessage: false
 
   # Ingress gateway enforcement — protects external traffic entering the cluster.
-  # Enabled by default. Requires an existing Gateway API Gateway resource.
+  # Opt-in: off by default so a bare `helm install` succeeds without cluster-specific
+  # Gateway details. Enable it and point name/namespace at an existing Gateway API
+  # Gateway resource to enforce HMAC auth on inbound traffic.
   ingressGateway:
-    enabled: true
+    enabled: false
     # Name of the Gateway resource to target. Required when enabled.
     name: ""
     # Namespace the Gateway resource lives in. Required when enabled.

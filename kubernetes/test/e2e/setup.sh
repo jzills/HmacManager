@@ -65,31 +65,43 @@ kubectl apply -f "$SCRIPT_DIR/manifests/echo.yaml"
 kubectl apply -f "$SCRIPT_DIR/manifests/curl.yaml"
 kubectl wait --for=condition=Ready pod/echo pod/curl -n default --timeout=60s
 
-# ── 7. Docker image ───────────────────────────────────────────────────────────
+# ── 7. Docker images ──────────────────────────────────────────────────────────
 log "Building hmac-manager image ($IMAGE_TAG)..."
 docker build -f "$REPO_ROOT/kubernetes/service/Dockerfile" \
-    -t "hmac-manager:${IMAGE_TAG}" \
+    -t "zills/hmac-manager:${IMAGE_TAG}" \
     "$REPO_ROOT"
 
-log "Loading image into kind..."
-kind load docker-image "hmac-manager:${IMAGE_TAG}" --name "$CLUSTER_NAME"
+log "Loading hmac-manager image into kind..."
+kind load docker-image "zills/hmac-manager:${IMAGE_TAG}" --name "$CLUSTER_NAME"
 
-# ── 8. Helm install ───────────────────────────────────────────────────────────
+log "Pulling and loading bundled Redis image into kind..."
+docker pull redis:7-alpine
+kind load docker-image redis:7-alpine --name "$CLUSTER_NAME"
+
+# ── 8. Policy secret + Helm install ──────────────────────────────────────────
+log "Creating namespace and HMAC policy secret..."
+kubectl create namespace "$NAMESPACE" --dry-run=client -o yaml | kubectl apply -f -
+kubectl create secret generic hmac-manager-policy \
+    --namespace "$NAMESPACE" \
+    --from-literal="MyPolicy-privateKey=$TEST_PRIVATE_KEY" \
+    --dry-run=client -o yaml | kubectl apply -f -
+
 log "Installing hmac-manager Helm chart..."
 helm upgrade --install hmac-manager "$REPO_ROOT/kubernetes/chart" \
     --namespace "$NAMESPACE" \
-    --create-namespace \
     --set image.tag="$IMAGE_TAG" \
     --set image.pullPolicy=Never \
-    --set config.ASPNETCORE_ENVIRONMENT=Development \
-    --set "config.HmacManager__0__Keys__PublicKey=$TEST_PUBLIC_KEY" \
-    --set "secretData.HmacManager__0__Keys__PrivateKey=$TEST_PRIVATE_KEY" \
+    --set environment=Development \
+    --set "policies[0].name=MyPolicy" \
+    --set "policies[0].publicKey=$TEST_PUBLIC_KEY" \
+    --set "policies[0].privateKeySecret.name=hmac-manager-policy" \
+    --set "policies[0].privateKeySecret.key=MyPolicy-privateKey" \
     --set istio.ingressGateway.enabled=false \
     --set istio.waypoint.enabled=true \
     --set istio.waypoint.authorizationPolicy.enabled=true \
     --set istio.waypoint.name=waypoint \
     --set istio.waypoint.namespace=default \
-    --wait --timeout=120s
+    --wait --timeout=180s
 
 # ── 9. MeshConfig: register ext-authz provider ───────────────────────────────
 log "Patching Istio MeshConfig with ext-authz provider..."
@@ -176,4 +188,59 @@ if [[ "$ENFORCED" != "true" ]]; then
 fi
 
 log "Enforcement active (unsigned request rejected with 403)."
+
+# ── 11. Warmup: verify a signed request returns 200 ───────────────────────────
+# This primes the Redis connection pool and confirms ext-authz is passing
+# correctly signed requests before the bats test suite runs.
+log "Warming up: verifying a signed request returns 200..."
+kubectl port-forward deploy/hmac-manager 9090:8081 -n hmac-system >/dev/null 2>&1 &
+PF_PID=$!
+
+# Wait for the port-forward to accept connections.
+# curl exits 7 on "connection refused"; set -e would kill the script on that
+# exit code inside a command substitution, so || true makes the assignment safe.
+for _ in $(seq 1 30); do
+    code=$(curl -s --max-time 1 -o /dev/null -w "%{http_code}" \
+        -X POST -H "Content-Type: application/json" \
+        -d '{}' "http://localhost:9090/sign" 2>/dev/null) || true
+    if [[ "$code" != "000" ]]; then break; fi
+    sleep 1
+done
+
+WARMUP_OK=false
+for _ in $(seq 1 15); do
+    sign=$(curl -s --max-time 2 -X POST "http://localhost:9090/sign" \
+        -H "Content-Type: application/json" \
+        -d '{"Policy":"MyPolicy","Method":"GET","Uri":"http://echo.default.svc.cluster.local/"}' \
+        2>/dev/null) || true
+
+    if echo "$sign" | python3 -c "import sys,json; json.load(sys.stdin)" >/dev/null 2>&1; then
+        auth=$(echo "$sign"   | python3 -c "import sys,json; print(json.load(sys.stdin)['Authorization'])")
+        policy=$(echo "$sign" | python3 -c "import sys,json; print(json.load(sys.stdin)['Hmac-Policy'])")
+        nonce=$(echo "$sign"  | python3 -c "import sys,json; print(json.load(sys.stdin)['Hmac-Nonce'])")
+        date=$(echo "$sign"   | python3 -c "import sys,json; print(json.load(sys.stdin)['Hmac-DateRequested'])")
+
+        code=$(kubectl exec -n default curl -- curl -s -o /dev/null -w "%{http_code}" \
+            -H "Authorization: $auth" \
+            -H "Hmac-Policy: $policy" \
+            -H "Hmac-Nonce: $nonce" \
+            -H "Hmac-DateRequested: $date" \
+            "http://echo.default.svc.cluster.local/" 2>/dev/null || echo "000")
+
+        if [[ "$code" == "200" ]]; then
+            WARMUP_OK=true
+            break
+        fi
+    fi
+    sleep 2
+done
+
+kill "$PF_PID" 2>/dev/null || true
+
+if [[ "$WARMUP_OK" != "true" ]]; then
+    log "ERROR: signed requests not passing through ext-authz after warmup."
+    exit 1
+fi
+
+log "Signed request warmup verified."
 log "Setup complete."

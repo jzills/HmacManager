@@ -1,5 +1,5 @@
 {{- if and (gt (int .Values.replicaCount) 1) (not .Values.redis.enabled) }}
-{{- fail "replicaCount > 1 requires redis.enabled=true: the in-process nonce cache is not shared across pods, so replay protection would be bypassed. Enable Redis (redis.enabled=true) or set replicaCount to 1." }}
+{{- fail "replicaCount > 1 requires redis.enabled=true: the in-process nonce cache is not shared across pods, so replay protection would be bypassed. Set replicaCount to 1 for a single-replica deployment, or enable Redis (redis.enabled=true) to scale safely." }}
 {{- end }}
 apiVersion: apps/v1
 kind: Deployment
@@ -13,11 +13,17 @@ spec:
   selector:
     matchLabels:
       {{- include "hmac-manager.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: server
   template:
     metadata:
       labels:
         {{- include "hmac-manager.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: server
     spec:
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "hmac-manager.fullname" . }}-config
       containers:
         - name: {{ include "hmac-manager.name" . }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -26,18 +32,23 @@ spec:
             - name: http
               containerPort: {{ .Values.service.port }}
               protocol: TCP
+          volumeMounts:
+            - name: config
+              mountPath: /etc/hmac-manager
+              readOnly: true
           env:
             - name: ASPNETCORE_URLS
               value: "http://+:{{ .Values.service.port }}"
+            - name: ASPNETCORE_ENVIRONMENT
+              value: {{ .Values.environment | quote }}
             {{- if .Values.redis.enabled }}
             - name: ConnectionStrings__Redis
+              value: {{ include "hmac-manager.redisAddress" . | quote }}
+            {{- end }}
+            {{- range $i, $policy := .Values.policies }}
+            - name: HmacManager__{{ $i }}__Keys__PrivateKey
               valueFrom:
                 secretKeyRef:
-                  name: {{ if .Values.redis.existingSecret }}{{ .Values.redis.existingSecret }}{{ else }}{{ include "hmac-manager.fullname" . }}-redis{{ end }}
-                  key: {{ .Values.redis.existingSecretKey }}
+                  name: {{ $policy.privateKeySecret.name }}
+                  key: {{ $policy.privateKeySecret.key }}
             {{- end }}
-          envFrom:
-            - configMapRef:
-                name: {{ include "hmac-manager.fullname" . }}-config
-            - secretRef:
-                name: {{ include "hmac-manager.secretName" . }}

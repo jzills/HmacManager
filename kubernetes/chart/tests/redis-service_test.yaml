@@ -1,0 +1,28 @@
+suite: redis-service
+release:
+  name: hmac-manager
+values:
+  - values/base.yaml
+templates:
+  - redis-service.yaml
+
+tests:
+  - it: renders the bundled Redis Service when redis is enabled
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: Service
+      - equal:
+          path: metadata.name
+          value: hmac-manager-redis
+      - equal:
+          path: spec.ports[0].port
+          value: 6379
+
+  - it: renders no Service when redis is disabled
+    set:
+      redis.enabled: false
+    asserts:
+      - hasDocuments:
+          count: 0

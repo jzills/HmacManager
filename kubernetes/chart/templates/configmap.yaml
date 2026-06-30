@@ -6,6 +6,4 @@ metadata:
   labels:
     {{- include "hmac-manager.labels" . | nindent 4 }}
 data:
-  {{- range $key, $value := .Values.config }}
-  {{ $key }}: {{ $value | quote }}
-  {{- end }}
+  config.json: {{ include "hmac-manager.policyConfig" . | quote }}
