@@ -66,10 +66,12 @@ setup_file() {
 
     # Poll until the sign endpoint is reachable; http_code "000" means the
     # TCP connection was refused (port-forward not yet listening).
+    # curl exits 7 on "connection refused"; set -e would kill setup_file on that
+    # exit code inside a command substitution, so || true makes the assignment safe.
     for _ in $(seq 1 30); do
         code=$(curl -s --max-time 1 -o /dev/null -w "%{http_code}" \
             -X POST -H "Content-Type: application/json" \
-            -d '{}' "http://localhost:${SIGN_PORT}/sign" 2>/dev/null)
+            -d '{}' "http://localhost:${SIGN_PORT}/sign" 2>/dev/null) || true
         if [[ "$code" != "000" ]]; then break; fi
         sleep 1
     done
