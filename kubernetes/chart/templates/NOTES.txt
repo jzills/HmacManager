@@ -12,8 +12,31 @@
 ╚═════════════════════════════════════════════════╝
 
 hmac-manager deployed to namespace {{ .Values.namespace }}.
+{{ len .Values.policies }} {{ if eq (len .Values.policies) 1 }}policy{{ else }}policies{{ end }} loaded · Redis {{ if .Values.redis.enabled }}enabled (bundled){{ else }}disabled (single-replica only){{ end }}
 
 {{- if .Values.istio.enabled }}
+{{- if and (not .Values.istio.ingressGateway.enabled) (not .Values.istio.waypoint.enabled) }}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ NOTE — No enforcement configured
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+hmac-manager is running but nothing is calling it yet — no
+AuthorizationPolicy was created because both enforcement points
+are disabled. Requests are NOT being verified. Enable one:
+
+  # Ingress gateway (external traffic):
+  helm upgrade hmac-manager ... \
+    --set istio.ingressGateway.enabled=true \
+    --set istio.ingressGateway.name=<gateway-name> \
+    --set istio.ingressGateway.namespace=<gateway-namespace>
+
+  # Waypoint (east-west / ambient mode):
+  helm upgrade hmac-manager ... \
+    --set istio.waypoint.enabled=true \
+    --set istio.waypoint.name=<waypoint-name> \
+    --set istio.waypoint.namespace=<waypoint-namespace>
+{{- end }}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  ACTION REQUIRED — Register ext-authz provider with Istio

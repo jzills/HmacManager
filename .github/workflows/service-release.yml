@@ -71,3 +71,11 @@ jobs:
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/hmac-manager:${{ steps.version.outputs.value }}
             ${{ secrets.DOCKERHUB_USERNAME }}/hmac-manager:latest
+
+      - name: Update Docker Hub description
+        uses: peter-evans/dockerhub-description@v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: ${{ secrets.DOCKERHUB_USERNAME }}/hmac-manager
+          readme-filepath: ./kubernetes/service/README.md

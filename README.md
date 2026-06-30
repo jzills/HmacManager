@@ -39,29 +39,21 @@ Add secure HMAC request authentication to ASP.NET Core APIs with lightweight, co
 
 ## Kubernetes (Istio ext-authz)
 
-Beyond the library, HmacManager ships as a containerized **ext-authz service** for [Istio](https://istio.io/) ambient mode. The waypoint (or ingress gateway) calls the service before forwarding a request, so unsigned or invalid requests are rejected at the mesh — no per-application integration code required.
-
-**Container image** — [`zills/hmac-manager`](https://hub.docker.com/r/zills/hmac-manager) on Docker Hub:
+Beyond the .NET library, HmacManager ships a containerized verification service and a Helm chart for enforcing HMAC authentication at the mesh edge. The service runs as an [Envoy ext-authz](https://www.envoyproxy.io/docs/envoy/latest/api-v3/extensions/filters/http/ext_authz/v3/ext_authz.proto) HTTP server: an Istio ingress gateway or ambient waypoint calls it before forwarding a request, and anything without a valid HMAC signature is rejected with `403`. Redis is bundled for replay protection — no external dependencies to provision.
 
 ```bash
-docker pull zills/hmac-manager:latest
-```
-
-**Helm chart** — install from the GitHub Pages HTTP repo:
-
-```bash
-helm repo add zills https://jzills.github.io/HmacManager
+helm repo add hmac-manager https://jzills.github.io/HmacManager
 helm repo update
-helm install hmac-manager zills/hmac-manager
+helm install hmac-manager hmac-manager/hmac-manager \
+  --namespace hmac-system --create-namespace \
+  --set "policies[0].name=MyPolicy" \
+  --set "policies[0].publicKey=00000000-0000-0000-0000-000000000001" \
+  --set "policies[0].privateKeySecret.name=my-hmac-secrets" \
+  --set "policies[0].privateKeySecret.key=MyPolicy-privateKey"
 ```
 
-or pull it from GHCR as an OCI artifact:
-
-```bash
-helm install hmac-manager oci://ghcr.io/jzills/charts/hmac-manager --version 0.0.1
-```
-
-See the [Kubernetes setup guide](kubernetes/service/README.md) for the full walkthrough (Istio install, waypoint enrollment, MeshConfig, request signing), and [RELEASING.md](RELEASING.md) for how the NuGet package, Docker image, and Helm chart are versioned and published.
+- **Helm chart** — [kubernetes/chart](kubernetes/chart/README.md) · [Artifact Hub](https://artifacthub.io/packages/search?repo=hmac-manager)
+- **Container image** — [zills/hmac-manager](https://hub.docker.com/r/zills/hmac-manager) on Docker Hub
 
 ## Resources
 

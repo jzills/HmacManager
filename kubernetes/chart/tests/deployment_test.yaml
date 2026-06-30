@@ -9,6 +9,12 @@ tests:
     set:
       image.repository: my-registry/hmac-manager
       image.tag: v1.2.3
+      policies:
+        - name: MyPolicy
+          publicKey: "00000000-0000-0000-0000-000000000001"
+          privateKeySecret:
+            name: my-secret
+            key: private-key
     asserts:
       - equal:
           path: spec.template.spec.containers[0].image
@@ -17,6 +23,12 @@ tests:
   - it: deploys to the configured namespace
     set:
       namespace: my-namespace
+      policies:
+        - name: MyPolicy
+          publicKey: "00000000-0000-0000-0000-000000000001"
+          privateKeySecret:
+            name: my-secret
+            key: private-key
     asserts:
       - equal:
           path: metadata.namespace
@@ -25,6 +37,12 @@ tests:
   - it: sets ASPNETCORE_URLS to the configured port
     set:
       service.port: 9090
+      policies:
+        - name: MyPolicy
+          publicKey: "00000000-0000-0000-0000-000000000001"
+          privateKeySecret:
+            name: my-secret
+            key: private-key
     asserts:
       - contains:
           path: spec.template.spec.containers[0].env
@@ -32,74 +50,161 @@ tests:
             name: ASPNETCORE_URLS
             value: "http://+:9090"
 
-  - it: references chart-managed secret by default
+  - it: sets ASPNETCORE_ENVIRONMENT from environment value
+    set:
+      environment: Development
+      policies:
+        - name: MyPolicy
+          publicKey: "00000000-0000-0000-0000-000000000001"
+          privateKeySecret:
+            name: my-secret
+            key: private-key
     asserts:
       - contains:
-          path: spec.template.spec.containers[0].envFrom
+          path: spec.template.spec.containers[0].env
           content:
-            secretRef:
-              name: hmac-manager-secrets
+            name: ASPNETCORE_ENVIRONMENT
+            value: Development
 
-  - it: references existingSecret when set
+  - it: defaults ASPNETCORE_ENVIRONMENT to Production
     set:
-      existingSecret: my-external-secret
+      policies:
+        - name: MyPolicy
+          publicKey: "00000000-0000-0000-0000-000000000001"
+          privateKeySecret:
+            name: my-secret
+            key: private-key
     asserts:
       - contains:
-          path: spec.template.spec.containers[0].envFrom
+          path: spec.template.spec.containers[0].env
           content:
-            secretRef:
-              name: my-external-secret
+            name: ASPNETCORE_ENVIRONMENT
+            value: Production
 
-  - it: sets the correct replica count when Redis is enabled
+  - it: injects ConnectionStrings__Redis when redis is enabled
     set:
-      replicaCount: 3
-      redis.enabled: true
-      redis.connectionString: redis-master:6379
-    asserts:
-      - equal:
-          path: spec.replicas
-          value: 3
-
-  - it: fails when replicaCount > 1 without Redis enabled
-    set:
-      replicaCount: 3
-    asserts:
-      - failedTemplate:
-          errorMessage: "replicaCount > 1 requires redis.enabled=true: the in-process nonce cache is not shared across pods, so replay protection would be bypassed. Enable Redis (redis.enabled=true) or set replicaCount to 1."
-
-  - it: injects the Redis connection string env var when enabled
-    set:
-      redis.enabled: true
-      redis.connectionString: redis-master:6379
+      policies:
+        - name: MyPolicy
+          publicKey: "00000000-0000-0000-0000-000000000001"
+          privateKeySecret:
+            name: my-secret
+            key: private-key
     asserts:
       - contains:
           path: spec.template.spec.containers[0].env
           content:
             name: ConnectionStrings__Redis
-            valueFrom:
-              secretKeyRef:
-                name: hmac-manager-redis
-                key: ConnectionStrings__Redis
+            value: "hmac-manager-redis:6379"
 
-  - it: references redis.existingSecret for the connection string when set
+  - it: omits ConnectionStrings__Redis when redis is disabled
     set:
-      redis.enabled: true
-      redis.existingSecret: my-redis-secret
-      redis.existingSecretKey: redis-url
-    asserts:
-      - contains:
-          path: spec.template.spec.containers[0].env
-          content:
-            name: ConnectionStrings__Redis
-            valueFrom:
-              secretKeyRef:
-                name: my-redis-secret
-                key: redis-url
-
-  - it: omits the Redis env var when disabled
+      redis.enabled: false
+      policies:
+        - name: MyPolicy
+          publicKey: "00000000-0000-0000-0000-000000000001"
+          privateKeySecret:
+            name: my-secret
+            key: private-key
     asserts:
       - notContains:
           path: spec.template.spec.containers[0].env
           any: true
           content:
             name: ConnectionStrings__Redis
+
+  - it: injects private key from referenced secret for each policy
+    set:
+      policies:
+        - name: PolicyA
+          publicKey: "00000000-0000-0000-0000-000000000001"
+          privateKeySecret:
+            name: secret-a
+            key: key-a
+        - name: PolicyB
+          publicKey: "00000000-0000-0000-0000-000000000002"
+          privateKeySecret:
+            name: secret-b
+            key: key-b
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: HmacManager__0__Keys__PrivateKey
+            valueFrom:
+              secretKeyRef:
+                name: secret-a
+                key: key-a
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: HmacManager__1__Keys__PrivateKey
+            valueFrom:
+              secretKeyRef:
+                name: secret-b
+                key: key-b
+
+  - it: mounts the config ConfigMap as a volume
+    set:
+      policies:
+        - name: MyPolicy
+          publicKey: "00000000-0000-0000-0000-000000000001"
+          privateKeySecret:
+            name: my-secret
+            key: private-key
+    asserts:
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: config
+            configMap:
+              name: hmac-manager-config
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: config
+            mountPath: /etc/hmac-manager
+            readOnly: true
+
+  - it: allows replicaCount > 1 when redis is enabled
+    set:
+      replicaCount: 3
+      policies:
+        - name: MyPolicy
+          publicKey: "00000000-0000-0000-0000-000000000001"
+          privateKeySecret:
+            name: my-secret
+            key: private-key
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 3
+
+  - it: fails when replicaCount > 1 with redis disabled
+    set:
+      replicaCount: 3
+      redis.enabled: false
+      policies:
+        - name: MyPolicy
+          publicKey: "00000000-0000-0000-0000-000000000001"
+          privateKeySecret:
+            name: my-secret
+            key: private-key
+    asserts:
+      - failedTemplate:
+          errorMessage: "replicaCount > 1 requires redis.enabled=true: the in-process nonce cache is not shared across pods, so replay protection would be bypassed. Set replicaCount to 1 for a single-replica deployment, or enable Redis (redis.enabled=true) to scale safely."
+
+  - it: labels pods with the server component to distinguish them from bundled Redis
+    set:
+      policies:
+        - name: MyPolicy
+          publicKey: "00000000-0000-0000-0000-000000000001"
+          privateKeySecret:
+            name: my-secret
+            key: private-key
+    asserts:
+      - equal:
+          path: spec.selector.matchLabels["app.kubernetes.io/component"]
+          value: server
+      - equal:
+          path: spec.template.metadata.labels["app.kubernetes.io/component"]
+          value: server

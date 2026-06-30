@@ -1,6 +1,8 @@
 suite: authorization-policy
 release:
   name: hmac-manager
+values:
+  - values/base.yaml
 templates:
   - authorization-policy.yaml
 
@@ -44,6 +46,11 @@ tests:
           errorMessage: "istio.waypoint.namespace is required when istio.waypoint.enabled=true"
 
   # --- Rendering: no output ---
+
+  - it: renders nothing by default so a bare install does not require a Gateway
+    asserts:
+      - hasDocuments:
+          count: 0
 
   - it: renders nothing when istio.enabled is false
     set:

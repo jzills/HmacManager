@@ -45,7 +45,7 @@ jobs:
             --password-stdin
 
       - name: Lint chart
-        run: helm lint ${{ env.CHART_PATH }}
+        run: helm lint ${{ env.CHART_PATH }} --values ${{ env.CHART_PATH }}/ci/lint-values.yaml
 
       - name: Package chart
         run: |
@@ -110,7 +110,7 @@ jobs:
           git worktree add gh-pages origin/gh-pages
           cp .cr-release-packages/*.tgz gh-pages/
           cp artifacthub-repo.yml gh-pages/artifacthub-repo.yml
-          cp pages/index.html gh-pages/index.html
+          cp kubernetes/pages/index.html gh-pages/index.html
           cd gh-pages
           if [ -f index.yaml ]; then
             helm repo index . --url "$PAGES_URL" --merge index.yaml
