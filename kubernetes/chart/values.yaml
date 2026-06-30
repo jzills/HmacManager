@@ -3,7 +3,7 @@ fullnameOverride: ""
 
 image:
   repository: zills/hmac-manager
-  tag: 0.0.1
+  tag: 0.1.0
   pullPolicy: IfNotPresent
 
 replicaCount: 1
@@ -72,9 +72,11 @@ istio:
     allowPartialMessage: false
 
   # Ingress gateway enforcement — protects external traffic entering the cluster.
-  # Enabled by default. Requires an existing Gateway API Gateway resource.
+  # Opt-in: off by default so a bare `helm install` succeeds without cluster-specific
+  # Gateway details. Enable it and point name/namespace at an existing Gateway API
+  # Gateway resource to enforce HMAC auth on inbound traffic.
   ingressGateway:
-    enabled: true
+    enabled: false
     # Name of the Gateway resource to target. Required when enabled.
     name: ""
     # Namespace the Gateway resource lives in. Required when enabled.

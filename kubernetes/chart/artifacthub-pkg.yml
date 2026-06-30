@@ -1,7 +1,7 @@
 version: 0.1.0
 name: hmac-manager
 displayName: HMAC Manager
-createdAt: "2025-01-01T00:00:00Z"
+createdAt: "2026-06-30T00:00:00Z"
 description: Istio ext-authz HTTP server for HMAC request authentication
 logoURL: ""
 digest: ""
