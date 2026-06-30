@@ -68,11 +68,11 @@ kubectl wait --for=condition=Ready pod/echo pod/curl -n default --timeout=60s
 # ── 7. Docker images ──────────────────────────────────────────────────────────
 log "Building hmac-manager image ($IMAGE_TAG)..."
 docker build -f "$REPO_ROOT/kubernetes/service/Dockerfile" \
-    -t "hmac-manager:${IMAGE_TAG}" \
+    -t "zills/hmac-manager:${IMAGE_TAG}" \
     "$REPO_ROOT"
 
 log "Loading hmac-manager image into kind..."
-kind load docker-image "hmac-manager:${IMAGE_TAG}" --name "$CLUSTER_NAME"
+kind load docker-image "zills/hmac-manager:${IMAGE_TAG}" --name "$CLUSTER_NAME"
 
 log "Pulling and loading bundled Redis image into kind..."
 docker pull redis:7-alpine
@@ -83,10 +83,11 @@ log "Installing hmac-manager Helm chart..."
 helm upgrade --install hmac-manager "$REPO_ROOT/kubernetes/chart" \
     --namespace "$NAMESPACE" \
     --create-namespace \
-    --set image.repository=hmac-manager \
     --set image.tag="$IMAGE_TAG" \
     --set image.pullPolicy=Never \
     --set config.ASPNETCORE_ENVIRONMENT=Development \
+    --set "config.HmacManager__0__Name=MyPolicy" \
+    --set "config.HmacManager__0__Nonce__CacheType=Distributed" \
     --set "config.HmacManager__0__Keys__PublicKey=$TEST_PUBLIC_KEY" \
     --set "secretData.HmacManager__0__Keys__PrivateKey=$TEST_PRIVATE_KEY" \
     --set istio.ingressGateway.enabled=false \
