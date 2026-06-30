@@ -3,6 +3,12 @@ using HmacManager.Mvc.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Load the chart-generated policy config mounted at a well-known path.
+// optional: true so the app starts normally outside Kubernetes.
+// Private keys are never written to this file — they arrive via secretKeyRef
+// env vars which cover different config keys, so ordering is not a concern.
+builder.Configuration.AddJsonFile("/etc/hmac-manager/config.json", optional: true, reloadOnChange: false);
+
 // Register a shared distributed cache for nonce storage when a Redis connection
 // string is provided. This must run BEFORE AddHmacManager: the library calls
 // TryAddSingleton<IDistributedCache, MemoryDistributedCache>(), so without a real

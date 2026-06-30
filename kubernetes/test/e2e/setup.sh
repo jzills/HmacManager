@@ -78,18 +78,24 @@ log "Pulling and loading bundled Redis image into kind..."
 docker pull redis:7-alpine
 kind load docker-image redis:7-alpine --name "$CLUSTER_NAME"
 
-# ── 8. Helm install ───────────────────────────────────────────────────────────
+# ── 8. Policy secret + Helm install ──────────────────────────────────────────
+log "Creating namespace and HMAC policy secret..."
+kubectl create namespace "$NAMESPACE" --dry-run=client -o yaml | kubectl apply -f -
+kubectl create secret generic hmac-manager-policy \
+    --namespace "$NAMESPACE" \
+    --from-literal="MyPolicy-privateKey=$TEST_PRIVATE_KEY" \
+    --dry-run=client -o yaml | kubectl apply -f -
+
 log "Installing hmac-manager Helm chart..."
 helm upgrade --install hmac-manager "$REPO_ROOT/kubernetes/chart" \
     --namespace "$NAMESPACE" \
-    --create-namespace \
     --set image.tag="$IMAGE_TAG" \
     --set image.pullPolicy=Never \
-    --set config.ASPNETCORE_ENVIRONMENT=Development \
-    --set "config.HmacManager__0__Name=MyPolicy" \
-    --set "config.HmacManager__0__Nonce__CacheType=Distributed" \
-    --set "config.HmacManager__0__Keys__PublicKey=$TEST_PUBLIC_KEY" \
-    --set "secretData.HmacManager__0__Keys__PrivateKey=$TEST_PRIVATE_KEY" \
+    --set environment=Development \
+    --set "policies[0].name=MyPolicy" \
+    --set "policies[0].publicKey=$TEST_PUBLIC_KEY" \
+    --set "policies[0].privateKeySecret.name=hmac-manager-policy" \
+    --set "policies[0].privateKeySecret.key=MyPolicy-privateKey" \
     --set istio.ingressGateway.enabled=false \
     --set istio.waypoint.enabled=true \
     --set istio.waypoint.authorizationPolicy.enabled=true \

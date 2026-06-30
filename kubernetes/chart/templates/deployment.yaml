@@ -18,6 +18,10 @@ spec:
       labels:
         {{- include "hmac-manager.selectorLabels" . | nindent 8 }}
     spec:
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "hmac-manager.fullname" . }}-config
       containers:
         - name: {{ include "hmac-manager.name" . }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -26,22 +30,23 @@ spec:
             - name: http
               containerPort: {{ .Values.service.port }}
               protocol: TCP
+          volumeMounts:
+            - name: config
+              mountPath: /etc/hmac-manager
+              readOnly: true
           env:
             - name: ASPNETCORE_URLS
               value: "http://+:{{ .Values.service.port }}"
+            - name: ASPNETCORE_ENVIRONMENT
+              value: {{ .Values.environment | quote }}
             {{- if .Values.redis.enabled }}
             - name: ConnectionStrings__Redis
-              {{- if .Values.redis.bundled }}
               value: {{ include "hmac-manager.redisAddress" . | quote }}
-              {{- else }}
+            {{- end }}
+            {{- range $i, $policy := .Values.policies }}
+            - name: HmacManager__{{ $i }}__Keys__PrivateKey
               valueFrom:
                 secretKeyRef:
-                  name: {{ if .Values.redis.existingSecret }}{{ .Values.redis.existingSecret }}{{ else }}{{ include "hmac-manager.fullname" . }}-redis{{ end }}
-                  key: {{ .Values.redis.existingSecretKey }}
-              {{- end }}
+                  name: {{ $policy.privateKeySecret.name }}
+                  key: {{ $policy.privateKeySecret.key }}
             {{- end }}
-          envFrom:
-            - configMapRef:
-                name: {{ include "hmac-manager.fullname" . }}-config
-            - secretRef:
-                name: {{ include "hmac-manager.secretName" . }}

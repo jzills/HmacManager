@@ -1,11 +1,13 @@
 suite: redis-deployment
 release:
   name: hmac-manager
+values:
+  - values/base.yaml
 templates:
   - redis-deployment.yaml
 
 tests:
-  - it: renders the bundled Redis Deployment by default
+  - it: renders the bundled Redis Deployment when redis is enabled
     asserts:
       - hasDocuments:
           count: 1
@@ -29,14 +31,6 @@ tests:
   - it: renders no Deployment when redis is disabled
     set:
       redis.enabled: false
-    asserts:
-      - hasDocuments:
-          count: 0
-
-  - it: renders no Deployment when BYO redis is used
-    set:
-      redis.bundled: false
-      redis.connectionString: redis-master:6379
     asserts:
       - hasDocuments:
           count: 0

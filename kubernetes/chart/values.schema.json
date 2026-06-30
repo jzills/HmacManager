@@ -27,6 +27,11 @@
       "type": "string",
       "minLength": 1
     },
+    "environment": {
+      "type": "string",
+      "enum": ["Production", "Staging", "Development"],
+      "description": "ASP.NET Core environment. Controls config file selection and whether the dev signing endpoint is active."
+    },
     "service": {
       "type": "object",
       "additionalProperties": false,
@@ -35,24 +40,86 @@
       },
       "required": ["port"]
     },
-    "config": {
-      "type": "object"
-    },
-    "secretData": {
-      "type": "object"
-    },
-    "existingSecret": {
-      "type": "string"
+    "policies": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "publicKey", "privateKeySecret"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "publicKey": {
+            "type": "string",
+            "minLength": 1
+          },
+          "privateKeySecret": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name", "key"],
+            "properties": {
+              "name": { "type": "string", "minLength": 1 },
+              "key":  { "type": "string", "minLength": 1 }
+            }
+          },
+          "algorithms": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "contentHash": {
+                "type": "string",
+                "enum": ["SHA1", "SHA256", "SHA512"]
+              },
+              "signingHash": {
+                "type": "string",
+                "enum": ["HMACSHA1", "HMACSHA256", "HMACSHA512"]
+              }
+            }
+          },
+          "nonce": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "maxAgeInSeconds": {
+                "type": "integer",
+                "minimum": 1
+              }
+            }
+          },
+          "schemes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["name"],
+              "properties": {
+                "name": { "type": "string", "minLength": 1 },
+                "headers": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["name"],
+                    "properties": {
+                      "name":      { "type": "string", "minLength": 1 },
+                      "claimType": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     },
     "redis": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "enabled":           { "type": "boolean" },
-        "bundled":           { "type": "boolean" },
-        "connectionString":  { "type": "string" },
-        "existingSecret":    { "type": "string" },
-        "existingSecretKey": { "type": "string", "minLength": 1 }
+        "enabled": { "type": "boolean" }
       },
       "required": ["enabled"]
     },
@@ -65,10 +132,10 @@
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "namespace":          { "type": "string", "minLength": 1 },
-            "configMapName":      { "type": "string", "minLength": 1 },
-            "maxRequestBytes":    { "type": "integer", "minimum": 1 },
-            "allowPartialMessage":{ "type": "boolean" }
+            "namespace":           { "type": "string", "minLength": 1 },
+            "configMapName":       { "type": "string", "minLength": 1 },
+            "maxRequestBytes":     { "type": "integer", "minimum": 1 },
+            "allowPartialMessage": { "type": "boolean" }
           },
           "required": ["namespace", "configMapName", "maxRequestBytes", "allowPartialMessage"]
         },
@@ -112,5 +179,5 @@
       "required": ["enabled", "meshConfig", "ingressGateway", "waypoint"]
     }
   },
-  "required": ["image", "replicaCount", "namespace", "service", "istio"]
+  "required": ["image", "replicaCount", "namespace", "environment", "service", "policies", "istio"]
 }
