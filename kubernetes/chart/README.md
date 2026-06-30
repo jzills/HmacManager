@@ -22,12 +22,12 @@ Client → Istio waypoint / ingress gateway
 ## Install
 
 ```bash
-helm repo add hmac-manager https://jzills.github.io/HmacManager
+helm repo add zills https://jzills.github.io/HmacManager
 helm repo update
 ```
 
 ```bash
-helm install hmac-manager hmac-manager/hmac-manager \
+helm install hmac-manager zills/hmac-manager \
   --namespace hmac-system \
   --create-namespace \
   --set "policies[0].name=MyPolicy" \
@@ -49,7 +49,7 @@ policies:
 ```
 
 ```bash
-helm install hmac-manager hmac-manager/hmac-manager \
+helm install hmac-manager zills/hmac-manager \
   --namespace hmac-system \
   --create-namespace \
   -f values.yaml
@@ -76,7 +76,7 @@ Enforcement is opt-in: `istio.ingressGateway.enabled` and `istio.waypoint.enable
 
 ```bash
 # External traffic — ingress gateway
-helm upgrade hmac-manager hmac-manager/hmac-manager \
+helm upgrade hmac-manager zills/hmac-manager \
   --namespace hmac-system --reuse-values \
   --set istio.ingressGateway.enabled=true \
   --set istio.ingressGateway.name=<gateway-name> \
@@ -85,7 +85,7 @@ helm upgrade hmac-manager hmac-manager/hmac-manager \
 
 ```bash
 # East-west traffic — ambient waypoint
-helm upgrade hmac-manager hmac-manager/hmac-manager \
+helm upgrade hmac-manager zills/hmac-manager \
   --namespace hmac-system --reuse-values \
   --set istio.waypoint.enabled=true \
   --set istio.waypoint.name=<waypoint-name> \

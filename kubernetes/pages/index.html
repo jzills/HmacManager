@@ -52,9 +52,9 @@
     <p class="tag">Istio ambient-mode ext-authz service for HMAC request authentication.</p>
 
     <h2>Install from this repository (HTTP)</h2>
-<pre class="cmd">helm repo add hmac-manager https://jzills.github.io/HmacManager
+<pre class="cmd">helm repo add zills https://jzills.github.io/HmacManager
 helm repo update
-helm install hmac-manager hmac-manager/hmac-manager \
+helm install hmac-manager zills/hmac-manager \
   --namespace hmac-system --create-namespace \
   --set "policies[0].name=MyPolicy" \
   --set "policies[0].publicKey=00000000-0000-0000-0000-000000000001" \
