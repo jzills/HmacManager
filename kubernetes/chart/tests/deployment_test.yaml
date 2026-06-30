@@ -52,7 +52,7 @@ tests:
 
   - it: sets ASPNETCORE_ENVIRONMENT from environment value
     set:
-      environment: Staging
+      environment: Development
       policies:
         - name: MyPolicy
           publicKey: "00000000-0000-0000-0000-000000000001"
@@ -64,7 +64,7 @@ tests:
           path: spec.template.spec.containers[0].env
           content:
             name: ASPNETCORE_ENVIRONMENT
-            value: Staging
+            value: Development
 
   - it: defaults ASPNETCORE_ENVIRONMENT to Production
     set:

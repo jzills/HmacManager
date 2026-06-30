@@ -29,8 +29,8 @@
     },
     "environment": {
       "type": "string",
-      "enum": ["Production", "Staging", "Development"],
-      "description": "ASP.NET Core environment. Controls config file selection and whether the dev signing endpoint is active."
+      "enum": ["Production", "Development"],
+      "description": "ASP.NET Core environment. Development activates the signing endpoint on port 8081; Production is the default for all other deployments."
     },
     "service": {
       "type": "object",

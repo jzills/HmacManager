@@ -11,7 +11,7 @@ namespace: hmac-system
 
 # ASP.NET Core environment. Controls which appsettings.{Environment}.json is loaded
 # and whether the dev-only signing endpoint is active.
-# Allowed values: Production, Staging, Development
+# Allowed values: Production | Development
 environment: Production
 
 service:
