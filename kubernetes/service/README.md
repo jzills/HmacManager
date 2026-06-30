@@ -18,10 +18,10 @@ Client → Istio waypoint / ingress gateway
 The recommended way to run this image is via the [hmac-manager Helm chart](https://github.com/jzills/HmacManager/tree/main/kubernetes/chart), which bundles Redis for replay protection and abstracts all configuration:
 
 ```bash
-helm repo add hmac-manager https://jzills.github.io/HmacManager
+helm repo add zills https://jzills.github.io/HmacManager
 helm repo update
 
-helm install hmac-manager hmac-manager/hmac-manager \
+helm install hmac-manager zills/hmac-manager \
   --namespace hmac-system \
   --create-namespace \
   --set "policies[0].name=MyPolicy" \
@@ -30,7 +30,7 @@ helm install hmac-manager hmac-manager/hmac-manager \
   --set "policies[0].privateKeySecret.key=MyPolicy-privateKey"
 ```
 
-A fresh install deploys the verifier and a bundled Redis but does not enforce any traffic until you enable an Istio enforcement point (`istio.ingressGateway.*` or `istio.waypoint.*`). See the [chart documentation](https://artifacthub.io/packages/helm/hmac-manager/hmac-manager) for the full values reference.
+A fresh install deploys the verifier and a bundled Redis but does not enforce any traffic until you enable an Istio enforcement point (`istio.ingressGateway.*` or `istio.waypoint.*`). See the [chart documentation](https://artifacthub.io/packages/helm/zills/hmac-manager) for the full values reference.
 
 ## Tags
 

@@ -127,9 +127,9 @@ The chart is published two ways from the same `chart/vX.Y.Z` tag:
 Install via the HTTP repo:
 
 ```bash
-helm repo add hmac-manager https://jzills.github.io/HmacManager
+helm repo add zills https://jzills.github.io/HmacManager
 helm repo update
-helm install hmac-manager hmac-manager/hmac-manager --version 1.5.0
+helm install hmac-manager zills/hmac-manager --version 1.5.0
 ```
 
 Or via OCI:
