@@ -72,12 +72,8 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/hmac-manager:${{ steps.version.outputs.value }}
             ${{ secrets.DOCKERHUB_USERNAME }}/hmac-manager:latest
 
-      # Docker Hub's API rejects repository metadata edits from scoped access
-      # tokens (403), even though the same token can push images fine — this
-      # is cosmetic, so don't fail the release over it.
       - name: Update Docker Hub description
         uses: peter-evans/dockerhub-description@v4
-        continue-on-error: true
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
