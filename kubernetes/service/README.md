@@ -15,10 +15,10 @@ Client → Istio waypoint / ingress gateway
 
 ## Deploy with Helm
 
-The recommended way to run this image is via the [hmac-manager Helm chart](https://github.com/jzills/HmacManager/tree/main/kubernetes/chart), which bundles Redis for replay protection and abstracts all configuration:
+The recommended way to run this image is via the [hmac-manager Helm chart](https://github.com/jzills/hmac-manager/tree/main/kubernetes/chart), which bundles Redis for replay protection and abstracts all configuration:
 
 ```bash
-helm repo add zills https://jzills.github.io/HmacManager
+helm repo add zills https://jzills.github.io/hmac-manager
 helm repo update
 
 helm install hmac-manager zills/hmac-manager \
@@ -92,4 +92,4 @@ Use the [HmacManager NuGet package](https://www.nuget.org/packages/HmacManager) 
 
 ## Source
 
-[github.com/jzills/HmacManager](https://github.com/jzills/HmacManager)
+[github.com/jzills/hmac-manager](https://github.com/jzills/hmac-manager)
