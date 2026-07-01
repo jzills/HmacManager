@@ -10,7 +10,7 @@
     "type": "module",
     "repository": {
         "type": "git",
-        "url": "https://github.com/jzills/HmacManager.git"
+        "url": "https://github.com/jzills/hmac-manager.git"
     },
     "main": "./dist/index.cjs",
     "module": "./dist/index.js",

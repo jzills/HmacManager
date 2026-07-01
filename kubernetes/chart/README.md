@@ -22,7 +22,7 @@ Client → Istio waypoint / ingress gateway
 ## Install
 
 ```bash
-helm repo add zills https://jzills.github.io/HmacManager
+helm repo add zills https://jzills.github.io/hmac-manager
 helm repo update
 ```
 
@@ -190,4 +190,4 @@ Returns the HMAC headers to attach to your request. Never use `Development` in a
 
 ## Source
 
-[github.com/jzills/HmacManager](https://github.com/jzills/HmacManager)
+[github.com/jzills/hmac-manager](https://github.com/jzills/hmac-manager)

@@ -13,7 +13,7 @@ public static class IServiceCollectionExtensions
     /// Registers the necessary dependencies to use <see cref="HmacManager.Components.IHmacManagerFactory"/>
     /// in the dependency injection container with the configured <see cref="HmacManagerOptions"/>.
     ///     <para>
-    ///         See <see href="https://github.com/jzills/HmacManager/tree/main/samples/">here</see> for examples.
+    ///         See <see href="https://github.com/jzills/hmac-manager/tree/main/samples/">here</see> for examples.
     ///     </para>
     /// </summary>
     /// <param name="services">The <see cref="IServiceCollection"/>.</param>
@@ -34,7 +34,7 @@ public static class IServiceCollectionExtensions
     /// Registers the necessary dependencies to use <see cref="HmacManager.Components.IHmacManagerFactory"/>
     /// in the dependency injection container with the corresponding <see cref="IConfiguration"/> settings.
     ///     <para>
-    ///         See <see href="https://github.com/jzills/HmacManager/tree/main/samples/">here</see> for examples.
+    ///         See <see href="https://github.com/jzills/hmac-manager/tree/main/samples/">here</see> for examples.
     ///     </para>
     /// </summary>
     /// <param name="services">The <see cref="IServiceCollection"/>.</param>
