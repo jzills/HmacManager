@@ -45,7 +45,12 @@ jobs:
 
       - name: Check release branch has changes to merge back
         run: |
-          git fetch origin develop "${{ github.event.pull_request.head.ref }}"
+          # checkout on a pull_request event leaves a narrow fetch refspec, so
+          # fetch into explicit remote-tracking refs — a bare `git fetch origin <branch>`
+          # only writes FETCH_HEAD, leaving origin/develop et al. unresolvable below.
+          git fetch origin \
+            "develop:refs/remotes/origin/develop" \
+            "${{ github.event.pull_request.head.ref }}:refs/remotes/origin/${{ github.event.pull_request.head.ref }}"
           if git diff --quiet "origin/develop...origin/${{ github.event.pull_request.head.ref }}"; then
             echo "::error::Release branch '${{ github.event.pull_request.head.ref }}' has no changes vs develop." \
               "Did you forget to bump the version (HmacManager.csproj, the service project, or Chart.yaml) before merging?" \
