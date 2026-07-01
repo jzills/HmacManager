@@ -3,11 +3,29 @@
 set -euo pipefail
 
 BRANCH="$1"
-VERSION="${BRANCH#release/v}"
+
+case "$BRANCH" in
+  release/service/v*)
+    PREFIX="service"
+    VERSION="${BRANCH#release/service/v}"
+    ;;
+  release/chart/v*)
+    PREFIX="chart"
+    VERSION="${BRANCH#release/chart/v}"
+    ;;
+  release/v*)
+    PREFIX="nuget"
+    VERSION="${BRANCH#release/v}"
+    ;;
+  *)
+    echo "Unrecognized release branch: $BRANCH (expected release/vX.Y.Z, release/service/vX.Y.Z, or release/chart/vX.Y.Z)" >&2
+    exit 1
+    ;;
+esac
 
 if ! echo "$VERSION" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
-  echo "Invalid version format: $BRANCH (expected release/vX.Y.Z)" >&2
+  echo "Invalid version format: $BRANCH" >&2
   exit 1
 fi
 
-echo "$VERSION"
+echo "$PREFIX/v$VERSION"
