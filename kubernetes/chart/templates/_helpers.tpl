@@ -51,8 +51,8 @@ Cluster-internal address of the bundled Redis instance.
 {{/*
 Build the HmacManager policy config JSON from .Values.policies.
 The result is a compact JSON string suitable for use as a ConfigMap value.
-Private keys are intentionally excluded — they are injected at runtime via
-secretKeyRef env vars so they never appear in the ConfigMap.
+Private keys are intentionally excluded — they are mounted at runtime from a
+separate projected Secret volume (see deployment.yaml) so they never appear in the ConfigMap.
 */}}
 {{- define "hmac-manager.policyConfig" -}}
 {{- $root := . -}}

@@ -40,12 +40,19 @@ public static class IServiceCollectionExtensions
     /// <param name="services">The <see cref="IServiceCollection"/>.</param>
     /// <param name="configurationSection">The <see cref="IConfigurationSection"/> for an array of JSON objects representing an <see cref="HmacManager.Policies.HmacPolicy"/>.</param>
     /// <returns>An <see cref="IServiceCollection"/> that can be used to further configure services.</returns>
+    /// <remarks>
+    /// If <paramref name="configurationSection"/> supports reload notifications (e.g. it was bound from a
+    /// configuration source added with <c>reloadOnChange: true</c>), the resulting policy collection stays
+    /// in sync with configuration changes for the lifetime of the process — see <see cref="HmacPolicyCollectionReloader"/>.
+    /// </remarks>
     public static IServiceCollection AddHmacManager(
-        this IServiceCollection services, 
+        this IServiceCollection services,
         IConfigurationSection configurationSection
     )
     {
-        var policies = configurationSection.GetPolicySection();
+        var policies = new ReloadableHmacPolicyCollection(configurationSection.GetPolicySection());
+        _ = new HmacPolicyCollectionReloader(configurationSection, policies);
+
         return services.AddHmacManager(new HmacManagerOptions(policies));
     }
 }
