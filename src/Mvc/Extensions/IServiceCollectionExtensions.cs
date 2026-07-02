@@ -50,7 +50,7 @@ public static class IServiceCollectionExtensions
         IConfigurationSection configurationSection
     )
     {
-        var policies = configurationSection.GetPolicySection();
+        var policies = new ReloadableHmacPolicyCollection(configurationSection.GetPolicySection());
         _ = new HmacPolicyCollectionReloader(configurationSection, policies);
 
         return services.AddHmacManager(new HmacManagerOptions(policies));

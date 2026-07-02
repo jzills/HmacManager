@@ -1,47 +1,47 @@
-using System.Configuration;
-using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
 using HmacManager.Policies;
-using HmacManager.Policies.Extensions;
 
 namespace HmacManager.Mvc.Extensions.Internal;
 
 /// <summary>
-/// Watches an <see cref="IConfigurationSection"/> for changes and synchronizes an
-/// <see cref="IHmacPolicyCollection"/> in place, so edits to the underlying configuration
+/// Watches an <see cref="IConfigurationSection"/> for changes and atomically republishes a
+/// <see cref="ReloadableHmacPolicyCollection"/>, so edits to the underlying configuration
 /// (e.g. a rotated key delivered via a reloadable mounted ConfigMap/Secret) take effect
 /// without restarting the host process.
 /// </summary>
 internal sealed class HmacPolicyCollectionReloader
 {
     private readonly IConfigurationSection ConfigurationSection;
-    private readonly IHmacPolicyCollection Policies;
+    private readonly ReloadableHmacPolicyCollection Collection;
 
     /// <summary>
     /// Creates an <see cref="HmacPolicyCollectionReloader"/> and immediately subscribes
     /// to configuration reload notifications for the lifetime of the process.
     /// </summary>
     /// <param name="configurationSection">The <see cref="IConfigurationSection"/> policies are bound from.</param>
-    /// <param name="policies">The <see cref="IHmacPolicyCollection"/> to keep in sync, already populated with the initial policy set.</param>
-    public HmacPolicyCollectionReloader(IConfigurationSection configurationSection, IHmacPolicyCollection policies)
+    /// <param name="collection">The <see cref="ReloadableHmacPolicyCollection"/> to republish on each change.</param>
+    public HmacPolicyCollectionReloader(IConfigurationSection configurationSection, ReloadableHmacPolicyCollection collection)
     {
         ConfigurationSection = configurationSection;
-        Policies = policies;
+        Collection = collection;
 
         ChangeToken.OnChange(ConfigurationSection.GetReloadToken, Reload);
     }
 
     /// <summary>
-    /// Rebuilds the policy set from the current configuration and synchronizes it into
-    /// <see cref="Policies"/> in place: policies no longer present are removed, new or
-    /// changed policies are added, and unchanged policies are left untouched.
+    /// Rebuilds the policy set from the current configuration and atomically publishes it,
+    /// replacing the previously served set in a single reference swap.
     /// </summary>
     /// <remarks>
-    /// Configuration that fails to bind is ignored and the previous, still-valid policy
-    /// set is left in place until the next change notification. This can happen transiently
-    /// when public policy fields and private keys are delivered via independently-updated
-    /// mounted volumes (ConfigMap vs. Secret), since the two are not guaranteed to update atomically together.
+    /// Configuration that fails to build a valid policy set is ignored and the previous,
+    /// still-valid set is left in place until the next change notification. This happens
+    /// transiently when public policy fields and private keys arrive on independently-updated
+    /// mounted volumes (ConfigMap vs. Secret): a rotation can be observed after config.json
+    /// updates but before the matching private key file syncs, at which point binding throws
+    /// a validation error. Building the new set fully before publishing means a failed reload
+    /// never leaves a partially-updated collection, and swallowing the error here keeps it off
+    /// the configuration reload thread.
     /// </remarks>
     internal void Reload()
     {
@@ -50,32 +50,11 @@ internal sealed class HmacPolicyCollectionReloader
         {
             updated = ConfigurationSection.GetPolicySection();
         }
-        catch (ConfigurationErrorsException)
+        catch (Exception)
         {
             return;
         }
 
-        var updatedNames = new HashSet<string>(updated.Values.Select(policy => policy.Name!));
-        foreach (var existing in Policies.Values.ToList())
-        {
-            if (!updatedNames.Contains(existing.Name!))
-            {
-                Policies.Remove(existing.Name!);
-            }
-        }
-
-        foreach (var policy in updated.Values)
-        {
-            if (Policies.TryGetValue(policy.Name!, out var current) && AreEqual(current, policy))
-            {
-                continue;
-            }
-
-            Policies.Remove(policy.Name!);
-            Policies.Add(policy);
-        }
+        Collection.Replace(updated);
     }
-
-    private static bool AreEqual(HmacPolicy left, HmacPolicy right) =>
-        JsonSerializer.Serialize(left) == JsonSerializer.Serialize(right);
 }
