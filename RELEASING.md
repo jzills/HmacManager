@@ -1,16 +1,23 @@
 # Releasing
 
-This project has three independently versioned artifacts, each with its own release pipeline. All releases follow Gitflow: work lands on `develop` via feature branches, gets stabilized on a release branch, merges into `main`, and is tagged at that merge commit.
+This project has three independently versioned artifacts, each with its own release pipeline. All releases follow Gitflow: work lands on `develop` via feature branches, gets stabilized on a release branch, merges into `main` **via a pull request**, and is tagged automatically at that merge commit.
+
+Tagging is automated by `.github/workflows/tag.yml`: it fires whenever a PR whose head branch starts with `release/` is merged into `main`, extracts the artifact and version from the branch name (`.github/scripts/extract-version.sh`), and pushes the matching prefixed tag. Merging into `main` with a direct `git push` (bypassing a PR) will **not** trigger a release — the merge must go through a PR for `tag.yml` to fire.
+
+> **Prerequisite for `gh pr merge --auto`:** the examples below queue the merge with `--auto`, which requires the repository's **Allow auto-merge** setting to be enabled (Settings → General → Pull Requests) and at least one required status check on `main`. If auto-merge is disabled, `gh pr merge --auto` errors out — drop `--auto` and run `gh pr merge --merge` to merge immediately once checks are green.
 
 ## Artifacts and Tag Prefixes
 
-| Artifact | Tag format | Trigger |
-|---|---|---|
-| NuGet package | `nuget/vX.Y.Z` | `.github/workflows/release.yml` |
-| Docker image (ext-authz service) | `service/vX.Y.Z` | `.github/workflows/service-release.yml` |
-| Helm chart | `chart/vX.Y.Z` | `.github/workflows/chart-release.yml` |
+| Artifact | Release branch | Tag format | Trigger |
+|---|---|---|---|
+| NuGet package | `release/vX.Y.Z` | `nuget/vX.Y.Z` | `.github/workflows/release.yml` |
+| Docker image (ext-authz service) | `release/service/vX.Y.Z` | `service/vX.Y.Z` | `.github/workflows/service-release.yml` |
+| Helm chart | `release/chart/vX.Y.Z` | `chart/vX.Y.Z` | `.github/workflows/chart-release.yml` |
 
-Versions are extracted from the tag at publish time — no source files need manual version bumps except `Chart.yaml`'s `appVersion` field (see [Helm chart release](#helm-chart) below).
+The published version always comes from the tag, not from any source file. Even so, each release branch must bump its own version file (`HmacManager.csproj`'s `<Version>` for NuGet, `HmacManager.Kubernetes.csproj`'s `<Version>` for the service, `Chart.yaml`'s `version` for the chart — see [Helm chart release](#helm-chart) for `appVersion`) so that:
+
+- local/manual builds report the right version, and
+- the release branch has a real commit to bring back into `develop`. If a release branch has no changes vs `develop` at merge time, `tag.yml`'s `merge-back` job fails loudly with an error telling you to bump the version — it does not silently skip.
 
 ---
 
@@ -23,20 +30,19 @@ Covers changes to the core library under `src/`.
 git checkout develop && git pull origin develop
 git checkout -b release/v2.7.0
 
-# 2. Stabilize (bug fixes, changelog, etc.), then merge into main
-git checkout main && git pull origin main
-git merge --no-ff release/v2.7.0
-git push origin main
+# 2. Bump the version and stabilize (bug fixes, changelog, etc.)
+#    Edit src/HmacManager.csproj: <Version>2.7.0</Version>
+git commit -am "chore: bump version to 2.7.0"
+git push origin release/v2.7.0
 
-# 3. Tag and publish via GitHub Release
-gh release create nuget/v2.7.0 --target main --generate-notes
+# 3. Open a PR release/v2.7.0 -> main and merge it once checks pass.
+#    Merging the PR automatically:
+#      - tags main as nuget/v2.7.0 (triggers release.yml: test, pack, publish)
+#      - opens and auto-merges a PR to back-merge release/v2.7.0 into develop
+gh pr create --base main --head release/v2.7.0 --title "release: nuget v2.7.0" --fill
+gh pr merge --merge --auto
 
-# 4. Back-merge into develop
-git checkout develop
-git merge --no-ff main
-git push origin develop
-
-# 5. Delete the release branch
+# 4. Once the back-merge PR has merged, delete the release branch
 git push origin --delete release/v2.7.0
 git branch -d release/v2.7.0
 ```
@@ -54,20 +60,19 @@ Covers changes to `kubernetes/service/`.
 git checkout develop && git pull origin develop
 git checkout -b release/service/v1.2.0
 
-# 2. Stabilize, then merge into main
-git checkout main && git pull origin main
-git merge --no-ff release/service/v1.2.0
-git push origin main
+# 2. Bump the version and stabilize
+#    Edit kubernetes/service/HmacManager.Kubernetes.csproj: <Version>1.2.0</Version>
+git commit -am "chore: bump service version to 1.2.0"
+git push origin release/service/v1.2.0
 
-# 3. Tag and publish via GitHub Release
-gh release create service/v1.2.0 --target main --generate-notes
+# 3. Open a PR release/service/v1.2.0 -> main and merge it once checks pass.
+#    Merging the PR automatically:
+#      - tags main as service/v1.2.0 (triggers service-release.yml: test, build, push image)
+#      - opens and auto-merges a PR to back-merge release/service/v1.2.0 into develop
+gh pr create --base main --head release/service/v1.2.0 --title "release: service v1.2.0" --fill
+gh pr merge --merge --auto
 
-# 4. Back-merge into develop
-git checkout develop
-git merge --no-ff main
-git push origin develop
-
-# 5. Delete the release branch
+# 4. Once the back-merge PR has merged, delete the release branch
 git push origin --delete release/service/v1.2.0
 git branch -d release/service/v1.2.0
 ```
@@ -98,23 +103,19 @@ If you are releasing a new service version alongside a chart update, update `app
 git checkout develop && git pull origin develop
 git checkout -b release/chart/v1.5.0
 
-# 2. If the chart now targets a new service version, update appVersion
-#    Edit kubernetes/chart/Chart.yaml: appVersion: "1.2.0"
+# 2. Bump the chart version (and appVersion if targeting a new service version)
+#    Edit kubernetes/chart/Chart.yaml: version: "1.5.0" (and appVersion if needed)
+git commit -am "chore: bump chart version to 1.5.0"
+git push origin release/chart/v1.5.0
 
-# 3. Stabilize, then merge into main
-git checkout main && git pull origin main
-git merge --no-ff release/chart/v1.5.0
-git push origin main
+# 3. Open a PR release/chart/v1.5.0 -> main and merge it once checks pass.
+#    Merging the PR automatically:
+#      - tags main as chart/v1.5.0 (triggers chart-release.yml: package, push to GHCR + Pages)
+#      - opens and auto-merges a PR to back-merge release/chart/v1.5.0 into develop
+gh pr create --base main --head release/chart/v1.5.0 --title "release: chart v1.5.0" --fill
+gh pr merge --merge --auto
 
-# 4. Tag and publish via GitHub Release
-gh release create chart/v1.5.0 --target main --generate-notes
-
-# 5. Back-merge into develop
-git checkout develop
-git merge --no-ff main
-git push origin develop
-
-# 6. Delete the release branch
+# 4. Once the back-merge PR has merged, delete the release branch
 git push origin --delete release/chart/v1.5.0
 git branch -d release/chart/v1.5.0
 ```
