@@ -24,6 +24,18 @@ spec:
         - name: config
           configMap:
             name: {{ include "hmac-manager.fullname" . }}-config
+        {{- if .Values.policies }}
+        - name: secret-keys
+          projected:
+            sources:
+              {{- range $i, $policy := .Values.policies }}
+              - secret:
+                  name: {{ $policy.privateKeySecret.name }}
+                  items:
+                    - key: {{ $policy.privateKeySecret.key }}
+                      path: {{ printf "HmacManager__%d__Keys__PrivateKey" $i }}
+              {{- end }}
+        {{- end }}
       containers:
         - name: {{ include "hmac-manager.name" . }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -36,6 +48,11 @@ spec:
             - name: config
               mountPath: /etc/hmac-manager
               readOnly: true
+            {{- if .Values.policies }}
+            - name: secret-keys
+              mountPath: /etc/hmac-manager/secrets
+              readOnly: true
+            {{- end }}
           env:
             - name: ASPNETCORE_URLS
               value: "http://+:{{ .Values.service.port }}"
@@ -44,11 +61,4 @@ spec:
             {{- if .Values.redis.enabled }}
             - name: ConnectionStrings__Redis
               value: {{ include "hmac-manager.redisAddress" . | quote }}
-            {{- end }}
-            {{- range $i, $policy := .Values.policies }}
-            - name: HmacManager__{{ $i }}__Keys__PrivateKey
-              valueFrom:
-                secretKeyRef:
-                  name: {{ $policy.privateKeySecret.name }}
-                  key: {{ $policy.privateKeySecret.key }}
             {{- end }}

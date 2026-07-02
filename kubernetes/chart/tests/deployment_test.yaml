@@ -112,7 +112,7 @@ tests:
           content:
             name: ConnectionStrings__Redis
 
-  - it: injects private key from referenced secret for each policy
+  - it: projects each policy's private key into the secret-keys volume, named for hot-reload binding
     set:
       policies:
         - name: PolicyA
@@ -127,23 +127,23 @@ tests:
             key: key-b
     asserts:
       - contains:
-          path: spec.template.spec.containers[0].env
+          path: spec.template.spec.volumes
           content:
-            name: HmacManager__0__Keys__PrivateKey
-            valueFrom:
-              secretKeyRef:
-                name: secret-a
-                key: key-a
-      - contains:
-          path: spec.template.spec.containers[0].env
-          content:
-            name: HmacManager__1__Keys__PrivateKey
-            valueFrom:
-              secretKeyRef:
-                name: secret-b
-                key: key-b
+            name: secret-keys
+            projected:
+              sources:
+                - secret:
+                    name: secret-a
+                    items:
+                      - key: key-a
+                        path: HmacManager__0__Keys__PrivateKey
+                - secret:
+                    name: secret-b
+                    items:
+                      - key: key-b
+                        path: HmacManager__1__Keys__PrivateKey
 
-  - it: mounts the config ConfigMap as a volume
+  - it: mounts the config ConfigMap and secret-keys volumes read-only
     set:
       policies:
         - name: MyPolicy
@@ -163,6 +163,12 @@ tests:
           content:
             name: config
             mountPath: /etc/hmac-manager
+            readOnly: true
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: secret-keys
+            mountPath: /etc/hmac-manager/secrets
             readOnly: true
 
   - it: allows replicaCount > 1 when redis is enabled

@@ -119,6 +119,8 @@ policies:
             claimType: userId
 ```
 
+Policy changes — including updating `policies[].privateKeySecret` to point at a rotated key — take effect on running pods without a restart: `helm upgrade` updates the ConfigMap and the projected Secret volume, and each pod picks up the change the next time kubelet syncs its mounted volumes (typically within about a minute). Key rotation is an instant cutover: once a pod reloads, requests signed with the old key are rejected, so coordinate rotation with whoever holds the key.
+
 ### Redis (replay protection)
 
 Redis is deployed as part of this release when `redis.enabled=true` (the default). All policies automatically use the distributed nonce cache. No connection strings, no external Redis cluster required.
